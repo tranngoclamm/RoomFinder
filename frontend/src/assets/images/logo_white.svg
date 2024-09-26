@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="134.438" height="38.571" viewBox="0 -1.039 184.287 41.169" xmlns="http://www.w3.org/2000/svg">
+  <defs/>
+  <path id="Path_758" data-name="Path 758" d="M 6.49 38.57 L 10.09 38.57 L 10.059 3.589 L 20.659 3.597 C 29.82 3.616 35.524 13.545 30.927 21.469 C 29.415 24.075 26.971 26.011 24.087 26.885 L 31.602 38.571 L 35.88 38.571 L 29.321 28.339 C 39.211 21.674 38.177 6.803 27.46 1.571 C 25.342 0.537 23.016 -0.001 20.659 0 L 6.459 0.008 L 6.49 38.57 Z" style="fill: rgb(241, 241, 241);"/>
+  <path id="Path_759" data-name="Path 759" d="M 0 38.57 L 3.6 38.57 L 3.6 10.028 L 20.612 10.036 C 24.8 10.036 27.418 14.57 25.324 18.198 C 24.352 19.881 22.556 20.918 20.612 20.918 L 12.987 20.918 L 12.987 20.91 L 12.979 20.918 L 24.42 38.57 L 28.706 38.57 L 19.591 24.512 L 20.609 24.512 C 27.566 24.512 31.915 16.98 28.436 10.955 C 26.822 8.159 23.838 6.436 20.609 6.436 L 0 6.428 L 0 38.57 Z" style="fill: rgb(241, 241, 241);"/>
+  <text style="fill: rgb(241, 241, 241); font-family: '.VnAvant'; font-size: 22px; font-weight: 700; white-space: pre; transform-box: fill-box; transform-origin: 108.253% 71.0111%;" transform="matrix(1.057629, 0, 0, 1, 6.483139, 0)" x="45.885" y="30.437">room</text>
+  <text style="fill: rgb(241, 241, 241); font-family: '.VnAvant'; font-size: 22px; font-weight: 700; white-space: pre; transform-origin: 106.372px 27.504px;" transform="matrix(1.057629, 0, 0, 1, 67.600807, -0.024529)" x="45.885" y="30.437">Finder</text>
+  <text style="white-space: pre; fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 28px;" x="168.372" y="-38.182">Enter your text here</text>
+  <text style="white-space: pre; fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 28px;" x="106.58" y="-70.377">Enter your text here</text>
+  <text style="white-space: pre; fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 28px;" x="100.349" y="-47.01">Enter your text here</text>
+</svg>
