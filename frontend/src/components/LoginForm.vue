@@ -4,11 +4,13 @@
       <div class="hero-mask opacity-8 bg-dark"></div>
       <div class="hero-bg hero-bg-scroll" :style="{ backgroundImage: `url(${require('@/assets/images/login-bg-4.jpg')})` }"></div>
 
+
       <div class="hero-content w-100">
         <div class="container">
           <div class="row g-0 min-vh-100 py-4 py-md-5">
             <!-- Welcome Text -->
-            <div class="col-lg-7 px-0 bg-primary" :style="{ backgroundImage: 'url(@/assets/images/login-bg-4.jpg)' }">
+           <div class="col-lg-7 px-0 bg-primary" :style="{ backgroundImage: `url(${require('@/assets/images/login-bg-4.jpg')})` }">
+
               <div class="hero-wrap d-flex align-items-center rounded-3 rounded-end-0 h-100">
                 <div class="hero-mask opacity-2 bg-primary"></div>
                 <div class="hero-bg hero-bg-scroll" :style="{ backgroundImage: `url(${require('@/assets/images/anh-13-mau-nha-tro-dep.jpg')})` }"></div>
@@ -45,7 +47,7 @@
                 <div class="row">
                   <div class="col-11 col-lg-10 mx-auto">
                     <h3 class="text-white text-center mb-4">Đăng nhập</h3>
-                    <form @submit.prevent="login">
+                    <form @submit.prevent="handleLogin">
                       <div class="mb-3">
                         <label class="form-label text-light" for="account">Tài khoản</label>
                         <input v-model="account" type="text" class="form-control" id="account" required placeholder="Nhập tài khoản" />
@@ -100,6 +102,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '@/assets/css/app.css'; // Nhúng file CSS
 import '@/assets/css/stylesheet.css'; // Nhúng file CSS
+import { loginUser } from '@/services/api'; // Import hàm gọi API từ api.js
 
 export default {
   data() {
@@ -108,14 +111,35 @@ export default {
       password: '',
     };
   },
+  mounted() {
+    this.account = localStorage.getItem('username');
+    this.password = localStorage.getItem('password');
+  },
   methods: {
-    login() {
-      // Thực hiện logic đăng nhập
-      console.log('Logging in:', this.account, this.password);
-      // Reset form sau khi đăng nhập
-      this.account = '';
-      this.password = '';
+    async handleLogin() {
+      try {
+        const userData = {
+          username: this.account,
+          password: this.password,
+        };
+        const response = await loginUser(userData);
+
+        // Kiểm tra nếu response và response.data tồn tại
+        if (response && response.data) {
+          alert('Đăng nhập thành công!');
+          // Chuyển đến trang chính hoặc dashboard
+          this.$router.push('/'); // Hoặc trang bạn muốn chuyển đến
+        }
+      } catch (error) {
+        // Xử lý thông báo lỗi từ server
+        if (error.response && error.response.data && error.response.data.message) {
+          alert(error.response.data.message); // Hiển thị thông báo lỗi
+        } else {
+          alert('Đã xảy ra lỗi, vui lòng thử lại.');
+        }
+      }
     },
   },
-};
+}
+
 </script>

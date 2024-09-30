@@ -73,13 +73,6 @@
                       </div>
                     </div>
                   </div>
-                  <div class="pt-2 pb-3">
-                    <div class="row">
-                      <div class="col-10 col-lg-9 mx-auto">
-                        <p class="text-2 text-muted mb-0">Copyright © 2024 <a href="#">RoomFinder</a></p>
-                      </div>
-                    </div>
-                  </div>
                 </div>
                 <!-- Register Form End -->
               </div>
@@ -92,6 +85,8 @@
 </template>
 
 <script>
+import { registerUser } from '@/services/api'; // Import hàm gọi API từ api.js
+
 export default {
   data() {
     return {
@@ -103,11 +98,43 @@ export default {
     };
   },
   methods: {
-    handleSubmit() {
-      // Xử lý logic đăng ký
-      console.log('Đăng ký:', this.fullName, this.username, this.email, this.password);
-    },
+  async handleSubmit() {
+    if (!this.agree) {
+      alert('Bạn cần đồng ý với điều khoản và dịch vụ để tiếp tục!');
+      return;
+    }
+
+    try {
+      const userData = {
+        fullName: this.fullName,
+        username: this.username,
+        email: this.email,
+        password: this.password,
+      };
+      const response = await registerUser(userData);
+
+      // Kiểm tra nếu response và response.data tồn tại
+      if (response && response.data) {
+        //lưu tài khoản, mật khẩu vào localstorage
+        localStorage.setItem('fullname', this.fullName);
+        localStorage.setItem('username', this.username);
+        localStorage.setItem('email', this.email);
+        localStorage.setItem('password', this.password);
+        // Chuyển đến trang đăng nhập 
+        this.$router.push('/login');
+      }
+    } catch (error) {
+      // Xử lý thông báo lỗi từ server
+      if (error.response && error.response.data && error.response.data.message) {
+        alert(error.response.data.message); // Hiển thị thông báo lỗi
+      } else {
+        alert('Đã xảy ra lỗi, vui lòng thử lại.');
+      }
+    }
   },
+},
+
+
 };
 </script>
 

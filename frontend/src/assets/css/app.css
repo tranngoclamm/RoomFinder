@@ -6057,6 +6057,23 @@ pre code {
   -webkit-transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
+.form-control:focus {
+  color: #495057;
+  background-color: #fff;
+  border-color: #a3bce9;
+  outline: 0;
+  box-shadow: 0 0 0 1px rgba(60, 112, 209, 0.25) !important;
+}
+.form-select:focus {
+  border-color: #88b8ff;
+  outline: 0;
+  /* box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25); */
+}
+.select_city {
+  overflow-y: auto; /* Thêm thanh cuộn nếu cần */
+  display: block; /* Đảm bảo nó hiển thị đúng cách */
+}
+
 
 @media (prefers-reduced-motion: reduce) {
   .form-control {
@@ -8878,7 +8895,7 @@ input[type="button"].btn-block {
 }
 
 .navbar-dark .navbar-nav .nav-link {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .navbar-dark .navbar-nav .nav-link:hover,
@@ -8907,13 +8924,46 @@ input[type="button"].btn-block {
 }
 
 .navbar-dark .navbar-text {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .navbar-dark .navbar-text a {
   color: #fff;
 }
+.navbar-dark .navbar-text a.dropdown-item {
+  color: #ffffff;
+}
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  float: left;
+  min-width: 10rem;
+  padding: 0.5rem 0;
+  margin: 0.125rem 0 0;
+  font-size: 0.9rem;
+  color: #d5d5d5;
+  text-align: left;
+  list-style: none;
+  background-color: #14141487;
+  background-clip: padding-box;
+  border: 1px solid rgba(60, 60, 60, 0.15);
+  border-radius: 10px;
+}
 
+
+.dropdown-item:hover, .dropdown-item:focus {
+  color: #16181b;
+  text-decoration: none;
+  background-color: #979797;
+}
+.dropdown-menu[data-bs-popper] {
+  top: 100%;
+  left: -70px;
+  margin-top: 14px;
+}
 .navbar-dark .navbar-text a:hover,
 .navbar-dark .navbar-text a:focus {
   color: #fff;
@@ -10181,7 +10231,14 @@ a.close.disabled {
   margin: 0.5rem;
   pointer-events: none;
 }
-
+.modal-dialog label {
+  color: #3B5EA0 !important;
+}
+.newpost-box .btn.btn-primary, .modal-footer .btn.btn-primary {
+  background-color: #3B5EA0 !important;
+  border-color: #3B5EA0 !important;
+  border-radius: 8px;
+}
 .modal.fade .modal-dialog {
   -webkit-transition: -webkit-transform 0.3s ease-out;
   transition: -webkit-transform 0.3s ease-out;
@@ -15968,35 +16025,35 @@ gets 2/3 of the page. You can adjust this to your personal liking. */
   }
 }
 
-main .filter .inputs {
+ .filter .inputs {
   height: 65px;
   padding: 7px 7px 12px 12px;
   border: 1px solid #ced4da;
 }
 
-main .filter .inputs label {
+ .filter .inputs label {
   text-transform: uppercase;
   font-weight: bold;
   letter-spacing: 2px;
 }
 
-main .filter .inputs:last-child {
+ .filter .inputs:last-child {
   font-size: 13px;
   margin-top: 3px;
 }
 
-main .view-switcher {
+ .view-switcher {
   margin-top: 2rem;
 }
 
-main .view-switcher__element {
+ .view-switcher__element {
   text-align: right;
   display: -webkit-box;
   display: flex;
   float: right;
 }
 
-main .view-switcher__element a {
+ .view-switcher__element a {
   font-size: 23px;
   padding: 8px;
   border-radius: 4px;
@@ -16007,108 +16064,145 @@ main .view-switcher__element a {
   line-height: 0;
 }
 
-main .view-switcher__element a.active,
-main .view-switcher__element a:hover {
+ .view-switcher__element a.active,
+ .view-switcher__element a:hover {
   background: #F5F5F5;
 }
-
-main .apartment__list {
-  margin-top: 6rem;
+.room-list,
+.apartment__inline{
+  width: 1200px;
 }
 
-main .apartment__list .unactive {
+ .apartment__list {
+  margin-top: 2rem;
+}
+
+ .apartment__list .unactive {
   border: 1px solid red;
   opacity: 0.5;
   border-radius: 20px 20px 0 0;
 }
 
-main .apartment__list__card {
+ .apartment__list__card {
   margin-bottom: 2rem;
 }
+.apartment__list__card:hover {
+    filter: brightness(90%);
+    /* transform: translate(0, -10px); */
+    box-sizing: border-box;
+}
 
-main .apartment__list__card__img {
+ .apartment__list__card__img {
   border-radius: 20px 20px 0 0;
   width: 100%;
   height: 160px;
+  cursor: pointer;
   -o-object-fit: cover;
      object-fit: cover;
 }
 
-main .apartment__list__card__container {
+ .apartment__list__card__container {
   border-top: none;
   border: 1px solid #ddd;
 }
 
-main .apartment__list__card__container__header {
-  line-height: 2.5;
+ .apartment__list__card__container__header {
+  line-height: 1.5;
 }
 
-main .apartment__list__card__container__header .row {
+ .apartment__list__card__container__header .row {
   margin-right: initial !important;
   margin-left: initial !important;
 }
-
-main .apartment__list__card__container__header .row .apartment__list__card__container__header-col {
-  border-bottom: 1px solid #ddd;
-  border-right: 1px solid #ddd;
-  text-align: center;
+.apartment__list__card__container .icon{
+  color: #3B5EA0 !important;
+  height: 25px;
+  width: 25px;
+  filter: none;
+  margin-top: 0;
+  padding-bottom: 2px;
+  transform: translateY(-2px);
+}
+.apartment__list__card__container__header-col {
+  display: flex;
+  align-items: center; /* Căn giữa theo chiều dọc */
 }
 
-main .apartment__list__card__container__header .row .apartment__list__card__container__header-col:last-child {
+.apartment__list__card__container__header__street {
+  display: -webkit-box; /* Sử dụng cho trình duyệt hỗ trợ WebKit */
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2; /* Giới hạn số dòng hiển thị */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Hiển thị dấu ... nếu quá dài */
+  max-height: 3em; /* Chiều cao của 2 dòng văn bản (có thể điều chỉnh tùy thuộc vào font-size) */
+  line-height: 1.5em; /* Khoảng cách giữa các dòng */
+  height: 3em; /* Cố định chiều cao cho trường hợp chỉ có 1 dòng */
+  /* text-align: center; Căn giữa theo chiều ngang */
+  white-space: normal; /* Bắt buộc văn bản xuống dòng */
+}
+
+
+ .apartment__list__card__container__header .row .apartment__list__card__container__header-col {
+  border-bottom: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  padding: 10px 10px 10px 15px;
+  /* text-align: center; */
+}
+
+ .apartment__list__card__container__header .row .apartment__list__card__container__header-col:last-child {
   border-right: none;
 }
 
-main .apartment__list__card__container__header__street,
-main .apartment__list__card__container__header__price {
-  font-size: 12px;
+ .apartment__list__card__container__header__street,
+ .apartment__list__card__container__header__price {
+  font-size: 13px;
   padding: 0px;
   font-weight: bold;
+  color: #3B5EA0;
 }
 
-main .apartment__list__card__container__header__price {
+ .apartment__list__card__container__header__price {
   color: #3B5EA0;
   font-weight: bold;
-  font-size: 19px;
+  font-size: 14px;
 }
 
-main .apartment__list__card__container__header__price span {
+ .apartment__list__card__container__header__price span {
   color: initial;
   font-size: initial;
   font-weight: initial;
 }
 
-main .apartment__list__card__container__header__price.sales_price {
+ .apartment__list__card__container__header__price.sales_price {
   color: #bf2d2d;
 }
 
-main .apartment__list__card__container__header__street {
+ .apartment__list__card__container__header__street {
   position: relative;
   top: 0px;
 }
 
-main .apartment__list__card__container__header__street span {
+ .apartment__list__card__container__header__street span {
   position: relative;
   display: block;
   margin-top: -17px;
   color: #AEB0B9;
 }
 
-main .apartment__list__card__container__facilities {
+ .apartment__list__card__container__facilities {
   padding: 3px;
-  text-align: center;
-  margin-bottom: 4px;
+  /* text-align: center; */
+  /* margin-bottom: 4px; */
   color: #cdcdcd;
+  padding: 10px 5px 10px 10px;
 }
 
-main .apartment__list__card__container__facilities__icon {
+ .apartment__list__card__container__facilities__icon {
   font-size: 22px;
 }
 
-main .apartment__list__card__container__facilities__bedroom div {
-  margin-left: -36px;
-}
 
-main .apartment__list__card__container__facilities__bedroom div span {
+ .apartment__list__card__container__facilities__bedroom div span {
   position: absolute;
   font-size: 30px;
   top: -7px;
@@ -16116,93 +16210,159 @@ main .apartment__list__card__container__facilities__bedroom div span {
   font-weight: 100;
 }
 
-main .apartment__list__card__container__facilities span {
+ .apartment__list__card__container__facilities span {
   font-size: 12px;
 }
-
-main .apartment__list__card__container__facilities__balcony.none i {
+.apartment__list__card__container__facilities__balcony  .icon{
+  width: 39px;
+  height: 39px;
+  padding: 0px;
+  transform: translateY(2px);
+  transform: translateX(-2px);
+}
+.apartment__list__card__container__facilities__balcony span,
+.apartment__list__card__container__facilities__bedroom span{
+  color:#3B5EA0;
+}
+.apartment__list__card__container__facilities__bedroom .icon{
+  width: 30px;
+  height: 30px;
+  padding-right: 2px;
+  margin: 0px;
+}
+ .apartment__list__card__container__facilities__balcony.none i {
   opacity: 0.5;
 }
 
-main .apartment__list__card__container__facilities__balcony__not {
+ .apartment__list__card__container__facilities__balcony__not {
   position: absolute;
   margin-left: 27%;
   top: -15px;
 }
 
-main .apartment__list__card__container__facilities__balcony__not span {
+ .apartment__list__card__container__facilities__balcony__not span {
   font-size: 45px;
   font-weight: lighter;
 }
 
-main .apartment__inline {
-  margin-top: 6rem;
+ .apartment__inline {
+  margin-top: 2rem;
+}
+.animated .ic-heart {
+  filter: invert(100%);
 }
 
-main .apartment__inline__card {
+ .apartment__inline__card {
   border: 2px solid #ddd;
   border-radius: 35px;
   margin-bottom: 2rem;
+  height: 203px;
+}
+.apartment__inline__card .icon-area{
+  width: 30px;
+  height: 30px;
+}
+.apartment__inline__card .icon-time{
+  width: 25px;
+  height: 25px;
+}
+small, .small {
+  font-size: 16.5px;
+  font-weight: 500;
+  color: #3b5ea0;
+  line-height: 1.75;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2; /* Giới hạn hiển thị 2 dòng */
+  overflow: hidden;
+  height: 57.75px;
+
+}
+.inline-heart{
+    width: 25px;
+    opacity: 0.6;
+    cursor: pointer;
+}
+.apartment__inline__card__container__facilities{
+    margin-top: 10px;
+}
+.apartment__inline__card .description{
+    font-size: 12.5px;
+    size: 16px;
+    color: #939393;
+    height: 55px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3; /* Giới hạn hiển thị 3 dòng */
+    overflow: hidden;
 }
 
-main .apartment__inline__card__img {
+ .apartment__inline__card__img {
   border-radius: 32px 0px 0px 32px;
   width: 100%;
-  height: 190px !important;
+  height: 200px !important;
   height: auto;
   -o-object-fit: cover;
   object-fit: cover;
 }
 
-main .apartment__inline__card__container {
+ .apartment__inline__card__container {
   padding: 1rem;
 }
 
-main .apartment__inline__card__container__header__street {
+ .apartment__inline__card__container__header__street {
   font-size: 34px;
   font-weight: 200;
 }
 
-main .apartment__inline__card__container__header__street span {
+ .apartment__inline__card__container__header__street span {
   font-size: 20px;
   color: #AEB0B9;
 }
 
-main .apartment__inline__card__container__header__price {
+ .apartment__inline__card__container__header__price {
   color: #3B5EA0;
   font-weight: bold;
   font-size: 34px;
 }
 
-main .apartment__inline__card__container__header__price span {
+ .apartment__inline__card__container__header__price span {
   color: #3C3C3C;
   font-size: 25px;
   font-weight: initial;
 }
 
-main .apartment__inline__card__container__header__price.sales_price {
+ .apartment__inline__card__container__header__price.sales_price {
   color: #bf2d2d;
 }
 
-main .apartment__inline__card__container__facilities {
-  text-align: center;
-  margin-top: 1rem;
+ .apartment__inline__card__container__facilities {
+  /* text-align: center;
+  margin-top: 1rem; */
 }
 
-main .apartment__inline__card__container__facilities span {
+ .apartment__inline__card__container__facilities span {
   font-size: 12px;
+  color: #3B5EA0;
+}
+.apartment__inline__card__container__facilities span.time {
+
+  letter-spacing: 1px; /* Điều chỉnh khoảng cách giữa các ký tự */
+
 }
 
-main .apartment__inline__card__container__facilities__bedroom,
-main .apartment__inline__card__container__facilities__room {
+
+
+ .apartment__inline__card__container__facilities__bedroom,
+ .apartment__inline__card__container__facilities__room {
   text-align: left;
 }
 
-main .apartment__inline__card__container__facilities__icon {
+ .apartment__inline__card__container__facilities__icon {
   font-size: 25px;
 }
 
-main .apartment__inline__card__container__facilities__icon span {
+ .apartment__inline__card__container__facilities__icon span {
   position: absolute;
   font-size: 30px;
   top: -4px;
@@ -16210,33 +16370,33 @@ main .apartment__inline__card__container__facilities__icon span {
   font-weight: 100;
 }
 
-main .apartment__inline__card__container__facilities__balcony.none {
+ .apartment__inline__card__container__facilities__balcony.none {
   opacity: 0.5;
 }
 
-main .apartment__inline__card__container__facilities__balcony__not {
+ .apartment__inline__card__container__facilities__balcony__not {
   position: absolute;
   margin-left: 30%;
   top: -15px;
 }
 
-main .apartment__inline__card__container__facilities__balcony__not span {
+ .apartment__inline__card__container__facilities__balcony__not span {
   font-size: 60px;
   font-weight: lighter;
 }
 
-main .apartment__inline__card__container__facilities__btn {
+ .apartment__inline__card__container__facilities__btn {
   top: 1rem;
   text-transform: unset;
   padding: 13px 37px;
   border-radius: 13px;
 }
 
-main .vgs__close {
+ .vgs__close {
   font-size: 50px !important;
 }
 
-main .gallery {
+ .gallery {
   margin-top: -1.4rem;
   display: grid;
   grid-template-columns: repeat(8, 1fr);
@@ -16244,11 +16404,11 @@ main .gallery {
   height: 350px;
 }
 
-main .gallery figure {
+ .gallery figure {
   margin: 0 !important;
 }
 
-main .gallery__img {
+ .gallery__img {
   width: 100%;
   height: 100%;
   -o-object-fit: cover;
@@ -16259,59 +16419,59 @@ main .gallery__img {
   transition: all 0.3s;
 }
 
-main .gallery__item {
+ .gallery__item {
   position: relative;
   overflow: hidden;
 }
 
-main .gallery__item:hover img {
+ .gallery__item:hover img {
   -webkit-transform: scale(1.1);
   transform: scale(1.1);
 }
 
-main .gallery__item--1 {
+ .gallery__item--1 {
   grid-column-start: 1;
   grid-column-end: 5;
   grid-row-start: 1;
   grid-row-end: 5;
 }
 
-main .gallery__item--2 {
+ .gallery__item--2 {
   grid-column-start: 5;
   grid-column-end: 7;
   grid-row-start: 1;
   grid-row-end: 3;
 }
 
-main .gallery__item--3 {
+ .gallery__item--3 {
   grid-column-start: 7;
   grid-column-end: 9;
   grid-row-start: 1;
   grid-row-end: 3;
 }
 
-main .gallery__item--4 {
+ .gallery__item--4 {
   grid-column-start: 5;
   grid-column-end: 7;
   grid-row-start: 3;
   grid-row-end: 5;
 }
 
-main .gallery__item--5 {
+ .gallery__item--5 {
   grid-column-start: 7;
   grid-column-end: 9;
   grid-row-start: 3;
   grid-row-end: 5;
 }
 
-main .gallery__item:last-child div {
+ .gallery__item:last-child div {
   position: absolute;
   bottom: 15px;
   right: 15px;
   color: #ddd;
 }
 
-main .gallery__item:last-child button {
+ .gallery__item:last-child button {
   background: #ffffff;
   padding: 7px 15px;
   color: #646363;
@@ -16325,14 +16485,14 @@ main .gallery__item:last-child button {
   border: none;
 }
 
-main .gallery__item1 {
+ .gallery__item1 {
   grid-column-start: 1;
   grid-column-end: -1;
   grid-row-start: 1;
   grid-row-end: 5;
 }
 
-main .gallery__item2 {
+ .gallery__item2 {
   grid-column-start: 1;
   grid-column-end: 5;
   grid-row-start: 1;
@@ -17661,6 +17821,10 @@ textarea {
     margin: 0;
     margin-top: 0 !important;
   }
+.breadcrumb-list{
+    font-size: 1.25rem;
+    user-select: none;
+  }
 
   main .view-switcher .col,
   main .filter .col {
@@ -18191,6 +18355,7 @@ textarea {
 
   .apartment__inline__card__container__header-street-wrap {
     padding-left: 10px;
+    height: 57.75px;
   }
 
   .apartment__inline__card-phone-price {
@@ -20490,8 +20655,39 @@ textarea {
 }
 
 .login-nav {
-  width: 200px;
+  width: 250px;
   /* position: relative; */
   display: flex;
   justify-content: space-between;
+}
+.avatar img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+}
+img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  transition: .3s;
+}
+
+/* upload-image */
+.image-preview {
+  margin-top: 20px;
+}
+
+.image-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.preview-img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
