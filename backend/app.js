@@ -1,22 +1,39 @@
-// backend/app.js
 const express = require('express');
-const dotenv = require('dotenv');
+const mongoose = require('mongoose');
+const authRoutes = require('./routers/authRoutes.js'); // Đường dẫn đến authRoutes
+const cors = require('cors');
 
-// Load environment variables from .env file
-dotenv.config();
+require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 3000;
+// Sử dụng cors để cho phép mọi origin, hoặc chỉ định origin cụ thể như 'http://localhost:8080'
+// app.use(cors({
+//   origin: 'http://localhost:8080',
+// }));
+
+app.use(cors()); // Thêm dòng này để cho phép tất cả các nguồn
 
 // Middleware
 app.use(express.json());
 
 // Routes
-app.get('/', (req, res) => {
-  res.send('Hello from Express');
+app.use('/api', require('./routers/authRoutes.js'));
+
+// Kết nối đến MongoDB
+
+mongoose.connect(process.env.uri, { 
+  useNewUrlParser: true, 
+  useUnifiedTopology: true, 
+})
+.then(() => {
+  console.log('Connected to MongoDB');
+})
+.catch((error) => {
+  console.error('MongoDB connection error:', error);
 });
 
 // Start server
-app.listen(port, () => {
-  console.log(`Backend server running on port ${port}`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
