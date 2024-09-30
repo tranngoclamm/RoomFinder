@@ -95,19 +95,28 @@
                         <div class="form-group w-100">
                           <label>
                             <div>Hình ảnh / Video <span></span></div>
-                        </label>                      
-                        <div class="wrapper upload-image-area w-100" @click="triggerFileInput">
-                              <!-- Hidden input for selecting multiple files -->
-                              <input class="file-input" type="file" name="file" ref="fileInput" hidden multiple @change="handleFileUpload">
-                          </div>
-                        
-                          <!-- Display selected images -->
-                          <div v-if="selectedImages.length > 0" class="image-preview">
-                            <h4>Selected Images:</h4>
-                            <div class="image-list">
-                              <img v-for="(image, index) in selectedImages" :src="image" :key="index" class="preview-img" />
-                            </div>
-                          </div>
+                        </label> 
+
+                <!-- Upload area wrapper -->
+                    <div class="wrapper upload-image-area w-100" @click="triggerFileInput">
+                        <form action="#" class="w-100">
+                        <!-- Hidden input for selecting multiple files -->
+                        <input class="file-input" type="file" name="file" ref="fileInput" hidden multiple @change="handleFileUpload">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Browse File to Upload</p>
+                        </form>
+                    </div>
+
+                    <!-- Display selected images -->
+                    <div v-if="selectedImages.length > 0" class="image-preview">
+                        <label>
+                            <div>Selected Images:</div>
+                        </label> 
+                        <div class="image-list">
+                        <img v-for="(image, index) in selectedImages" :src="image" :key="index" class="preview-img" />
+                        </div>
+                    </div>
+
                         </div>
                     </div>
                 </div>
@@ -179,7 +188,6 @@
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    console.log(data); // Log the fetched provinces
 
     // Access the provinces from the response
     if (data.error === 0) {
@@ -199,7 +207,6 @@ async fetchDistricts() {
   if (!this.selectedProvince) return; // Prevent fetching if no province is selected
   try {
     const url = `https://esgoo.net/api-tinhthanh/2/${this.selectedProvince}.htm`;
-    console.log(url); // Log the constructed URL for debugging
     const response = await fetch(url);
     
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -222,7 +229,6 @@ async fetchDistricts() {
       if (!this.selectedDistrict) return; // Prevent fetching if no district is selected
       try {
         const url = `https://esgoo.net/api-tinhthanh/3/${this.selectedDistrict}.htm`;
-        console.log(url); // Log the constructed URL for debugging
         const response = await fetch(url);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
@@ -237,12 +243,11 @@ async fetchDistricts() {
       }
     },
         onProvinceChange() {
-    console.log('onProvinceChange triggered');
-    console.log('Selected Province ID:', this.selectedProvince); // Log the selected province
     this.fetchDistricts(); // Call to fetch districts based on selected province
     },
+
     triggerFileInput() {
-      this.$refs.fileInput.click();
+      this.$refs.fileInput.click(); // Trigger the hidden file input
     },
 
     // Handle file selection and store the selected images
