@@ -20,6 +20,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  phone: {
+    type: Number,
+  },
+  zalo: {
+    type: Number,
+  },
+  
 });
 
 userSchema.pre('save', async function (next) {

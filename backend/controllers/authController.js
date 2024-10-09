@@ -43,10 +43,7 @@ exports.loginUser = async (req, res) => {
       if (!user) {
         return res.status(400).json({ message: 'Tên tài khoản không tồn tại' });
       }
-  
-      console.log('Thông tin tài khoản đăng nhập:');
-      console.log('Username:', username);
-      console.log('Mật khẩu đã nhập:', password);
+
       
       // So sánh mật khẩu đã mã hóa
       const isPasswordValid = await bcrypt.compare(password,  user.password);
