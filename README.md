@@ -3,7 +3,11 @@
 ## Hướng dẫn Cài đặt và Chạy Dự án
 
 ### Bước 1: Cài đặt các package cần thiết
-Truy cập vào từng thư mục `frontend` và `backend` và chạy lệnh sau:
+Từ thư mục gốc của dự án, chạy:
+```bash
+npm install
+```
+Sau đó truy cập vào từng thư mục `frontend` và `backend` và chạy lệnh sau:
 
 ```bash
 npm install
