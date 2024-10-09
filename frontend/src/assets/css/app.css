@@ -6067,7 +6067,7 @@ pre code {
 .form-select:focus {
   border-color: #88b8ff;
   outline: 0;
-  /* box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25); */
+  box-shadow: 0 0 0 1px rgba(13, 110, 253, .25);;
 }
 .select_city {
   overflow-y: auto; /* Thêm thanh cuộn nếu cần */
@@ -7564,14 +7564,96 @@ input[type="button"].btn-block {
   overflow: hidden;
   border-top: 1px solid #e9ecef;
 }
+.booking__form__block .dropdown-menu {
+  position: absolute !important;
+  top: 55%;
+  width: 105%;
+  left: 15px;
+  z-index: 1000;
+  display: flex;
+  float: left;
+  min-width: 10rem;
+  padding: 0.5rem 0;
+  margin: 0.125rem 0 0;
+  font-size: 0.9rem;
+  color: #767373;
+  text-align: left;
+  list-style: none;
+  background-color: #fff;
+  background-clip: padding-box;
+  /* border: 1px solid rgba(60, 60, 60, 0.15); */
+  border-radius: 25px;
+  padding-top: 5px;
+  border: 1px solid #ced4da;
+  transform: translate3d(-29px, 47px, 0px) !important;
+  overflow: hidden;
+  user-select: none;
+}
+.hover:hover{
+  cursor: pointer;
+}
+.booking__form__block .dropdown-menu .option-item{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 21px 34px;
+  height: 35px;
+  font-size: 14px;
+  border-bottom: 1px solid #c7c7c7;
+  text-transform: uppercase;
+  font-weight: bold;
 
+}
+
+.location-menu{
+  position: absolute;
+  top: -26px !important;
+  /* width: 110%; */
+  max-height: 140px !important; /* Điều chỉnh chiều cao tối đa cho 4 mục */
+  overflow-y: auto !important;  /* Bật cuộn dọc nếu vượt quá chiều cao */
+  overflow-x: auto !important;   /* Ẩn cuộn ngang */
+  border-radius: 25px;
+  /* margin-top: 30px; */
+  padding-top: 5px;
+  border: 1px solid #ced4da;
+  color: #ffffffad !important;
+    text-align: left;
+    list-style: none;
+    background-color: #14141487 !important;
+    background-clip: padding-box;
+    border: 1px solid rgba(60, 60, 60, 0.15) !important;
+    border-radius: 10px;
+}
+
+.location-menu::-webkit-scrollbar,
+.modal-dialog-scrollable .modal-body::-webkit-scrollbar {
+  width: 0;             /* Ẩn thanh cuộn dọc */
+  height: 0;            /* Ẩn thanh cuộn ngang (nếu có) */
+}
+.header__navbar .nav-link:focus span {
+  border-bottom: 2px solid;
+  padding-bottom: 3px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.location-menu li:hover{
+  cursor: pointer;
+}
+.location-input{
+  outline: none;
+  border: none;
+  background-color: transparent;
+  color: #505050;
+  font-size: 13px;
+}
 .dropdown-item {
   display: block;
   width: 100%;
   padding: 0.25rem 1.5rem;
   clear: both;
   font-weight: 400;
-  color: #212529;
+  color: #ffffff;
   text-align: inherit;
   white-space: nowrap;
   background-color: transparent;
@@ -20632,10 +20714,13 @@ textarea {
   .phone-total__col-amount-text {
     font-size: 16px;
   }
+.contacte .info__details__list p[data-v-524c0c0c] {
 
+}
   .phone-total__col-date span {
     font-size: 10px;
   }
+  .oxyy-login-register 
 
   .payment_medhod__back__list div {
     width: 34px !important;

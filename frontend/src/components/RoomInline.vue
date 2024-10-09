@@ -1,573 +1,85 @@
 <template>
+
+    <!-- Khung search -->
+    <div class="view-switcher room-list d-flex align-items-center justify-content-between">
+          <div class="breadcrumb-list">
+              <a href="/">RoomFinder</a>
+              <span> > </span>
+              <a ref="postTitle" href="">{{type}}</a>
+          </div>
+          <div class="view-switcher__element"><input type="hidden" value="en">
+              <input v-model="searchQuery" type="text" placeholder="Nhập nội dung tìm kiếm" class="form-control"> 
+              <a href="#" @click.prevent="fetchData"><i class="fas fa-search"></i></a>
+              <a href="#" style="display: none;"></a> 
+              <a class="active">
+                  <i class="fas fa-th-large"></i>
+              </a> 
+              <a>
+                  <i class="fas fa-list-ul"></i>
+              </a>
+          </div>
+    </div>
+
+    <!-- Danh sách phòng -->
     <div class="apartment__inline">
         <div class="row">
             <div class="col-12">
-                <div class="apartment__inline__card">
-                    <div class="row">
-                        <div class="col-md-4 col-6 pr-tablet-0" @click="showModal = true">
-                            <a><img src="https://cdn.dribbble.com/users/263641/screenshots/4517916/404_not_found_3_dribbble.jpg" alt="" class="apartment__inline__card__img">
-                            </a>
-                        </div>
-                        <div onclick="window.location.href='https://rentroom.md/en/detail/one-bedroom-apartment-furnished-for-rent-per-day-short-period-or-long-in-puskin-street-center-chisinau-strada-puskin-50-kishinev-moldaviya'" class="col-md-8 col-6 pl-tablet-0">
-                            <div class="apartment__inline__card__container">
-                                <div class="apartment__inline__card__container__header">
-                                    <div class="row">
-                                        <div class="col-11 apartment__inline__card__container__header-street-wrap">
-                                            <small>                    Văn Phòng - MB Đường Tân Sơn  Phát Nhà Bè 1T1L 3.8x11m dtsd: 83m2. 2 PN 2 WC có ban công. 5.5tr/tháng điện nước nhà nước. Cách chợ Phú Xuân 50m. Hẻm dễ đi an ninh tốt có chỗ để 2-3 xe máy. Hình thực tế dọn vào ở ngay
-                                                Cho Thuê nhà hẻm 1632/11/1
-                                            </small></div>
-                                        <div class="col-1 apartment__inline__card__container__header-price-wrap">
-                                            <div class="apartment__list__card__container__facilities__balcony  d-flex align-items-center ">
-                                                <img src="@/assets/images/ic-heart.svg" alt="" class="inline-heart">
-                                             </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="my-2 description">
-                                    <span class="">
-                                        Cho Thuê nhà hẻm 1632/11/16 Huỳnh Tấn Phát Nhà Bè 1T1L 3.8x11m dtsd: 83m2. 2 PN 2 WC có ban công. 5.5tr/tháng điện nước nhà nước. Cách chợ Phú Xuân 50m. Hẻm dễ đi an ninh tốt có chỗ để 2-3 xe máy. Hình thực tế dọn vào ở ngay
-                                        Cho Thuê nhà hẻm 1632/11/1
-                                   </span>
-
-                                </div>
-
-                                <div class="apartment__inline__card__container__facilities">
-                                    <div class="row">
-                                        <div class="col-3 col-mob-dn d-flex align-items-center">
-                                            <img src="@/assets/images/time-svgrepo-com.svg" alt="" class="icon-time me-1">
-                                            <span class="time">12:45 24/10/2024</span>
-                                        </div>
-                                        <div class="col-4 d-flex align-items-center">
-                                           <div class="apartment__list__card__container__facilities__bedroom d-flex align-items-center ">
-                                              <img src="@/assets/images/location-87.svg" alt="" class="icon text-black">
-                                              <span>Hoài Đức, Hà Nội</span>
-                                           </div>
-                                        </div>
-                                        <div class="col col-3 apartment__list__card__container__header-col d-flex  align-items-center justify-content-center">
-                                            <img class="icon-area text-black me-1" src="@/assets/images/measure-area-svgrepo-com.svg" alt="">
-                                            <span class="apartment__list__card__container__header__price">
-                                             40m²
-                                            </span>
-                                          </div>
-                                        <div class="col-2 p-0">
-                                           <div class="apartment__list__card__container__facilities__balcony  d-flex align-items-center ">
-                                              <img src="@/assets/images/money-35.svg" alt="" class="icon text-black">
-                                              <span>2.5tr /tháng</span>
-                                           </div>
-                                        </div>
-              
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="apartment__inline__card"  v-for="item in items" :key="item.id">
+                  <div class="row">
+                    <div class="col-md-4 col-6 pr-tablet-0" @click.prevent="openDetailRoom(item)">
+                        <a>
+                        <img :src="item.images[0] || 'https://cdn.dribbble.com/users/263641/screenshots/4517916/404_not_found_3_dribbble.jpg'" alt="" class="apartment__inline__card__img">
+                      </a>
                     </div>
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="apartment__inline__card">
-                    <div class="row">
-                        <div class="col-md-4 col-6 pr-tablet-0"  @click="showModal = true">
-                            <a><img src="https://rentroom.md/images/apartments/9b1f1163d34ba6296071d5bbd0689f77b9f628b3@350.jpg" alt="" class="apartment__inline__card__img">
-                            </a>
-                        </div>
-                        <div onclick="window.location.href='https://rentroom.md/en/detail/one-bedroom-apartment-furnished-for-rent-per-day-short-period-or-long-in-puskin-street-center-chisinau-strada-puskin-50-kishinev-moldaviya'" class="col-md-8 col-6 pl-tablet-0">
-                            <div class="apartment__inline__card__container">
-                                <div class="apartment__inline__card__container__header">
-                                    <div class="row">
-                                        <div class="col-11 apartment__inline__card__container__header-street-wrap">
-                                            <small>                    Văn Phòng - MB Đường Tân Sơn  Phát Nhà Bè 1T1L 3.8x11m dtsd: 83m2. 2 PN 2 WC có ban công. 5.5tr/tháng điện nước nhà nước. Cách chợ Phú Xuân 50m. Hẻm dễ đi an ninh tốt có chỗ để 2-3 xe máy. Hình thực tế dọn vào ở ngay
-                                                Cho Thuê nhà hẻm 1632/11/1
-                                            </small></div>
-                                        <div class="col-1 apartment__inline__card__container__header-price-wrap">
-                                            <div class="apartment__list__card__container__facilities__balcony  d-flex align-items-center ">
-                                                <img src="@/assets/images/ic-heart.svg" alt="" class="inline-heart">
-                                             </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="my-2 description">
-                                    <span class="">
-                                        Cho Thuê nhà hẻm 1632/11/16 Huỳnh Tấn Phát Nhà Bè 1T1L 3.8x11m dtsd: 83m2. 2 PN 2 WC có ban công. 5.5tr/tháng điện nước nhà nước. Cách chợ Phú Xuân 50m. Hẻm dễ đi an ninh tốt có chỗ để 2-3 xe máy. Hình thực tế dọn vào ở ngay
-                                        Cho Thuê nhà hẻm 1632/11/1
-                                   </span>
-
-                                </div>
-
-                                <div class="apartment__inline__card__container__facilities">
-                                    <div class="row">
-                                        <div class="col-3 col-mob-dn d-flex align-items-center">
-                                            <img src="@/assets/images/time-svgrepo-com.svg" alt="" class="icon-time me-1">
-                                            <span class="time">12:45 24/10/2024</span>
-                                        </div>
-                                        <div class="col-4 d-flex align-items-center">
-                                           <div class="apartment__list__card__container__facilities__bedroom d-flex align-items-center ">
-                                              <img src="@/assets/images/location-87.svg" alt="" class="icon text-black">
-                                              <span>Hoài Đức, Hà Nội</span>
-                                           </div>
-                                        </div>
-                                        <div class="col col-3 apartment__list__card__container__header-col d-flex  align-items-center justify-content-center">
-                                            <img class="icon-area text-black me-1" src="@/assets/images/measure-area-svgrepo-com.svg" alt="">
-                                            <span class="apartment__list__card__container__header__price">
-                                             40m²
-                                            </span>
-                                          </div>
-                                        <div class="col-2 p-0">
-                                           <div class="apartment__list__card__container__facilities__balcony  d-flex align-items-center ">
-                                              <img src="@/assets/images/money-35.svg" alt="" class="icon text-black">
-                                              <span>2.5tr /tháng</span>
-                                           </div>
-                                        </div>
-              
-                                    </div>
-                                </div>
+                    <div class="col-md-8 col-6 pl-tablet-0">
+                      <div class="apartment__inline__card__container">
+                        <div class="apartment__inline__card__container__header">
+                          <div class="row">
+                            <div class="col-11 apartment__inline__card__container__header-street-wrap">
+                              <small @click.prevent="openDetailRoom(item)">{{ item.title }}</small>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="apartment__inline__card">
-                    <div class="row">
-                        <div class="col-md-4 col-6 pr-tablet-0"  @click="showModal = true">
-                            <a><img src="https://rentroom.md/images/apartments/147405a3b13e714f7f4ff97fbdea509449933850@350.jpg" alt="" class="apartment__inline__card__img">
-                            </a>
-                        </div>
-                        <div onclick="window.location.href='https://rentroom.md/en/detail/one-bedroom-apartment-furnished-for-rent-per-day-short-period-or-long-in-puskin-street-center-chisinau-strada-puskin-50-kishinev-moldaviya'" class="col-md-8 col-6 pl-tablet-0">
-                            <div class="apartment__inline__card__container">
-                                <div class="apartment__inline__card__container__header">
-                                    <div class="row">
-                                        <div class="col-11 apartment__inline__card__container__header-street-wrap">
-                                            <small>                    Văn Phòng - MB Đường Tân Sơn  Phát Nhà Bè 1T1L 3.8x11m dtsd: 83m2. 2 PN 2 WC có ban công. 5.5tr/tháng điện nước nhà nước. Cách chợ Phú Xuân 50m. Hẻm dễ đi an ninh tốt có chỗ để 2-3 xe máy. Hình thực tế dọn vào ở ngay
-                                                Cho Thuê nhà hẻm 1632/11/1
-                                            </small></div>
-                                        <div class="col-1 apartment__inline__card__container__header-price-wrap">
-                                            <div class="apartment__list__card__container__facilities__balcony  d-flex align-items-center ">
-                                                <img src="@/assets/images/ic-heart.svg" alt="" class="inline-heart">
-                                             </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="my-2 description">
-                                    <span class="">
-                                        Cho Thuê nhà hẻm 1632/11/16 Huỳnh Tấn Phát Nhà Bè 1T1L 3.8x11m dtsd: 83m2. 2 PN 2 WC có ban công. 5.5tr/tháng điện nước nhà nước. Cách chợ Phú Xuân 50m. Hẻm dễ đi an ninh tốt có chỗ để 2-3 xe máy. Hình thực tế dọn vào ở ngay
-                                        Cho Thuê nhà hẻm 1632/11/1
-                                   </span>
-
-                                </div>
-
-                                <div class="apartment__inline__card__container__facilities">
-                                    <div class="row">
-                                        <div class="col-3 col-mob-dn d-flex align-items-center">
-                                            <img src="@/assets/images/time-svgrepo-com.svg" alt="" class="icon-time me-1">
-                                            <span class="time">12:45 24/10/2024</span>
-                                        </div>
-                                        <div class="col-4 d-flex align-items-center">
-                                           <div class="apartment__list__card__container__facilities__bedroom d-flex align-items-center ">
-                                              <img src="@/assets/images/location-87.svg" alt="" class="icon text-black">
-                                              <span>Hoài Đức, Hà Nội</span>
-                                           </div>
-                                        </div>
-                                        <div class="col col-3 apartment__list__card__container__header-col d-flex  align-items-center justify-content-center">
-                                            <img class="icon-area text-black me-1" src="@/assets/images/measure-area-svgrepo-com.svg" alt="">
-                                            <span class="apartment__list__card__container__header__price">
-                                             40m²
-                                            </span>
-                                          </div>
-                                        <div class="col-2 p-0">
-                                           <div class="apartment__list__card__container__facilities__balcony  d-flex align-items-center ">
-                                              <img src="@/assets/images/money-35.svg" alt="" class="icon text-black">
-                                              <span>2.5tr /tháng</span>
-                                           </div>
-                                        </div>
-              
-                                    </div>
-                                </div>
+                            <div class="col-1 apartment__inline__card__container__header-price-wrap">
+                              <div class="apartment__list__card__container__facilities__balcony d-flex align-items-center">
+                                <img src="@/assets/images/ic-heart.svg" alt="" class="inline-heart">
+                              </div>
                             </div>
+                          </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="apartment__inline__card">
-                    <div class="row">
-                        <div class="col-md-4 col-6 pr-tablet-0" @click="showModal = true">
-                            <a><img src="https://rentroom.md/images/apartments/efdbf9fae2db2557dbc257a0580b85251b03d141@350.jpg" alt="" class="apartment__inline__card__img">
-                            </a>
+                        <div class="my-2 description">
+                          <span>{{ item.details }}</span>
                         </div>
-                        <div onclick="window.location.href='https://rentroom.md/en/detail/one-bedroom-apartment-furnished-for-rent-per-day-short-period-or-long-in-puskin-street-center-chisinau-strada-puskin-50-kishinev-moldaviya'" class="col-md-8 col-6 pl-tablet-0">
-                            <div class="apartment__inline__card__container">
-                                <div class="apartment__inline__card__container__header">
-                                    <div class="row">
-                                        <div class="col-11 apartment__inline__card__container__header-street-wrap">
-                                            <small>                    Văn Phòng - MB Đường Tân Sơn  Phát Nhà Bè 1T1L 3.8x11m dtsd: 83m2. 2 PN 2 WC có ban công. 5.5tr/tháng điện nước nhà nước. Cách chợ Phú Xuân 50m. Hẻm dễ đi an ninh tốt có chỗ để 2-3 xe máy. Hình thực tế dọn vào ở ngay
-                                                Cho Thuê nhà hẻm 1632/11/1
-                                            </small></div>
-                                        <div class="col-1 apartment__inline__card__container__header-price-wrap">
-                                            <div class="apartment__list__card__container__facilities__balcony  d-flex align-items-center ">
-                                                <img src="@/assets/images/ic-heart.svg" alt="" class="inline-heart">
-                                             </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="my-2 description">
-                                    <span class="">
-                                        Cho Thuê nhà hẻm 1632/11/16 Huỳnh Tấn Phát Nhà Bè 1T1L 3.8x11m dtsd: 83m2. 2 PN 2 WC có ban công. 5.5tr/tháng điện nước nhà nước. Cách chợ Phú Xuân 50m. Hẻm dễ đi an ninh tốt có chỗ để 2-3 xe máy. Hình thực tế dọn vào ở ngay
-                                        Cho Thuê nhà hẻm 1632/11/1
-                                   </span>
-
-                                </div>
-
-                                <div class="apartment__inline__card__container__facilities">
-                                    <div class="row">
-                                        <div class="col-3 col-mob-dn d-flex align-items-center">
-                                            <img src="@/assets/images/time-svgrepo-com.svg" alt="" class="icon-time me-1">
-                                            <span class="time">12:45 24/10/2024</span>
-                                        </div>
-                                        <div class="col-4 d-flex align-items-center">
-                                           <div class="apartment__list__card__container__facilities__bedroom d-flex align-items-center ">
-                                              <img src="@/assets/images/location-87.svg" alt="" class="icon text-black">
-                                              <span>Hoài Đức, Hà Nội</span>
-                                           </div>
-                                        </div>
-                                        <div class="col col-3 apartment__list__card__container__header-col d-flex  align-items-center justify-content-center">
-                                            <img class="icon-area text-black me-1" src="@/assets/images/measure-area-svgrepo-com.svg" alt="">
-                                            <span class="apartment__list__card__container__header__price">
-                                             40m²
-                                            </span>
-                                          </div>
-                                        <div class="col-2 p-0">
-                                           <div class="apartment__list__card__container__facilities__balcony  d-flex align-items-center ">
-                                              <img src="@/assets/images/money-35.svg" alt="" class="icon text-black">
-                                              <span>2.5tr /tháng</span>
-                                           </div>
-                                        </div>
-              
-                                    </div>
-                                </div>
+                        <div class="apartment__inline__card__container__facilities">
+                          <div class="row">
+                            <div class="col-3 col-mob-dn d-flex align-items-center">
+                              <img src="@/assets/images/time-svgrepo-com.svg" alt="" class="icon-time me-1">
+                              <span class="time">{{ formatDate(item.createdAt) }}</span> <!-- Sử dụng phương thức formatDate -->
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="apartment__inline__card">
-                    <div class="row">
-                        <div class="col-md-4 col-6 pr-tablet-0"  @click="showModal = true">
-                            <a><img src="https://rentroom.md/images/apartments/2d7c78e6ca1023f53ebb21157a7a873b16a09303@350.jpg" alt="" class="apartment__inline__card__img">
-                            </a>
-                        </div>
-                        <div onclick="window.location.href='https://rentroom.md/en/detail/one-bedroom-apartment-furnished-for-rent-per-day-short-period-or-long-in-puskin-street-center-chisinau-strada-puskin-50-kishinev-moldaviya'" class="col-md-8 col-6 pl-tablet-0">
-                            <div class="apartment__inline__card__container">
-                                <div class="apartment__inline__card__container__header">
-                                    <div class="row">
-                                        <div class="col-11 apartment__inline__card__container__header-street-wrap">
-                                            <small>                    Văn Phòng - MB Đường Tân Sơn  Phát Nhà Bè 1T1L 3.8x11m dtsd: 83m2. 2 PN 2 WC có ban công. 5.5tr/tháng điện nước nhà nước. Cách chợ Phú Xuân 50m. Hẻm dễ đi an ninh tốt có chỗ để 2-3 xe máy. Hình thực tế dọn vào ở ngay
-                                                Cho Thuê nhà hẻm 1632/11/1
-                                            </small></div>
-                                        <div class="col-1 apartment__inline__card__container__header-price-wrap">
-                                            <div class="apartment__list__card__container__facilities__balcony  d-flex align-items-center ">
-                                                <img src="@/assets/images/ic-heart.svg" alt="" class="inline-heart">
-                                             </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="my-2 description">
-                                    <span class="">
-                                        Cho Thuê nhà hẻm 1632/11/16 Huỳnh Tấn Phát Nhà Bè 1T1L 3.8x11m dtsd: 83m2. 2 PN 2 WC có ban công. 5.5tr/tháng điện nước nhà nước. Cách chợ Phú Xuân 50m. Hẻm dễ đi an ninh tốt có chỗ để 2-3 xe máy. Hình thực tế dọn vào ở ngay
-                                        Cho Thuê nhà hẻm 1632/11/1
-                                   </span>
-
-                                </div>
-
-                                <div class="apartment__inline__card__container__facilities">
-                                    <div class="row">
-                                        <div class="col-3 col-mob-dn d-flex align-items-center">
-                                            <img src="@/assets/images/time-svgrepo-com.svg" alt="" class="icon-time me-1">
-                                            <span class="time">12:45 24/10/2024</span>
-                                        </div>
-                                        <div class="col-4 d-flex align-items-center">
-                                           <div class="apartment__list__card__container__facilities__bedroom d-flex align-items-center ">
-                                              <img src="@/assets/images/location-87.svg" alt="" class="icon text-black">
-                                              <span>Hoài Đức, Hà Nội</span>
-                                           </div>
-                                        </div>
-                                        <div class="col col-3 apartment__list__card__container__header-col d-flex  align-items-center justify-content-center">
-                                            <img class="icon-area text-black me-1" src="@/assets/images/measure-area-svgrepo-com.svg" alt="">
-                                            <span class="apartment__list__card__container__header__price">
-                                             40m²
-                                            </span>
-                                          </div>
-                                        <div class="col-2 p-0">
-                                           <div class="apartment__list__card__container__facilities__balcony  d-flex align-items-center ">
-                                              <img src="@/assets/images/money-35.svg" alt="" class="icon text-black">
-                                              <span>2.5tr /tháng</span>
-                                           </div>
-                                        </div>
-              
-                                    </div>
-                                </div>
+                            <div class="col-4 d-flex align-items-center">
+                              <div class="apartment__list__card__container__facilities__bedroom d-flex align-items-center">
+                                <img src="@/assets/images/location-87.svg" alt="" class="icon text-black">
+                                <span>
+                                  {{ item.district && item.district.name ? item.district.name + ',' : '' }}
+                                  {{ item.province && item.province.name ? item.province.name : '' }}
+                                </span>  
+                              </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="apartment__inline__card">
-                    <div class="row">
-                        <div class="col-md-4 col-6 pr-tablet-0"  @click="showModal = true">
-                            <a><img src="https://rentroom.md/images/apartments/f63e3c806e830f1f8d07e53435d02e92a3dc0b81@350.jpg" alt="" class="apartment__inline__card__img">
-                            </a>
-                        </div>
-                        <div onclick="window.location.href='https://rentroom.md/en/detail/one-bedroom-apartment-furnished-for-rent-per-day-short-period-or-long-in-puskin-street-center-chisinau-strada-puskin-50-kishinev-moldaviya'" class="col-md-8 col-6 pl-tablet-0">
-                            <div class="apartment__inline__card__container">
-                                <div class="apartment__inline__card__container__header">
-                                    <div class="row">
-                                        <div class="col-11 apartment__inline__card__container__header-street-wrap">
-                                            <small>                    Văn Phòng - MB Đường Tân Sơn  Phát Nhà Bè 1T1L 3.8x11m dtsd: 83m2. 2 PN 2 WC có ban công. 5.5tr/tháng điện nước nhà nước. Cách chợ Phú Xuân 50m. Hẻm dễ đi an ninh tốt có chỗ để 2-3 xe máy. Hình thực tế dọn vào ở ngay
-                                                Cho Thuê nhà hẻm 1632/11/1
-                                            </small></div>
-                                        <div class="col-1 apartment__inline__card__container__header-price-wrap">
-                                            <div class="apartment__list__card__container__facilities__balcony  d-flex align-items-center ">
-                                                <img src="@/assets/images/ic-heart.svg" alt="" class="inline-heart">
-                                             </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="my-2 description">
-                                    <span class="">
-                                        Cho Thuê nhà hẻm 1632/11/16 Huỳnh Tấn Phát Nhà Bè 1T1L 3.8x11m dtsd: 83m2. 2 PN 2 WC có ban công. 5.5tr/tháng điện nước nhà nước. Cách chợ Phú Xuân 50m. Hẻm dễ đi an ninh tốt có chỗ để 2-3 xe máy. Hình thực tế dọn vào ở ngay
-                                        Cho Thuê nhà hẻm 1632/11/1
-                                   </span>
-
-                                </div>
-
-                                <div class="apartment__inline__card__container__facilities">
-                                    <div class="row">
-                                        <div class="col-3 col-mob-dn d-flex align-items-center">
-                                            <img src="@/assets/images/time-svgrepo-com.svg" alt="" class="icon-time me-1">
-                                            <span class="time">12:45 24/10/2024</span>
-                                        </div>
-                                        <div class="col-4 d-flex align-items-center">
-                                           <div class="apartment__list__card__container__facilities__bedroom d-flex align-items-center ">
-                                              <img src="@/assets/images/location-87.svg" alt="" class="icon text-black">
-                                              <span>Hoài Đức, Hà Nội</span>
-                                           </div>
-                                        </div>
-                                        <div class="col col-3 apartment__list__card__container__header-col d-flex  align-items-center justify-content-center">
-                                            <img class="icon-area text-black me-1" src="@/assets/images/measure-area-svgrepo-com.svg" alt="">
-                                            <span class="apartment__list__card__container__header__price">
-                                             40m²
-                                            </span>
-                                          </div>
-                                        <div class="col-2 p-0">
-                                           <div class="apartment__list__card__container__facilities__balcony  d-flex align-items-center ">
-                                              <img src="@/assets/images/money-35.svg" alt="" class="icon text-black">
-                                              <span>2.5tr /tháng</span>
-                                           </div>
-                                        </div>
-              
-                                    </div>
-                                </div>
+                            <div class="col col-3 apartment__list__card__container__header-col d-flex align-items-center justify-content-center">
+                              <img class="icon-area me-1" src="@/assets/images/measure-area-svgrepo-com.svg" alt="">
+                              <span class="apartment__list__card__container__header__price fw-normal">{{ item.area }}m²</span>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="apartment__inline__card">
-                    <div class="row">
-                        <div class="col-md-4 col-6 pr-tablet-0"  @click="showModal = true">
-                            <a><img src="https://cdn.dribbble.com/users/263641/screenshots/4517916/404_not_found_3_dribbble.jpg" alt="" class="apartment__inline__card__img">
-                                <div class="apartment__inline__card-phone-price"><strong>60 € / </strong> <small>  per day</small></div>
-                            </a>
-                        </div>
-                        <div onclick="window.location.href='https://rentroom.md/en/detail/one-bedroom-apartment-furnished-for-rent-per-day-short-period-or-long-in-puskin-street-center-chisinau-strada-puskin-50-kishinev-moldaviya'" class="col-md-8 col-6 pl-tablet-0">
-                            <div class="apartment__inline__card__container">
-                                <div class="apartment__inline__card__container__header">
-                                    <div class="row">
-                                        <div class="col-11 apartment__inline__card__container__header-street-wrap">
-                                            <small>                    Văn Phòng - MB Đường Tân Sơn  Phát Nhà Bè 1T1L 3.8x11m dtsd: 83m2. 2 PN 2 WC có ban công. 5.5tr/tháng điện nước nhà nước. Cách chợ Phú Xuân 50m. Hẻm dễ đi an ninh tốt có chỗ để 2-3 xe máy. Hình thực tế dọn vào ở ngay
-                                                Cho Thuê nhà hẻm 1632/11/1
-                                            </small></div>
-                                        <div class="col-1 apartment__inline__card__container__header-price-wrap">
-                                            <div class="apartment__list__card__container__facilities__balcony  d-flex align-items-center ">
-                                                <img src="@/assets/images/ic-heart.svg" alt="" class="inline-heart">
-                                             </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="my-2 description">
-                                    <span class="">
-                                        Cho Thuê nhà hẻm 1632/11/16 Huỳnh Tấn Phát Nhà Bè 1T1L 3.8x11m dtsd: 83m2. 2 PN 2 WC có ban công. 5.5tr/tháng điện nước nhà nước. Cách chợ Phú Xuân 50m. Hẻm dễ đi an ninh tốt có chỗ để 2-3 xe máy. Hình thực tế dọn vào ở ngay
-                                        Cho Thuê nhà hẻm 1632/11/1
-                                   </span>
-
-                                </div>
-
-                                <div class="apartment__inline__card__container__facilities">
-                                    <div class="row">
-                                        <div class="col-3 col-mob-dn d-flex align-items-center">
-                                            <img src="@/assets/images/time-svgrepo-com.svg" alt="" class="icon-time me-1">
-                                            <span class="time">12:45 24/10/2024</span>
-                                        </div>
-                                        <div class="col-4 d-flex align-items-center">
-                                           <div class="apartment__list__card__container__facilities__bedroom d-flex align-items-center ">
-                                              <img src="@/assets/images/location-87.svg" alt="" class="icon text-black">
-                                              <span>Hoài Đức, Hà Nội</span>
-                                           </div>
-                                        </div>
-                                        <div class="col col-3 apartment__list__card__container__header-col d-flex  align-items-center justify-content-center">
-                                            <img class="icon-area text-black me-1" src="@/assets/images/measure-area-svgrepo-com.svg" alt="">
-                                            <span class="apartment__list__card__container__header__price">
-                                             40m²
-                                            </span>
-                                          </div>
-                                        <div class="col-2 p-0">
-                                           <div class="apartment__list__card__container__facilities__balcony  d-flex align-items-center ">
-                                              <img src="@/assets/images/money-35.svg" alt="" class="icon text-black">
-                                              <span>2.5tr /tháng</span>
-                                           </div>
-                                        </div>
-              
-                                    </div>
-                                </div>
+                            <div class="col-2 p-0">
+                              <div class="apartment__list__card__container__facilities__balcony d-flex align-items-center">
+                                <img src="@/assets/images/money-35.svg" alt="" class="icon text-black">
+                                <span>{{ item.price }}tr/ tháng</span>
+                              </div>
                             </div>
+                          </div>
                         </div>
+                      </div>
                     </div>
+                  </div>
                 </div>
-            </div>
-            <div class="col-12">
-                <div class="apartment__inline__card">
-                    <div class="row">
-                        <div class="col-md-4 col-6 pr-tablet-0"  @click="showModal = true">
-                            <a><img src="https://rentroom.md/images/apartments/d54eb2aa073b5164afef5fbea34c0b77bb9bf819@350.jpg" alt="" class="apartment__inline__card__img">
-                            </a>
-                        </div>
-                        <div onclick="window.location.href='https://rentroom.md/en/detail/one-bedroom-apartment-furnished-for-rent-per-day-short-period-or-long-in-puskin-street-center-chisinau-strada-puskin-50-kishinev-moldaviya'" class="col-md-8 col-6 pl-tablet-0">
-                            <div class="apartment__inline__card__container">
-                                <div class="apartment__inline__card__container__header">
-                                    <div class="row">
-                                        <div class="col-11 apartment__inline__card__container__header-street-wrap">
-                                            <small>                    Văn Phòng - MB Đường Tân Sơn  Phát Nhà Bè 1T1L 3.8x11m dtsd: 83m2. 2 PN 2 WC có ban công. 5.5tr/tháng điện nước nhà nước. Cách chợ Phú Xuân 50m. Hẻm dễ đi an ninh tốt có chỗ để 2-3 xe máy. Hình thực tế dọn vào ở ngay
-                                                Cho Thuê nhà hẻm 1632/11/1
-                                            </small></div>
-                                        <div class="col-1 apartment__inline__card__container__header-price-wrap">
-                                            <div class="apartment__list__card__container__facilities__balcony  d-flex align-items-center ">
-                                                <img src="@/assets/images/ic-heart.svg" alt="" class="inline-heart">
-                                             </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="my-2 description">
-                                    <span class="">
-                                        Cho Thuê nhà hẻm 1632/11/16 Huỳnh Tấn Phát Nhà Bè 1T1L 3.8x11m dtsd: 83m2. 2 PN 2 WC có ban công. 5.5tr/tháng điện nước nhà nước. Cách chợ Phú Xuân 50m. Hẻm dễ đi an ninh tốt có chỗ để 2-3 xe máy. Hình thực tế dọn vào ở ngay
-                                        Cho Thuê nhà hẻm 1632/11/1
-                                   </span>
-
-                                </div>
-
-                                <div class="apartment__inline__card__container__facilities">
-                                    <div class="row">
-                                        <div class="col-3 col-mob-dn d-flex align-items-center">
-                                            <img src="@/assets/images/time-svgrepo-com.svg" alt="" class="icon-time me-1">
-                                            <span class="time">12:45 24/10/2024</span>
-                                        </div>
-                                        <div class="col-4 d-flex align-items-center">
-                                           <div class="apartment__list__card__container__facilities__bedroom d-flex align-items-center ">
-                                              <img src="@/assets/images/location-87.svg" alt="" class="icon text-black">
-                                              <span>Hoài Đức, Hà Nội</span>
-                                           </div>
-                                        </div>
-                                        <div class="col col-3 apartment__list__card__container__header-col d-flex  align-items-center justify-content-center">
-                                            <img class="icon-area text-black me-1" src="@/assets/images/measure-area-svgrepo-com.svg" alt="">
-                                            <span class="apartment__list__card__container__header__price">
-                                             40m²
-                                            </span>
-                                          </div>
-                                        <div class="col-2 p-0">
-                                           <div class="apartment__list__card__container__facilities__balcony  d-flex align-items-center ">
-                                              <img src="@/assets/images/money-35.svg" alt="" class="icon text-black">
-                                              <span>2.5tr /tháng</span>
-                                           </div>
-                                        </div>
-              
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="apartment__inline__card">
-                    <div class="row">
-                        <div class="col-md-4 col-6 pr-tablet-0"  @click="showModal = true">
-                            <a><img src="https://rentroom.md/images/apartments/aa9612591e5888f0865a8e13510c5921cec601ff@350.jpg" alt="" class="apartment__inline__card__img">
-                            </a>
-                        </div>
-                        <div onclick="window.location.href='https://rentroom.md/en/detail/one-bedroom-apartment-furnished-for-rent-per-day-short-period-or-long-in-puskin-street-center-chisinau-strada-puskin-50-kishinev-moldaviya'" class="col-md-8 col-6 pl-tablet-0">
-                            <div class="apartment__inline__card__container">
-                                <div class="apartment__inline__card__container__header">
-                                    <div class="row">
-                                        <div class="col-11 apartment__inline__card__container__header-street-wrap">
-                                            <small>                    Văn Phòng - MB Đường Tân Sơn  Phát Nhà Bè 1T1L 3.8x11m dtsd: 83m2. 2 PN 2 WC có ban công. 5.5tr/tháng điện nước nhà nước. Cách chợ Phú Xuân 50m. Hẻm dễ đi an ninh tốt có chỗ để 2-3 xe máy. Hình thực tế dọn vào ở ngay
-                                                Cho Thuê nhà hẻm 1632/11/1
-                                            </small></div>
-                                        <div class="col-1 apartment__inline__card__container__header-price-wrap">
-                                            <div class="apartment__list__card__container__facilities__balcony  d-flex align-items-center ">
-                                                <img src="@/assets/images/ic-heart.svg" alt="" class="inline-heart">
-                                             </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="my-2 description">
-                                    <span class="">
-                                        Cho Thuê nhà hẻm 1632/11/16 Huỳnh Tấn Phát Nhà Bè 1T1L 3.8x11m dtsd: 83m2. 2 PN 2 WC có ban công. 5.5tr/tháng điện nước nhà nước. Cách chợ Phú Xuân 50m. Hẻm dễ đi an ninh tốt có chỗ để 2-3 xe máy. Hình thực tế dọn vào ở ngay
-                                        Cho Thuê nhà hẻm 1632/11/1
-                                   </span>
-
-                                </div>
-
-                                <div class="apartment__inline__card__container__facilities">
-                                    <div class="row">
-                                        <div class="col-3 col-mob-dn d-flex align-items-center">
-                                            <img src="@/assets/images/time-svgrepo-com.svg" alt="" class="icon-time me-1">
-                                            <span class="time">12:45 24/10/2024</span>
-                                        </div>
-                                        <div class="col-4 d-flex align-items-center">
-                                           <div class="apartment__list__card__container__facilities__bedroom d-flex align-items-center ">
-                                              <img src="@/assets/images/location-87.svg" alt="" class="icon text-black">
-                                              <span>Hoài Đức, Hà Nội</span>
-                                           </div>
-                                        </div>
-                                        <div class="col col-3 apartment__list__card__container__header-col d-flex  align-items-center justify-content-center">
-                                            <img class="icon-area text-black me-1" src="@/assets/images/measure-area-svgrepo-com.svg" alt="">
-                                            <span class="apartment__list__card__container__header__price">
-                                             40m²
-                                            </span>
-                                          </div>
-                                        <div class="col-2 p-0">
-                                           <div class="apartment__list__card__container__facilities__balcony  d-flex align-items-center ">
-                                              <img src="@/assets/images/money-35.svg" alt="" class="icon text-black">
-                                              <span>2.5tr /tháng</span>
-                                           </div>
-                                        </div>
-              
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div v-if="loading">Loading...</div> <!-- Optional loading indicator -->
             </div>
         </div>
     </div>
@@ -577,33 +89,103 @@
         
     <!-- modal-detail -->
             
-    <DetailRoom v-if="showModal" @close-modal="showModal = false" :apartment="apartment" />
+    <DetailRoom v-if="showDetailRoom" @close-modal="showDetailRoom = false" :apartment="selectedApartment" />
   </template>
   
   <script>
+    import 'bootstrap/dist/css/bootstrap.min.css';
     import DetailRoom from './DetailRoom.vue';
-
+    import { getPosts } from '@/services/api'; // Import hàm gọi API từ api.js
 
     export default {
     name: 'RoomInline',
     data() {
-    return {
-        showModal: false, // Khai báo showModal
-      showDetailRoom: false,
-      selectedApartmentId: null,
-      apartment: {}
-    };
-    
-  },
-  methods: {
-    openDetailRoom(apartmentId) {
-      this.selectedApartmentId = apartmentId;
-      this.showDetailRoom = true;
+        return {
+            type:'',
+            searchQuery: '', 
+            items: [], // Data từ server
+            showModal: false, // Khai báo showModal
+            showDetailRoom: false,
+            selectedApartment: null, // Biến để lưu thông tin căn hộ được chọn
+            selectedApartmentId: null,
+            apartment: {},
+            apartments: [], // Khai báo biến apartments
+            loading: false // Khai báo biến loading
+            };
+        },
+    methods: {
+        formatDate(dateString) {
+            const date = new Date(dateString);
+            
+            // Lấy giờ và phút
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            
+            // Lấy ngày, tháng và năm
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
+            const year = date.getFullYear();
+            
+            // Trả về định dạng mong muốn
+            return `${hours}:${minutes} ${day}/${month}/${year}`;
+        },
+
+        openDetailRoom(apartment) {
+          this.selectedApartment = apartment; // Lưu căn hộ/phòng được chọn
+          this.showDetailRoom = true; // Hiển thị modal
+        },
+
+        async fetchData() {
+              this.loading = true;
+              this.type = this.$route.meta.type;
+              if(this.type == 'rooms'){
+                this.type = 'Cho thuê phòng trọ';
+              } else if(this.type == 'apartments'){
+                this.type = 'Cho thuê căn hộ';
+              } else if(this.type == 'houses'){
+                  this.type = 'Cho thuê nhà ở';
+              } else if(this.type == 'find-roommates'){
+                  this.type = 'Tìm người ở ghép';
+              }
+              const query = {
+                type: this.$route.meta.type || 'default', // Lấy loại phòng từ meta
+                page: this.$route.query.page || 1, // Lấy số trang từ query params (mặc định là 1)
+                search: this.searchQuery || '',
+              };
+              try {
+                const response = await getPosts(query); // Gọi API với query
+                this.items = response.data.posts; // Giả sử kết quả trả về có trường 'posts'
+              } catch (error) {
+                console.error('Lỗi lấy dữ liệu:', error);
+              } finally {
+                this.loading = false;
+              }
+        },
+
+        scrollToTitle() {
+          const titleElement = this.$refs.postTitle; // Giả sử bạn đã thêm ref vào h2
+          const offset = 32; // Kích thước offset bạn muốn
+
+          const elementPosition = titleElement.getBoundingClientRect().top + window.scrollY; // Tính vị trí của tiêu đề
+          const offsetPosition = elementPosition - offset; // Tính vị trí cuộn với offset
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth", // Thêm hiệu ứng cuộn mượt
+          });
+        },
+
     },
-  },
-  components: {
-    DetailRoom, // Đăng ký component
-  },
+
+    components: {
+        DetailRoom, // Đăng ký component
+    },
+      watch: {
+      '$route': 'fetchData' // Gọi lại hàm fetchData khi route thay đổi
+    },
+    created() {
+      this.fetchData(); // Gọi hàm fetchData khi component được tạo
+    },
   };
   </script>
   

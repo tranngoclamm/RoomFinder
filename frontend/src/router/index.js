@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../components/LoginForm.vue';
 import Register from '../components/RegisterForm.vue';
 import HomePage from '../components/HomePage.vue';
+import MainRoomInline from '../components/MainRoomInline.vue';
 
 const routes = [
   {
@@ -19,10 +20,35 @@ const routes = [
     name: 'Register',
     component: Register,
   },
+  {
+    path: '/rent-room',
+    name: 'RentRoom',
+    component: MainRoomInline,
+    meta: { type: 'rooms' }, // Thêm meta để nhận biết loại phòng
+  },
+  {
+    path: '/rent-house',
+    name: 'RentHouse',
+    component: MainRoomInline,
+    meta: { type: 'houses' }, // Thêm meta để nhận biết loại nhà
+  },
+  {
+    path: '/rent-apartment',
+    name: 'RentApartment',
+    component: MainRoomInline,
+    meta: { type: 'apartments' }, // Thêm meta cho căn hộ
+  },
+  {
+    path: '/find-roommate',
+    name: 'FindRoommate',
+    component: MainRoomInline,
+    meta: { type: 'find-roommates' }, // Thêm meta cho tìm người ở ghép
+  }
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
+  mode: 'history',
   routes,
 });
 

@@ -20,7 +20,7 @@
                     <div class="col-12 col-lg-12 ms-5">
                       <div class="mt-4 mb-2 mb-lg-0">
                         <a href="index.html" title="RoomFinder">
-                          <img src="@/assets/images/logo_white.svg" alt="Oxyy" style="height: 55px;" />
+                          <img src="@/assets/images/logo_white.svg" alt="Oxyy" style="width: 250px;" />
                         </a>
                       </div>
                     </div>
@@ -59,12 +59,12 @@
                       <div class="row mt-4">
                         <div class="col">
                           <div class="form-check text-2">
-                            <input id="remember-me" name="remember" class="form-check-input" type="checkbox" />
+                            <input id="remember-me" v-model="rememberMe" name="remember" class="form-check-input" type="checkbox" />
                             <label class="form-check-label text-light" for="remember-me">Ghi nhớ đăng nhập</label>
                           </div>
                         </div>
                         <div class="col-sm text-2 text-end">
-                          <a href="forgot-password-2.html">Quên mật khẩu ?</a>
+                          <a href="forgot-password-2.html">Quên mật khẩu?</a>
                         </div>
                       </div>
                       <div class="d-grid my-4">
@@ -109,11 +109,13 @@ export default {
     return {
       account: '',
       password: '',
+      rememberMe: false, // Added for Remember Me functionality
     };
   },
   mounted() {
-    this.account = localStorage.getItem('username');
-    this.password = localStorage.getItem('password');
+    // Load saved credentials if they exist
+    this.account = localStorage.getItem('username') || '';
+    this.password = localStorage.getItem('password') || '';
   },
   methods: {
     async handleLogin() {
@@ -124,22 +126,32 @@ export default {
         };
         const response = await loginUser(userData);
 
-        // Kiểm tra nếu response và response.data tồn tại
         if (response && response.data) {
-          alert('Đăng nhập thành công!');
-          // Chuyển đến trang chính hoặc dashboard
-          this.$router.push('/'); // Hoặc trang bạn muốn chuyển đến
+
+          // Store credentials if Remember Me is checked
+          if (this.rememberMe) {
+            localStorage.setItem('username', this.account);
+            localStorage.setItem('password', this.password);
+          } else {
+            // Clear saved credentials if Remember Me is not checked
+            localStorage.removeItem('username');
+            localStorage.removeItem('password');
+          }
+
+          // Store user information in localStorage
+          localStorage.setItem('user', JSON.stringify(response.data.user));
+
+          // Redirect to home or dashboard page
+          this.$router.push('/');
         }
       } catch (error) {
-        // Xử lý thông báo lỗi từ server
-        if (error.response && error.response.data && error.response.data.message) {
-          alert(error.response.data.message); // Hiển thị thông báo lỗi
+        if (error.response && error.response.data.message) {
+          alert(error.response.data.message);
         } else {
           alert('Đã xảy ra lỗi, vui lòng thử lại.');
         }
       }
     },
   },
-}
-
+};
 </script>
