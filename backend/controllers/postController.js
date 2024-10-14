@@ -162,11 +162,6 @@ const getLatestPosts = async (req, res) => {
 const createPost = async (req, res) => {
   try {
     var { images, category, title,  provinceId, districtId, wardId, street, exactAddress, price, area, details, contactName, contactMobile, userId } = req.body;
-
-    console.dir(provinceId, { depth: null }); // depth: null để hiển thị tất cả các thuộc tính
-    console.dir(districtId, { depth: null });
-    console.dir(wardId, { depth: null });
-
     const uploadedImages = [];
     if (images && !Array.isArray(images)) {
         images = [images]; // Chuyển đổi thành mảng nếu chỉ có một ảnh
@@ -219,7 +214,6 @@ const createPost = async (req, res) => {
       { new: true } // Đảm bảo trả về giá trị sau khi cập nhật
     ).exec();
 
-        console.log("provinceData: ", provinceData);
 // Tìm và cập nhật quận
 let districtData = await District.findOneAndUpdate(
   { id: districtId },
@@ -314,8 +308,6 @@ const wardIdToUse = wardData ? wardData._id : null;
       images: uploadedImages,
       userId,
     });
-    console.log("newPost:", newPost);
-    console.log("district:" ,newPost.district);
     await newPost.save();
     res.status(201).json({ message: 'Post created successfully!', post: newPost });
   } catch (error) {

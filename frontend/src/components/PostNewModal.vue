@@ -9,7 +9,7 @@
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <div class="modal-body">   
+                <div class="modal-body">   
                   <div class="newpost-box mt-2">
                     <div class="form-layout detail-section">
                         <div class="form-group detail-section-category w-100">
@@ -144,7 +144,7 @@
                     </div>
                 </div>
 
-            </div>
+                </div>
 
             <div class="modal-footer">
               <button type="button" @click="submitPost" class="btn btn-primary w-100">Đăng tin</button>
@@ -219,109 +219,6 @@
       }
     },
 
-    validateForm() {
-      this.errors = {}; // Clear previous errors
-
-      // Validate CategoryId
-      if (!this.CategoryId) {
-        alert("Vui lòng nhập chuyên mục");
-        return;
-      }
-
-      // Validate Title
-      if (!this.Title) {
-        alert("Vui lòng nhập tiêu đề");
-        return;
-      }
-
-      // Validate Province
-      if (!this.selectedProvince) {
-        this.errors.ProvinceId = 'Vui lòng chọn tỉnh/thành phố';
-        alert("Vui lòng nhập  tỉnh/thành phố");
-        return;
-
-      }
-
-      // Validate District
-      if (!this.selectedDistrict) {
-        this.errors.DistrictId = 'Vui lòng chọn quận/huyện';
-        alert("Vui lòng nhập quận/huyện");
-        return;
-
-      }
-
-      // Validate Price
-      if (!this.Price || isNaN(this.Price)) {
-        this.errors.Price = 'Vui lòng nhập giá hợp lệ';
-        alert("Vui lòng nhập nhập giá hợp lệ");
-        return;
-      }
-
-      // Validate ContactName
-      if (!this.ContactName) {
-        this.errors.ContactName = 'Vui lòng nhập tên liên hệ';
-        alert("Vui lòng nhập tên liên hệ");
-        return;
-      }
-
-      // Validate ContactMobile
-      if (!this.ContactMobile) {
-        this.errors.ContactMobile = 'Vui lòng nhập số điện thoại hợp lệ';
-        alert("Vui lòng nhập số điện thoại hợp lệ");
-        return;
-      }
-
-      // Return whether the form is valid
-      return Object.keys(this.errors).length === 0;
-    },
-
-    async submitPost() {
-  // Validate form
-  if (!this.validateForm()) {
-    return;
-  }
-  const user = JSON.parse(localStorage.getItem('user')); // Get user data from localStorage
-    const userId = user ? user._id : null; // Get user ID
- 
-  const formData = new FormData();
-
-  // Add images to formData
-  this.selectedImages.forEach((image) => {
-    formData.append('images', image); // Append each selected image
-  });
-
-  // Add other fields to formData
-  formData.append('category', this.CategoryId);
-  formData.append('title', this.Title);
-  formData.append('provinceId', this.selectedProvince.id);
-  formData.append('districtId', this.selectedDistrict.id);
-  formData.append('wardId', this.selectedWard.id);
-  formData.append('street', this.streetName);
-  formData.append('exactAddress', this.exactAddress);
-  formData.append('price', this.Price);
-  formData.append('area', this.Area);
-  formData.append('details', this.Detail);
-  formData.append('contactName', this.ContactName);
-  formData.append('contactMobile', this.ContactMobile);
-  formData.append('userId', userId);
-  console.log("data",this.selectedProvince.id);
-  console.log("data2",this.selectedDistrict.id);
-  console.log("data3",this.selectedWard.id);
-
-  // Send the formData to the server
-  const response = await postNew(formData);
-
-  try {
-    if (response && response.data) {
-      this.closeModal();
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    alert(error.response ? error.response.data.message : 'Đã xảy ra lỗi, vui lòng thử lại.');
-  }
-},
-
-
     async fetchDistricts() {
       if (!this.selectedProvince) return; // Prevent fetching if no province is selected
       try {
@@ -392,6 +289,105 @@
         }
       }
     },
+    validateForm() {
+      this.errors = {}; // Clear previous errors
+
+      // Validate CategoryId
+      if (!this.CategoryId) {
+        alert("Vui lòng nhập chuyên mục");
+        return;
+      }
+
+      // Validate Title
+      if (!this.Title) {
+        alert("Vui lòng nhập tiêu đề");
+        return;
+      }
+
+      // Validate Province
+      if (!this.selectedProvince) {
+        this.errors.ProvinceId = 'Vui lòng chọn tỉnh/thành phố';
+        alert("Vui lòng nhập  tỉnh/thành phố");
+        return;
+
+      }
+
+      // Validate District
+      if (!this.selectedDistrict) {
+        this.errors.DistrictId = 'Vui lòng chọn quận/huyện';
+        alert("Vui lòng nhập quận/huyện");
+        return;
+
+      }
+
+      // Validate Price
+      if (!this.Price || isNaN(this.Price)) {
+        this.errors.Price = 'Vui lòng nhập giá hợp lệ';
+        alert("Vui lòng nhập nhập giá hợp lệ");
+        return;
+      }
+
+      // Validate ContactName
+      if (!this.ContactName) {
+        this.errors.ContactName = 'Vui lòng nhập tên liên hệ';
+        alert("Vui lòng nhập tên liên hệ");
+        return;
+      }
+
+      // Validate ContactMobile
+      if (!this.ContactMobile) {
+        this.errors.ContactMobile = 'Vui lòng nhập số điện thoại hợp lệ';
+        alert("Vui lòng nhập số điện thoại hợp lệ");
+        return;
+      }
+
+      // Return whether the form is valid
+      return Object.keys(this.errors).length === 0;
+    },
+
+    async submitPost() {
+      // Validate form
+      if (!this.validateForm()) {
+        return;
+      }
+      const user = JSON.parse(localStorage.getItem('user')); // Get user data from localStorage
+        const userId = user ? user._id : null; // Get user ID
+    
+      const formData = new FormData();
+
+      // Add images to formData
+      this.selectedImages.forEach((image) => {
+        formData.append('images', image); // Append each selected image
+      });
+
+      // Add other fields to formData
+      formData.append('category', this.CategoryId);
+      formData.append('title', this.Title);
+      formData.append('provinceId', this.selectedProvince.id);
+      formData.append('districtId', this.selectedDistrict.id);
+      formData.append('wardId', this.selectedWard.id);
+      formData.append('street', this.streetName);
+      formData.append('exactAddress', this.exactAddress);
+      formData.append('price', this.Price);
+      formData.append('area', this.Area);
+      formData.append('details', this.Detail);
+      formData.append('contactName', this.ContactName);
+      formData.append('contactMobile', this.ContactMobile);
+      formData.append('userId', userId);
+      
+      // Send the formData to the server
+      const response = await postNew(formData);
+
+      try {
+        if (response && response.data) {
+          this.closeModal();
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert(error.response ? error.response.data.message : 'Đã xảy ra lỗi, vui lòng thử lại.');
+      }
+    },
+
 
   },
   watch: {

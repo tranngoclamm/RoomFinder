@@ -140,8 +140,6 @@ const searchLocation = async (req, res) => {
         }
       }
 
-
-
       query = query.skip((page - 1) * limit).limit(limit);
 
       const results = await query.populate('province').populate('district').exec();

@@ -435,7 +435,6 @@ export default {
     }
     if (dropdownPrice && !dropdownPrice.contains(event.target)) {
       this.isDropdownOpenPrice = false;
-      console.log("false");
       return;
     } else{
       console.log("true");
@@ -461,6 +460,7 @@ export default {
     // Đóng dropdown sau khi chọn
     this.isDropdownOpenTypeRoom = false;
   },
+
     async searchLocation() {
       if (this.inputsearchLocation.length < 2) {
         this.results = []; // Xóa kết quả nếu input ngắn hơn 2 ký tự

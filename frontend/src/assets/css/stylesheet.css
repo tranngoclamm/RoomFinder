@@ -62,12 +62,33 @@ body, html {
 }
 
 /*-------- Preloader --------*/
+@keyframes fadeInFromCenter {
+  0% {
+    opacity: 0; /* Ban đầu trong suốt */
+  }
+  100% {
+    opacity: 1; /* Kết thúc với độ mờ hoàn toàn */
+  }
+}
+.main_content {
+  opacity: 0;
+  animation: fadeInFromCenter 1s ease-out forwards; /* Hiệu ứng opacity trong 1 giây */
+}
+
+.main_content.loaded {
+  opacity: 1;
+}
+
 .preloader {
   position: fixed;
   width: 100%;
   height: 100%;
   z-index: 999999999 !important;
-  background-color: #fff;
+  background-color:rgba(108, 117, 125, 0.75);
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+
+
   top: 0;
   left: 0;
   right: 0;
@@ -91,7 +112,7 @@ body, html {
   width: 13px;
   height: 13px;
   border-radius: 50%;
-  background: #000;
+  background: #fff;
   animation-timing-function: cubic-bezier(0, 1, 1, 0);
 }
 
@@ -1506,6 +1527,17 @@ input.form-control.border-dark:-webkit-autofill {
   -webkit-text-fill-color: #495057; 
   font-size: 0.9rem;
 }
+
+/* shorthader */
+/* .header__background .header__navbar {
+  background: #002f5f5e;
+  padding-left: 3rem;
+  color: #000;
+  height: 127.5px;
+}
+.header__navbar {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+} */
 .header__navbar .navbar-brand img {
   width: 250px;
   padding-top: 12px;

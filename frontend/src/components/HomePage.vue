@@ -1,8 +1,12 @@
+<!-- HomePage.vue -->
 <template>
+    <LoadingPreloader :isLoading="isLoading" />
     <HeaderRoom @search="handleSearch"  @scroll-to-latestPostTitle="scrollToLatestPostTitle"/>
-    <RoomCategory ref="roomCategory" @search="receiveEmit" :results="dataSearch" :total-pages="totalPages" :current-page="currentPage"  /> 
-    <FooterRoom />
-    <PostNewModal v-if="showModal" @close-modal="closeModal" />
+    <div v-if="!isLoading" :class="{ loaded: !isLoading }" class="main_content" >
+      <RoomCategory ref="roomCategory" @search="receiveEmit" :results="dataSearch" :total-pages="totalPages" :current-page="currentPage"  /> 
+      <FooterRoom />
+      <PostNewModal v-if="showModal" @close-modal="closeModal" />
+    </div>
 </template>
   
 <script>
@@ -10,6 +14,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '@/assets/css/app.css'; // Nhúng file CSS
 import 'bootstrap/dist/js/bootstrap.bundle.js';
 import HeaderRoom from './HeaderRoom.vue';
+import LoadingPreloader from './LoadingPreloader.vue';
 import RoomCategory from './RoomCategory.vue';
 import FooterRoom from './FooterRoom.vue';
 import PostNewModal from './PostNewModal.vue';
@@ -18,6 +23,7 @@ import {searchRoom, getLatestPosts } from '@/services/api'; // Import hàm gọi
 export default {
   emits: ['scrollToLatestPostTitle'], // Khai báo sự kiện
   components: {
+    LoadingPreloader,
     RoomCategory,
     PostNewModal,
     HeaderRoom,
@@ -25,6 +31,7 @@ export default {
   },
   data() {
     return {
+      isLoading: true,
       results:'',
       dataSearch: [], 
       fullname: '',
@@ -64,7 +71,6 @@ export default {
     },
 
     receiveEmit(searchInput) {
-      console.log(searchInput);
        this.fetchLatestPosts(searchInput);
     },
 
@@ -110,6 +116,9 @@ export default {
   mounted() {
     this.fetchLatestPosts(); // Gọi API để lấy bài mới nhất khi trang được tải
     // Lấy thông tin người dùng từ localStorage nếu đã đăng nhập
+    setTimeout(() => {
+      this.isLoading = false; // Tắt preloader sau ít nhất 0.5s
+    }, 1000);
     const user = JSON.parse(localStorage.getItem('user'));
     if (user) {
       this.fullname = user.fullName || 'Người dùng'; // Thay đổi theo cách lưu trữ username trong user object
