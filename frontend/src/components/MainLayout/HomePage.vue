@@ -14,10 +14,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '@/assets/css/app.css'; // Nhúng file CSS
 import 'bootstrap/dist/js/bootstrap.bundle.js';
 import HeaderRoom from './HeaderRoom.vue';
-import LoadingPreloader from './LoadingPreloader.vue';
-import RoomCategory from './RoomCategory.vue';
+import LoadingPreloader from '../LoadingPreloader.vue';
+import RoomCategory from './RoomComponents/RoomCategory.vue';
 import FooterRoom from './FooterRoom.vue';
-import PostNewModal from './PostNewModal.vue';
+import PostNewModal from './RoomComponents/PostNewModal.vue';
 import {searchRoom, getLatestPosts } from '@/services/api'; // Import hàm gọi API từ api.js
 
 export default {

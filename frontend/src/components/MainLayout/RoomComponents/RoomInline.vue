@@ -39,8 +39,8 @@
                               <small @click.prevent="openDetailRoom(item)">{{ item.title }}</small>
                             </div>
                             <div class="col-1 apartment__inline__card__container__header-price-wrap">
-                              <div class="apartment__list__card__container__facilities__balcony d-flex align-items-center">
-                                <img src="@/assets/images/ic-heart.svg" alt="" class="inline-heart">
+                              <div  @click.prevent="toggleFavorite(item)" class="apartment__list__card__container__facilities__balcony d-flex align-items-center">
+                                <img :src="isFavorite(item) ? require('@/assets/images/ic-heart-active.svg') : require('@/assets/images/ic-heart.svg')" alt="" class="inline-heart">
                               </div>
                             </div>
                           </div>
@@ -95,13 +95,15 @@
   <script>
     import 'bootstrap/dist/css/bootstrap.min.css';
     import DetailRoom from './DetailRoom.vue';
-    import { getPosts } from '@/services/api'; // Import hàm gọi API từ api.js
+    import { getPosts, deleteFavorite, addFavorite } from '@/services/api'; // Import hàm gọi API từ api.js
 
     export default {
     name: 'RoomInline',
     data() {
         return {
             type:'',
+            roomType: '',
+            favorites: [], // Danh sách yêu thích của người dùng
             searchQuery: '', 
             items: [], // Data từ server
             showModal: false, // Khai báo showModal
@@ -139,12 +141,16 @@
               this.loading = true;
               this.type = this.$route.meta.type;
               if(this.type == 'rooms'){
+                this.roomType = 'rooms';
                 this.type = 'Cho thuê phòng trọ';
               } else if(this.type == 'apartments'){
+                this.roomType = 'apartments';
                 this.type = 'Cho thuê căn hộ';
               } else if(this.type == 'houses'){
-                  this.type = 'Cho thuê nhà ở';
+                this.roomType = 'houses';
+                this.type = 'Cho thuê nhà ở';
               } else if(this.type == 'find-roommates'){
+                  this.roomType = 'findroommates';
                   this.type = 'Tìm người ở ghép';
               }
               const query = {
@@ -162,6 +168,71 @@
               }
         },
 
+        async toggleFavorite(item) {
+          const user = JSON.parse(localStorage.getItem('user'));
+          console.log(user);
+          try {
+            if (!user._id) {
+              console.error("Người dùng không hợp lệ.");
+              return;
+            }
+
+              // Kiểm tra xem phòng có trong danh sách yêu thích hay không
+              const isFavorite = this.favorites.includes(item._id);
+
+              const data = {
+                userId: user._id,
+                roomId: 'af'
+                };
+              if (isFavorite) {
+                this.animateHeart(item, false); // false cho việc xóa
+
+                // Nếu có, gọi API để xóa phòng khỏi danh sách yêu thích
+                await deleteFavorite(data);
+                console.log('Xóa khỏi danh sách yêu thích thành công!');
+                
+                // Cập nhật danh sách yêu thích trên client
+                this.favorites = this.favorites.filter(favId => favId !== item._id);
+
+              } else {
+                this.animateHeart(item, true); // true cho việc thêm
+
+                // Nếu chưa có, gọi API để thêm phòng vào danh sách yêu thích
+                await addFavorite(data);
+                console.log('Thêm vào danh sách yêu thích thành công!');
+                
+                // Cập nhật danh sách yêu thích trên client
+                this.favorites.push(item._id);
+              }
+          } catch (error) {
+            console.error('Lỗi khi thêm/xóa yêu thích:', error);
+          }
+        },
+        isFavorite(itemId) {
+          return this.favorites.includes(itemId); // Kiểm tra xem phòng có trong danh sách yêu thích không
+        },
+
+        animateHeart(item, isAdding) {
+          const heartElement = this.$refs[`heart-${item._id}`]; // Giả sử bạn có ref cho mỗi biểu tượng trái tim
+
+          if (heartElement) {
+            // Thêm lớp CSS cho hiệu ứng
+            heartElement.classList.add('heart-animate');
+
+            // Nếu đang thêm vào yêu thích, có thể thêm hiệu ứng khác
+            if (isAdding) {
+              heartElement.classList.add('heart-active');
+            } else {
+              heartElement.classList.remove('heart-active');
+            }
+
+            // Sau 0.5 giây, xóa lớp hiệu ứng
+            setTimeout(() => {
+              heartElement.classList.remove('heart-animate');
+            }, 500); // Thời gian tương ứng với hiệu ứng CSS
+          }
+        },
+        
         scrollToTitle() {
           const titleElement = this.$refs.postTitle; // Giả sử bạn đã thêm ref vào h2
           const offset = 32; // Kích thước offset bạn muốn
@@ -185,6 +256,12 @@
     },
     created() {
       this.fetchData(); // Gọi hàm fetchData khi component được tạo
+    },
+    mounted() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user._id) {
+      this.favoriteRooms = ['exampleRoomId1', 'exampleRoomId2']; // Placeholder cho danh sách yêu thích
+    }
     },
   };
   </script>

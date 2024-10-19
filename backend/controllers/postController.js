@@ -268,7 +268,7 @@ if (!wardData) {
 
     // Tìm thông tin xã/phường trong dữ liệu lấy từ API
     const wardFromApi = wardList.find(w => w.id === wardId);
-
+    console.log("wardFromApi: ",wardFromApi);
     if (wardFromApi) {
       // Tạo mới ward trong cơ sở dữ liệu
       wardData = await Ward.create({

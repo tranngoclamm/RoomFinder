@@ -26,6 +26,18 @@ const userSchema = new mongoose.Schema({
   zalo: {
     type: Number,
   },
+  favorites: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'RoomType', // Tham chiếu đến collection phòng
+    },
+  ],
+  postedRooms: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'RoomType', // Tham chiếu đến collection phòng
+    },
+  ],
   
 });
 

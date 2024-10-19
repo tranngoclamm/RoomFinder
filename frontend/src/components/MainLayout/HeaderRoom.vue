@@ -316,7 +316,7 @@
 <script>
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@/assets/css/app.css'; // Nhúng file CSS
-import PostNewModal from './PostNewModal.vue';
+import PostNewModal from './RoomComponents/PostNewModal.vue';
 import 'bootstrap/dist/js/bootstrap.bundle.js';
 import { searchLocation
  } from '@/services/api'; // Import hàm gọi API từ api.js

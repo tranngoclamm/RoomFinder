@@ -22,10 +22,10 @@
   import '@/assets/css/app.css'; // Nhúng file CSS
   import 'bootstrap/dist/js/bootstrap.bundle.js';
   import HeaderRoom from './HeaderRoom.vue';
-  import RoomInline from './RoomInline.vue';
-  import PostNewModal from './PostNewModal.vue';
+  import RoomInline from './RoomComponents/RoomInline.vue';
+  import PostNewModal from './RoomComponents/PostNewModal.vue';
   import FooterRoom from './FooterRoom.vue';
-  import DetailRoom from './DetailRoom.vue'; 
+  import DetailRoom from './RoomComponents/DetailRoom.vue'; 
   import { search } from '@/services/api'; // Import hàm gọi API từ api.js
 
   

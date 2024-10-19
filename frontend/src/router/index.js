@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Login from '../components/LoginForm.vue';
-import Register from '../components/RegisterForm.vue';
-import HomePage from '../components/HomePage.vue';
-import MainRoomInline from '../components/MainRoomInline.vue';
+import Login from '../components/Authentication/LoginForm.vue';
+import Register from '../components/Authentication/RegisterForm.vue';
+import HomePage from '../components/MainLayout/HomePage.vue';
+import MainRoomInline from '../components/MainLayout/MainRoomInline.vue';
 
 const routes = [
   {

@@ -33,6 +33,10 @@
     text-decoration: none;
     margin-right: 7px;
 }
+.inline-heart {
+    width: 25px;
+    height: 25px;
+}
 .trend_location .styled_text .resize-form {
     height: 18px;
     width: 24px;

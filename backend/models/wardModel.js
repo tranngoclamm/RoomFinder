@@ -4,8 +4,8 @@ const wardSchema = new mongoose.Schema({
   id: { type: String, required: true },  // Mã ID của ward
   name: { type: String, required: true },  // Tên ward
   full_name: { type: String, required: true },  // Tên đầy đủ của ward
-  latitude: { type: String, required: true },  // Tọa độ latitude
-  longitude: { type: String, required: true },  // Tọa độ longitude
+  latitude: { type: String},  // Tọa độ latitude
+  longitude: { type: String },  // Tọa độ longitude
   districtId: { type: mongoose.Schema.Types.ObjectId, ref: 'District', required: true }  // Tham chiếu đến ID của province
 
 }, { timestamps: true });
