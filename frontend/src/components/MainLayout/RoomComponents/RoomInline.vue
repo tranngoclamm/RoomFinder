@@ -3,7 +3,7 @@
     <!-- Khung search -->
     <div class="view-switcher room-list d-flex align-items-center justify-content-between">
           <div class="breadcrumb-list">
-              <a href="/">RoomFinder</a>
+              <router-link to ="/">RoomFinder</router-link>
               <span> > </span>
               <a ref="postTitle" href="">{{type}}</a>
           </div>
@@ -24,7 +24,7 @@
     <div class="apartment__inline">
         <div class="row">
             <div class="col-12">
-                <div class="apartment__inline__card"  v-for="item in items" :key="item.id">
+                <div class="apartment__inline__card"  v-for="item in items" :key="item._id">
                   <div class="row">
                     <div class="col-md-4 col-6 pr-tablet-0" @click.prevent="openDetailRoom(item)">
                         <a>
@@ -40,7 +40,7 @@
                             </div>
                             <div class="col-1 apartment__inline__card__container__header-price-wrap">
                               <div  @click.prevent="toggleFavorite(item)" class="apartment__list__card__container__facilities__balcony d-flex align-items-center">
-                                <img :src="isFavorite(item) ? require('@/assets/images/ic-heart-active.svg') : require('@/assets/images/ic-heart.svg')" alt="" class="inline-heart">
+                                <img :src="favorites.includes(item._id) ? require('@/assets/images/ic-heart-active.svg') : require('@/assets/images/ic-heart.svg')" alt="" class="inline-heart">
                               </div>
                             </div>
                           </div>
@@ -79,15 +79,23 @@
                     </div>
                   </div>
                 </div>
-                <div v-if="loading">Loading...</div> <!-- Optional loading indicator -->
+                
+                <div class="mb-8 loading-wrapper" v-if="loading">Loading...</div> <!-- Optional loading indicator -->
+              </div>
             </div>
-        </div>
-    </div>
-
-    <!-- navigation -->
-    <ul role="navigation" class="pagination mb-3"><li aria-disabled="true" aria-label="« Previous" class="page-item disabled"><span aria-hidden="true" class="page-link">‹</span></li> <li aria-current="page" class="page-item active"><span class="page-link">1</span></li> <li class="page-item"><a href="http://rentroom.md/en/list?page=2" class="page-link">2</a></li> <li class="page-item"><a href="http://rentroom.md/en/list?page=3" class="page-link">3</a></li> <li class="page-item"><a href="http://rentroom.md/en/list?page=4" class="page-link">4</a></li> <li class="page-item"><a href="http://rentroom.md/en/list?page=2" rel="next" aria-label="Next »" class="page-link">›</a></li></ul>
-        
+          </div>
+          
+          <!-- navigation -->
     <!-- modal-detail -->
+    <ul v-show="!loading" role="navigation" class="pagination mb-3">
+      <li aria-disabled="true" aria-label="« Previous" class="page-item disabled"><span aria-hidden="true" class="page-link">‹</span></li>
+      <li aria-current="page" class="page-item active"><span class="page-link">1</span></li>
+      <li class="page-item"><a href="/list?page=2" class="page-link">2</a></li>
+      <li class="page-item"><a href="/list?page=3" class="page-link">3</a></li>
+      <li class="page-item"><a href="/list?page=4" class="page-link">4</a></li>
+      <li class="page-item"><a href="/list?page=2" rel="next" aria-label="Next »" class="page-link">›</a></li>
+    </ul>
+    
             
     <DetailRoom v-if="showDetailRoom" @close-modal="showDetailRoom = false" :apartment="selectedApartment" />
   </template>
@@ -95,7 +103,7 @@
   <script>
     import 'bootstrap/dist/css/bootstrap.min.css';
     import DetailRoom from './DetailRoom.vue';
-    import { getPosts, deleteFavorite, addFavorite } from '@/services/api'; // Import hàm gọi API từ api.js
+    import { getPosts,  } from '@/services/api'; // Import hàm gọi API từ api.js
 
     export default {
     name: 'RoomInline',
@@ -103,6 +111,7 @@
         return {
             type:'',
             roomType: '',
+            isFavorite: false,
             favorites: [], // Danh sách yêu thích của người dùng
             searchQuery: '', 
             items: [], // Data từ server
@@ -152,7 +161,10 @@
               } else if(this.type == 'find-roommates'){
                   this.roomType = 'findroommates';
                   this.type = 'Tìm người ở ghép';
-              }
+              } else if(this.type == 'favorites'){
+                    this.roomType = 'favorites';
+                    this.type = 'Danh sách yêu thích';
+                }
               const query = {
                 type: this.$route.meta.type || 'default', // Lấy loại phòng từ meta
                 page: this.$route.query.page || 1, // Lấy số trang từ query params (mặc định là 1)
@@ -170,7 +182,6 @@
 
         async toggleFavorite(item) {
           const user = JSON.parse(localStorage.getItem('user'));
-          console.log(user);
           try {
             if (!user._id) {
               console.error("Người dùng không hợp lệ.");
@@ -178,39 +189,40 @@
             }
 
               // Kiểm tra xem phòng có trong danh sách yêu thích hay không
-              const isFavorite = this.favorites.includes(item._id);
+              this.isFavorite = this.favorites.includes(item._id);
 
               const data = {
                 userId: user._id,
-                roomId: 'af'
+                roomId: item._id
                 };
-              if (isFavorite) {
+                console.log(data)
+              if (this.isFavorite) {
                 this.animateHeart(item, false); // false cho việc xóa
-
+                
                 // Nếu có, gọi API để xóa phòng khỏi danh sách yêu thích
-                await deleteFavorite(data);
+                // await deleteFavorite(data);
                 console.log('Xóa khỏi danh sách yêu thích thành công!');
                 
                 // Cập nhật danh sách yêu thích trên client
                 this.favorites = this.favorites.filter(favId => favId !== item._id);
-
+                console.log(this.favorites)
+                
               } else {
                 this.animateHeart(item, true); // true cho việc thêm
-
+                
                 // Nếu chưa có, gọi API để thêm phòng vào danh sách yêu thích
-                await addFavorite(data);
+                // await addFavorite(data);
                 console.log('Thêm vào danh sách yêu thích thành công!');
                 
                 // Cập nhật danh sách yêu thích trên client
                 this.favorites.push(item._id);
+                console.log(this.favorites)
               }
           } catch (error) {
             console.error('Lỗi khi thêm/xóa yêu thích:', error);
           }
         },
-        isFavorite(itemId) {
-          return this.favorites.includes(itemId); // Kiểm tra xem phòng có trong danh sách yêu thích không
-        },
+
 
         animateHeart(item, isAdding) {
           const heartElement = this.$refs[`heart-${item._id}`]; // Giả sử bạn có ref cho mỗi biểu tượng trái tim

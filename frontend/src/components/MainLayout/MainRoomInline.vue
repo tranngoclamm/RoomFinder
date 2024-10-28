@@ -1,7 +1,7 @@
 <!-- RoomCategory.vue -->
 <template>
     <div id="app">
-        <HeaderRoom @search="handleSearch"  @scroll-to-title="scrollToPostTitle" />  
+        <HeaderRoom class="header--small" @search="handleSearch"  @scroll-to-title="scrollToPostTitle" />  
         <div class="room-category d-flex flex-column justify-content-center align-items-center">
               
             <!-- Danh sách phòng -->

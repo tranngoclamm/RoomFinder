@@ -43,6 +43,12 @@ const routes = [
     name: 'FindRoommate',
     component: MainRoomInline,
     meta: { type: 'find-roommates' }, // Thêm meta cho tìm người ở ghép
+  },
+  {
+    path: '/favorites',
+    name: 'Favorites',
+    component: MainRoomInline,
+    meta: { type: 'favorites' }, // Thêm meta cho danh sách yêu thích
   }
 ];
 

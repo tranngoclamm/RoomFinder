@@ -1,11 +1,11 @@
 <template>
-    <header class="header header__background user-select-none">
-        <div class="header__navbar">
+    <header class="header header__background user-select-none" :class="{ 'headerSmall': !isHomePage }">
+        <div class="header__navbar" :class="{ 'headerLight': !isHomePage }">
           <div class="container-fluid">
             <nav class="navbar navbar-expand-lg navbar-dark">
-              <a class="navbar-brand" href="/">
+              <router-link to="/" class="navbar-brand" @click="navigateToPostTitle('homepage')">
                 <img src="@/assets/images/logo_white.svg" alt="RentRoom" ref="logo" />
-              </a>
+              </router-link>
     
               <div class="lang__currency lang_top d-block d-sm-none">
                 <div class="dropdown white">
@@ -75,11 +75,11 @@
                     </li>
                       <li class="nav-item">
                         <div class="calltoaction__text" @mouseover="animation.phone = true" @mouseleave="animation.phone = false">
-                          <a href="#" @click="openCall2action">
+                          <router-link to="/favorites">
                             <div v-bind:class="{ 'shake animated slow infinite': animation.phone }" style="display: inline-block;" >
                               <img src="@/assets/images/ic-heart.svg" class="icon ms-2 ic-heart" alt="" />
                             </div>
-                          </a>
+                          </router-link>
                         </div>
                       </li>
                     </ul>
@@ -161,7 +161,7 @@
           </div>
         </div>
     
-        <div class="hero">
+        <div class="hero" v-show="isHomePage">
           <div class="hero__center">
             <div class="container">
               <h1>Phòng cho thuê hàng đầu tại Việt Nam</h1>
@@ -329,10 +329,11 @@ export default {
   },
   data() {
     return {
-       lastName: '',
+      lastName: '',
       selectedRoomType: 'NHÀ Ở', // Loại phòng được chọn hiện tại
-      roomTypes: ['PHÒNG TRỌ', 'CĂN HỘ', 'TÌM NGƯỜI Ở GHÉP'], // Các tùy chọn còn lại
+      roomTypes: ['PHÒNG TRỌ', 'CĂN HỘ', 'TÌM NGƯỜI Ở GHÉP','DANH SÁCH YÊU THÍCH'], // Các tùy chọn còn lại
       inputsearchLocation: '',
+      isHomePage: true,
       selectedLocation:'',
       isDropdownOpenArea: false,
       isDropdownOpenPrice: false,
@@ -392,12 +393,13 @@ export default {
       this.$router.push('/login');
     },
     navigateToPostTitle(name){
-      if (name == 'postType'){
-        this.$emit('scroll-to-title'); // Phát sự kiện
-      } else if(name == 'latestPost'){
-        this.$emit('scroll-to-latestPostTitle'); // Phát sự kiện
+      if(name == 'homepage'){
+        this.isHomePage = true;
+      } else {
+        this.isHomePage =false;
       }
     },
+    
     async searchRoom() {
       // Tạo đối tượng formData đúng cách
       let formData = {
@@ -618,6 +620,7 @@ export default {
   },
 
   mounted() {
+    this.isHomePage = this.$route.path === '/';
   document.addEventListener('click', this.handleClickOutside);
    // Lấy thông tin user từ localStorage
    const user = JSON.parse(localStorage.getItem('user'));

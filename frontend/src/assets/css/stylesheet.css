@@ -1535,9 +1535,20 @@ input.form-control.border-dark:-webkit-autofill {
   color: #000;
   height: 127.5px;
 }
+
 .header__navbar {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 } */
+
+.headerSmall {
+  height: 121px;
+}
+.headerLight{
+  background: rgba(0,0,0,0.2) !important;
+}
+.loading-wrapper{
+  height: 100px;
+}
 .header__navbar .navbar-brand img {
   width: 250px;
   padding-top: 12px;
