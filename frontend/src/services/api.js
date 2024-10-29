@@ -56,3 +56,26 @@ export const searchHistory = (data) => {
   
 };
 
+// Hàm lấy danh sách yêu thích
+export const getFavorites = (query) => {
+  return axios.get(`${API_URL}/favorites`,{
+    params: { userId: query }
+  });
+};
+
+// Hàm update danh sách yêu thích
+export const updateFavorites = (data) => {
+  return axios.post(`${API_URL}/favorites`, data);
+};
+
+// Hàm thêm phòng vào danh sách yêu thích
+export const addFavorite = (data) => {
+  return axios.post(`${API_URL}/favorites/add`, data);
+};
+
+// Hàm xóa phòng khỏi danh sách yêu thích
+export const removeFavorite = (data) => {
+  return axios.post(`${API_URL}/favorites/remove`, data);
+};
+
+
