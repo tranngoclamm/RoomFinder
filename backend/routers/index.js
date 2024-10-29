@@ -4,6 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const { registerUser, loginUser } = require('../controllers/authController');
 const { getPosts, getLatestPosts, createPost, searchPosts } = require('../controllers/postController');
+const { getFavorites, updateFavorites, addFavorite, removeFavorite} = require('../controllers/favoritesController');
 const { analyzeSearchHistory } = require('../controllers/searchHistory'); 
 const { searchLocation, searchRoom } = require('../controllers/searchController');
 
@@ -30,6 +31,12 @@ router.post('/register', registerUser);
 router.get('/posts', getPosts); // Lấy bài đăng theo loại
 router.post('/posts', upload.array('images', 10), createPost); // Tạo bài đăng
 router.get('/latest-posts', getLatestPosts); // Lấy bài đăng mới nhất
+
+// Danh sách yêu thích
+router.get('/favorites', getFavorites);
+router.post('/favorites', updateFavorites);
+router.post('/favorites/add', addFavorite);
+router.post('/favorites/remove', removeFavorite);
 
 // Tìm kiếm
 router.post('/search', searchPosts); 

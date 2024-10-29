@@ -3,8 +3,7 @@ const Room = require('../models/roomModel'); // Sử dụng require
 const House = require('../models/houseModel'); // Sử dụng require
 const Apartment = require('../models/apartmentModel'); // Sử dụng require
 const FindRoommate = require('../models/findRoommateModel'); // Sử dụng require
-const SearchHistory = require('../models/searchHistoryModel'); // Sử dụng require
-const multer = require('multer'); // Sử dụng require
+const Favorites = require('../models/userModel'); // Sử dụng require
 const path = require('path'); // Sử dụng require
 const Province = require('../models/provinceModel'); // Đường dẫn tùy thuộc vào cấu trúc dự án của bạn
 const District = require('../models/districtModel'); 
@@ -17,7 +16,7 @@ const axios = require('axios');
 const getPosts = async (req, res) => {
   const page = parseInt(req.query.page) || 1; // Lấy số trang từ query string, mặc định là 1
   const limit = 9; // Số lượng bài đăng mỗi trang
-  const postType = req.query.type; // Lấy loại bài viết từ query string (rooms, houses, apartments, find-roommates)
+  const postType = req.query.type; // Lấy loại bài viết từ query string (rooms, houses, apartments, find-roommates, favorites)
   const searchQuery = req.query.search || ''; // Lấy giá trị tìm kiếm từ query string
   let Model;
 
@@ -35,6 +34,9 @@ const getPosts = async (req, res) => {
     case 'find-roommates':
       Model = FindRoommate;
       break;
+    case 'favorites':
+      Model = Favorites;
+      break;
     default:
       return res.status(400).json({ message: 'Loại bài viết không hợp lệ' });
   }
@@ -51,22 +53,29 @@ const getPosts = async (req, res) => {
         { contactMobile: { $regex: searchQuery, $options: 'i' } } // Tìm theo contactMobile
       ]
     };
-
-    // Lấy bài viết mới nhất đến cũ và sử dụng populate
-    const posts = await Model.find(searchCondition)
-      .populate('province') // Populate province
-      .populate('district') // Populate district
-      .populate('ward') // Populate ward
-      .populate({
-        path: 'userId', // Populate userId
-        select: '-password' // Chỉ định không lấy trường password
-      })
-      .sort({ createdAt: -1 }) // Sắp xếp từ mới đến cũ
-      .skip((page - 1) * limit) // Bỏ qua số bài viết đã có trên các trang trước
-      .limit(limit); // Giới hạn số bài viết trả về
+    var posts;
+    if(postType == 'favorites'){
+      posts = await Model.find(searchCondition)
+        .populate('favorites') // Populate favorites
+        .sort({ createdAt: -1 }) // Sắp xếp từ mới đến cũ
+        .skip((page - 1) * limit) // Bỏ qua số bài viết đã có trên các trang trước
+        .limit(limit); // Giới hạn số bài viết trả về
+    } else{
+      // Lấy bài viết mới nhất đến cũ và sử dụng populate
+      posts = await Model.find(searchCondition)
+        .populate('province') // Populate province
+        .populate('district') // Populate district
+        .populate('ward') // Populate ward
+        .populate({
+          path: 'userId', // Populate userId
+          select: '-password' // Chỉ định không lấy trường password
+        })
+        .sort({ createdAt: -1 }) // Sắp xếp từ mới đến cũ
+        .skip((page - 1) * limit) // Bỏ qua số bài viết đã có trên các trang trước
+        .limit(limit); // Giới hạn số bài viết trả về
+    }
 
     const totalPosts = await Model.countDocuments(searchCondition); // Tổng số bài viết trong collection tương ứng
-
     res.status(200).json({
       currentPage: page,
       totalPages: Math.ceil(totalPosts / limit), // Tổng số trang
@@ -243,7 +252,6 @@ if (!districtData) {
         createdAt: new Date(),
         updatedAt: new Date()
       });
-      console.log("New district created:", districtData);
     }
   } catch (error) {
     console.error("Error fetching district data from API:", error);
@@ -268,7 +276,6 @@ if (!wardData) {
 
     // Tìm thông tin xã/phường trong dữ liệu lấy từ API
     const wardFromApi = wardList.find(w => w.id === wardId);
-    console.log("wardFromApi: ",wardFromApi);
     if (wardFromApi) {
       // Tạo mới ward trong cơ sở dữ liệu
       wardData = await Ward.create({
@@ -282,7 +289,6 @@ if (!wardData) {
         createdAt: new Date(),
         updatedAt: new Date()
       });
-      console.log("New ward created:", wardData);
     }
   } catch (error) {
     console.error("Error fetching ward data from API:", error);
