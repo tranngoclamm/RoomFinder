@@ -5,8 +5,8 @@
         <div class="room-category d-flex flex-column justify-content-center align-items-center">
               
             <!-- Danh sách phòng -->
-            <RoomInline ref="roomInline"/>
-
+            <RoomInline v-if="$route.path !== '/blog-posts'" ref="roomInline" />
+            <BlogPostMain v-if="$route.path === '/blog-posts'" />
             <!-- Chi tiết phòng -->
             <DetailRoom v-if="showModal" @close-modal="showModal = false" :apartment="apartment" />
         </div>
@@ -26,6 +26,7 @@
   import PostNewModal from './RoomComponents/PostNewModal.vue';
   import FooterRoom from './FooterRoom.vue';
   import DetailRoom from './RoomComponents/DetailRoom.vue'; 
+  import BlogPostMain from './BlogPost/BlogPostMain.vue'; 
   import { search } from '@/services/api'; // Import hàm gọi API từ api.js
 
   
@@ -33,6 +34,7 @@
     components: {
       HeaderRoom,
       RoomInline,
+      BlogPostMain,
       PostNewModal,
       FooterRoom,
       DetailRoom

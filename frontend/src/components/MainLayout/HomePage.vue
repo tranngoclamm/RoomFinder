@@ -3,6 +3,8 @@
     <LoadingPreloader :isLoading="isLoading" />
     <HeaderRoom @search="handleSearch"  @scroll-to-latestPostTitle="scrollToLatestPostTitle"/>
     <div v-if="!isLoading" :class="{ loaded: !isLoading }" class="main_content" >
+      <TrendRoom />
+      <BlogHomePage />
       <RoomCategory ref="roomCategory" @search="receiveEmit" :results="dataSearch" :total-pages="totalPages" :current-page="currentPage"  /> 
       <FooterRoom />
       <PostNewModal v-if="showModal" @close-modal="closeModal" />
@@ -15,7 +17,9 @@ import '@/assets/css/app.css'; // Nhúng file CSS
 import 'bootstrap/dist/js/bootstrap.bundle.js';
 import HeaderRoom from './HeaderRoom.vue';
 import LoadingPreloader from '../LoadingPreloader.vue';
+import TrendRoom from './RoomComponents/TrendRoom.vue';
 import RoomCategory from './RoomComponents/RoomCategory.vue';
+import BlogHomePage from './BlogHomePage.vue';
 import FooterRoom from './FooterRoom.vue';
 import PostNewModal from './RoomComponents/PostNewModal.vue';
 import {searchRoom, getLatestPosts } from '@/services/api'; // Import hàm gọi API từ api.js
@@ -24,7 +28,9 @@ export default {
   emits: ['scrollToLatestPostTitle'], // Khai báo sự kiện
   components: {
     LoadingPreloader,
+    TrendRoom,
     RoomCategory,
+    BlogHomePage,
     PostNewModal,
     HeaderRoom,
     FooterRoom,

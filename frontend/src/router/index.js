@@ -49,13 +49,27 @@ const routes = [
     name: 'Favorites',
     component: MainRoomInline,
     meta: { type: 'favorites' }, // Thêm meta cho danh sách yêu thích
+  },
+  {
+    path: '/blog-posts',
+    name: 'BlogPost',
+    component: MainRoomInline,
   }
-];
+]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   mode: 'history',
   routes,
+  scrollBehavior(to, from, savedPosition) {
+    // Nếu vị trí cuộn trước đó được lưu (như khi dùng nút quay lại), Vue Router sẽ cuộn về vị trí đó.
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      // Mặc định luôn cuộn lên đầu trang khi chuyển trang
+      return { top: 0 }
+    }
+  },
 });
 
 export default router;

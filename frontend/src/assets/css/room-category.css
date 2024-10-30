@@ -3,7 +3,9 @@
 }
 .trend_location,
 .homepage-feature, 
-.room-list{
+.room-list,
+.looking_for-travel,
+.homepage-news{
     width: 1200px;
 }
 .trend_location h2 {
