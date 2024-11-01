@@ -6,14 +6,13 @@ const { registerUser, loginUser } = require('../controllers/authController');
 const { getPosts, getLatestPosts, createPost, searchPosts } = require('../controllers/postController');
 const { getFavorites, updateFavorites, addFavorite, removeFavorite} = require('../controllers/favoritesController');
 const { analyzeSearchHistory } = require('../controllers/searchHistory'); 
-const { searchLocation, searchRoom } = require('../controllers/searchController');
+const { searchLocation, searchRoom, searchHost } = require('../controllers/searchController');
 
-// Cấu hình lưu trữ file với multer
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // Thư mục lưu trữ file tạm
   },
-  filename: function (req, file, cb) {
+  filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
   }
 });
@@ -29,7 +28,7 @@ router.post('/register', registerUser);
 
 // Bài đăng
 router.get('/posts', getPosts); // Lấy bài đăng theo loại
-router.post('/posts', upload.array('images', 10), createPost); // Tạo bài đăng
+router.post('/posts', upload.array('images'), createPost); 
 router.get('/latest-posts', getLatestPosts); // Lấy bài đăng mới nhất
 
 // Danh sách yêu thích
@@ -42,6 +41,7 @@ router.post('/favorites/remove', removeFavorite);
 router.post('/search', searchPosts); 
 router.get('/search-location', searchLocation); // Tìm kiếm địa chỉ ở khung search
 router.post('/search-room', searchRoom); // Tìm kiếm ở HomePage
+router.get('/search-owner', searchHost); // Tìm kiếm ở HomePage
 
 // Phân tích lịch sử tìm kiếm
 router.get('/analyze-search-history', analyzeSearchHistory);

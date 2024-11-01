@@ -1,7 +1,7 @@
 <!-- PostNewModal.vue -->
 <template>
   <div @click.self="closeModal" class="modal fade show" style="display: block;" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div v-if="!isBlogPostModal" class="modal-dialog modal-dialog-scrollable" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Đăng tin</h5>
@@ -14,13 +14,16 @@
             <div class="form-layout detail-section">
               <div class="form-group detail-section-category w-100">
                 <label>Chuyên mục cho thuê <span>*</span></label>
-                <select v-model="CategoryId" class="form-select" id="ddlPostCate" name="CategoryId" data-val="true"
+                <select v-model="CategoryId" @change="handleCategoryChange" class="form-select" id="ddlPostCate" name="CategoryId" data-val="true"
                   data-val-required="Vui lòng chọn chuyên mục">
                   <option value="" disabled="" selected="">Chọn chuyên mục</option>
                   <option value="room">Cho thuê phòng trọ</option>
                   <option value="apartment">Cho thuê căn hộ</option>
                   <option value="house">Cho thuê nhà</option>
                   <option value="find-roommate">Tìm người ở ghép</option>
+                  <option value="blog-post">Đăng tin</option>
+                  <option value="owner-review">Review chủ trọ</option>
+                  <option value="share-experience">Chia sẻ kinh nghiệm</option>
                 </select>
                 <span class="field-validation-valid text-danger" v-if="errors.CategoryId">{{ errors.CategoryId }}</span>
               </div>
@@ -182,7 +185,7 @@
       </div>
     </div>
   </div>
-
+  <BlogPostModal v-if="isBlogPostModal" @closeModal="closeBlogPostModal" :categoryId="CategoryId"/>
   <!-- Overlay mờ phía sau modal -->
   <div class="modal-backdrop fade show"></div>
 </template>
@@ -191,6 +194,7 @@
   import 'bootstrap/dist/css/bootstrap.min.css';
   import '@/assets/css/room-category.css';
   import '@/assets/css/app.css';
+  import BlogPostModal from '../BlogPost/BlogPostComponents/BlogPostModal.vue';
   import {
     postNew
   } from '@/services/api'; // Import hàm gọi API từ api.js
@@ -199,8 +203,12 @@
   export default {
     name: 'PostNewModal',
     emits: ['close-modal'],
+    components: {
+      BlogPostModal
+    },
     data() {
       return {
+        isBlogPostModal: false,
         selectedImages: [], // Khai báo mảng lưu trữ ảnh đã chọn
         CategoryId: '', // Đảm bảo rằng thuộc tính này đã được khai báo
         Title: '',
@@ -230,6 +238,15 @@
       closeModal() {
         this.$emit('close-modal');
       },
+      handleCategoryChange() {
+      if (['blog-post', 'owner-review', 'share-experience'].includes(this.CategoryId)) {
+        this.isBlogPostModal=true;
+      } 
+    },
+    closeBlogPostModal(postType){
+      this.isBlogPostModal=false;
+      this.CategoryId=postType;
+    },
       async fetchProvinces() {
         try {
           const response = await fetch('https://esgoo.net/api-tinhthanh/1/0.htm');
@@ -302,24 +319,19 @@
 
       // Handle file selection and store the selected images
       handleFileUpload(event) {
-        const files = event.target.files; // Get selected files
+        const files = event.target.files; // Lấy các file đã chọn
+        console.log(files);
         if (files.length) {
-          // Clear previously selected images
-          this.selectedImages = [];
+          this.selectedImages = []; // Xóa các ảnh đã chọn trước đó
 
-          // Loop through the selected files and create a preview
+          // Lưu trữ URL của ảnh để hiển thị
           for (let i = 0; i < files.length; i++) {
             const file = files[i];
-            const reader = new FileReader();
-
-            reader.onload = (e) => {
-              // Push the image data URL to selectedImages array
-              this.selectedImages.push(e.target.result);
-            };
-
-            reader.readAsDataURL(file); // Convert file to Data URL
+            const imageUrl = URL.createObjectURL(file); // Tạo URL từ file ảnh
+            this.selectedImages.push(imageUrl); // Lưu URL thay vì lưu trực tiếp File object
           }
         }
+        console.log(this.selectedImages);
       },
       validateForm() {
         this.errors = {}; // Clear previous errors
@@ -351,6 +363,36 @@
           return;
 
         }
+          // Validate Ward
+          if (!this.selectedWard) {
+          this.errors.WardId = 'Vui lòng chọn phường/xã';
+          alert("Vui lòng nhập phường/xã");
+          return;
+
+        }
+          // Validate Address
+          if (!this.streetName) {
+          this.errors.StreetId = 'Vui lòng chọn đường phố';
+          alert("Vui lòng nhập đường phố");
+          return;
+
+        }
+
+          // Validate exactAdress
+          if (!this.exactAddress) {
+          this.errors.exactAddressId = 'Vui lòng chọn địa chỉ chính xác';
+          alert("Vui lòng nhập địa chỉ chính xác");
+          return;
+
+        }
+
+          // Validate detail
+          if (!this.Detail) {
+          this.errors.DetailId = 'Vui lòng nhập mô tả';
+          alert("Vui lòng nhập mô tả");
+          return;
+
+        }
 
         // Validate Price
         if (!this.Price || isNaN(this.Price)) {
@@ -377,6 +419,7 @@
         return Object.keys(this.errors).length === 0;
       },
 
+
       async submitPost() {
         // Validate form
         if (!this.validateForm()) {
@@ -387,11 +430,15 @@
 
         const formData = new FormData();
 
-        // Add images to formData
-        this.selectedImages.forEach((image) => {
-          formData.append('images', image); // Append each selected image
-        });
-
+        // Đưa ảnh gốc vào formData
+        for (let i = 0; i < this.selectedImages.length; i++) {
+          const file = await blobToFile(this.selectedImages[i], `image-${i}.jpg`);
+          formData.append('images', file);
+        }
+        // Lặp qua các giá trị của formData để kiểm tra
+        for (let [key, value] of formData.entries()) {
+          console.log(key, value);
+        }
         // Add other fields to formData
         formData.append('category', this.CategoryId);
         formData.append('title', this.Title);
@@ -407,16 +454,23 @@
         formData.append('contactMobile', this.ContactMobile);
         formData.append('userId', userId);
 
-        // Send the formData to the server
-        const response = await postNew(formData);
-
         try {
-          if (response && response.data) {
-            this.closeModal();
+        // Gửi formData tới server
+        const response = await postNew(formData);
+        console.log('Response:', response.data); // Log phản hồi từ server
+        if (response.data) {
+          // Xử lý phản hồi thành công
+          alert('Bài đăng đã được gửi thành công!');
+          this.closeModal(); // Đóng modal nếu gửi thành công
           }
         } catch (error) {
           console.error('Error:', error);
           alert(error.response ? error.response.data.message : 'Đã xảy ra lỗi, vui lòng thử lại.');
+        }
+        async function blobToFile(blobUrl, fileName) {
+          const response = await fetch(blobUrl);
+          const blob = await response.blob();
+          return new File([blob], fileName, { type: blob.type });
         }
       },
 

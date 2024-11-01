@@ -37,7 +37,6 @@ const uploadToCloudinary = async (filePath) => {
         const result = await cloudinary.uploader.upload(filePath, {
             folder: 'images' 
         });
-        console.log("imageController:", result.secure_url);
         return result.secure_url; // Lấy URL của ảnh sau khi upload thành công
     } catch (error) {
         throw new Error(`Upload to Cloudinary failed: ${error.message}`);

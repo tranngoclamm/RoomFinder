@@ -20,9 +20,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  phone: {
-    type: Number,
-  },
   zalo: {
     type: Number,
   },
@@ -32,12 +29,18 @@ const userSchema = new mongoose.Schema({
       ref: 'RoomType', // Tham chiếu đến collection phòng
     },
   ],
+  phone: {
+    type: String, // Đổi thành String nếu muốn lưu mã vùng hoặc ký tự đặc biệt
+  },
   postedRooms: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'RoomType', // Tham chiếu đến collection phòng
     },
   ],
+  profilePicture: { 
+    type: String 
+  }
   
 });
 

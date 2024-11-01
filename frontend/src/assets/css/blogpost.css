@@ -66,6 +66,9 @@ figure {
 .homepage-news .news-thumb img {
     aspect-ratio: 1 / 0.66667;
 }
+.blog-list-wrapper{
+    transform: translateY(-16px);
+}
 
 img {
     width: 100%;
@@ -106,6 +109,169 @@ img, svg {
 }
 .homepage-news .img_caption .filter-bright:hover {
     filter: brightness(90%);
+    cursor: pointer;
+}
+.tox-statusbar__branding{
+    display:none;
+}
+.tinymce-wrapper{
+    background-color: white;
+    position: fixed;
+    padding-top: 6px;
+    top: 16px;
+    left: 50%; 
+    transform: translateX(-50%);
+    z-index: 1050;
+    width: calc(1200px*8/12);
+    height: calc(100vh - 30px) !important;
+    overflow: hidden;
+    outline: 0;
+    border-radius: 3px;
+}
+.tox .tox-dialog--width-lg {
+    height: 100vh !important;
+    width: calc(1200px*8/12) !important;
+}
+.tox .tox-dialog__body-content {
+    max-height: 95vh !important;
+}
+.tox.tox-silver-sink .tox-dialog-wrap__backdrop--opaque,
+.tox.tox-silver-sink .tox-dialog-wrap__backdrop {
+    background-color: transparent !important;
+}
+.inputTitle{
+    width: 100%;
+    margin-left: 22px;
+    border: none;
+    outline: none;
+}
+.labelPost{
+    width: 80px;
+    margin-bottom: 0;
+    margin-left: 22px;
+}
+.tinymce-wrapper .form-select:focus{
+    outline: none;
+    box-shadow: none;
+}
+.tinymce-wrapper .form-select{
+    outline: none;
+    border: none;
+    font-size: 14.4px;
+}
+.tinymce-wrapper .input-owner{
+    border: 1px solid #c9c9c9;
+    outline: none;
+    border-radius: 4px;
+    padding-left: 8px;
+}
+ul.blog-post-detail {
+    list-style-type: none; /* Loại bỏ dấu đầu dòng */
+    padding-left: 0; /* Xóa khoảng cách bên trái nếu cần */
+    transform: translateY(-25px);
+}
+.dropdown-item:hover, .dropdown-item:focus {
+    color: #16181b;
+    text-decoration: underline;
+    cursor: pointer;
+    background-color: transparent !important;
+}
+.savePost{
+    right: 10px;
+    top: 5.3px;
+    width: 125px;
+    outline: none;
+    background-color: transparent;
+    border: none;
+    color: #3C70D1;
+}
+.find-owner-list{
+    position: absolute;
+    top: 100%;
+    left: 0;
+    float: left;
+    min-width: 10rem;
+    padding: 0.5rem 0;
+    margin: 0.125rem 0 0;
+    font-size: 0.9rem;
+    color: #d5d5d5;
+    text-align: left;
+    z-index: 1000;
+    list-style: none;
+    background-color: #14141487;
+    background-clip: padding-box;
+    border: 1px solid rgba(60, 60, 60, 0.15);
+    border-radius: 10px;
+}
+.font-merriweather-bold {
+    font-size: 32px;
+    font-weight: 600;
+    width: 800px;
+    margin: 0;
+    margin-bottom: 8px;
+    color: #3C70D1;
+    font-family: Helvetica, Arial, Roboto, sans-serif;
+    border: none;
+    outline: none;
+    line-height: 1.2;
+    resize: none; /* Ngăn chặn người dùng thay đổi kích thước */
+    /* height: auto; */
+}
+.mce-content-body  p {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+.search__owner-wrapper {
+    position: absolute;
+    bottom: -22px;
+    left: 2px;
+}
+.search__owner-wrapper .dropdown-menu{
+    min-height: 95px;
+    padding-right: 8px;
+}
+.search__owner-wrapper li{
+    height: 30px;
+}
+.search__owner-wrapper .dropdown-item:hover {
+    background-color: transparent !important;
+    cursor: pointer;
+}
+.search__owner-wrapper .dropdown-item {
+    width: 180px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    margin-right: 8px;
+}
+.search__owner-wrapper .dropdown-item .my-1 {
+    margin-left: 2px;
+    margin-right: 2px;
+}
+.search__owner-wrapper .dropdown-item .avatar,
+.selected__owner-wrapper .avatar {
+    height: 28px;
+    width: 28px;
+    border-radius: 50%;
+    margin-right: 4px;
+}
+.selected__owner-wrapper{
+    user-select: none;
+}
+.user-select-none{
+    user-select: none;
+}
+.tinymce-header{
+    background-color: white;
+}
+.tox.tox-tinymce {
+    height: calc(100% - 90px) !important;
+}
+label{
+    user-select: none;
+}
+.tinymce-wrapper .form-select :hover{
     cursor: pointer;
 }
 .blog-item:hover,
@@ -516,6 +682,7 @@ Template sidebar
 }
 .post__inline {
     margin-top: 20px;
+    padding-left: 10px;
 }
 .blogpage-right .box-lastnews{
     margin-bottom: 0;

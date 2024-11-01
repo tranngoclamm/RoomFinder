@@ -23,7 +23,10 @@
   <div class="apartment__inline post__inline">
     <div class="row">
       <!-- Danh sách tin tức -->
-      <BlogPostList />
+      <BlogPostList v-if="!isBlogPostDetail"/>
+      <div v-if="isBlogPostDetail" class="col-8 blog-list-wrapper">
+        {{ postContent }}
+      </div>
       <!-- danh mục bên phải -->
       <div class="blogpage-right col-4">
         <div class="sidebar-box">
@@ -71,6 +74,12 @@
     components: {
       BlogPostList,
       SuggestedPosts
+    },
+    data(){
+      return {
+        isBlogPostDetail: false,
+        postContent: '',
+      }
     }
   };
 </script>

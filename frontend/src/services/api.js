@@ -13,8 +13,8 @@ export const loginUser = (userData) => {
 };
 
 // Hàm thêm bài đăng 
-export const postNew = (userData) => {
-  return axios.post(`${API_URL}/posts`, userData);
+export const postNew = (formData) => {
+  return axios.post(`${API_URL}/posts`, formData);
 };
 
 // Hàm lấy bài đăng theo loại
@@ -50,6 +50,13 @@ export const searchRoom = (data) => {
   return axios.post(`${API_URL}/search-room`, data);
 };
 
+// Hàm tìm kiếm chủ trọ ở đăng tin
+export const searchOwner = (query) => {
+  return axios.get(`${API_URL}/search-owner`, {
+    params: {q: query}
+  });
+};
+
 // Hàm lịch sử tìm kiếm của người dùng
 export const searchHistory = (data) => {
   return axios.get(`${API_URL}/analyze-search-history`, data);
@@ -78,4 +85,11 @@ export const removeFavorite = (data) => {
   return axios.post(`${API_URL}/favorites/remove`, data);
 };
 
-
+// Hàm upload ảnh tin tức lên Cloudinary bằng upload preset
+export const uploadImagePostToCloudinary = (formData) => {
+  return axios.post('https://api.cloudinary.com/v1_1/dlawgdb8h/image/upload', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+};

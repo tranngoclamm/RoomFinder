@@ -88,7 +88,6 @@ export default {
           this.totalPages = response.data.totalPages;
           this.currentPage = response.data.currentPage;
         }
-        console.log(this.dataSearch);
       } catch (error) {
         console.error("Lỗi lấy bài đăng mới nhất:", error);
       }

@@ -1,5 +1,6 @@
 const { uploadToCloudinary } = require('./imageController'); // Sử dụng require
 const Room = require('../models/roomModel'); // Sử dụng require
+const User = require('../models/userModel'); // Sử dụng require
 const House = require('../models/houseModel'); // Sử dụng require
 const Apartment = require('../models/apartmentModel'); // Sử dụng require
 const FindRoommate = require('../models/findRoommateModel'); // Sử dụng require
@@ -170,155 +171,193 @@ const getLatestPosts = async (req, res) => {
 // Đăng bài
 const createPost = async (req, res) => {
   try {
-    var { images, category, title,  provinceId, districtId, wardId, street, exactAddress, price, area, details, contactName, contactMobile, userId } = req.body;
+      var {
+          category,
+          title,
+          provinceId,
+          districtId,
+          wardId,
+          street,
+          exactAddress,
+          price,
+          area,
+          details,
+          contactName,
+          contactMobile,
+          userId
+      } = req.body;
+           // Kiểm tra và xử lý các file ảnh từ `req.files`
     const uploadedImages = [];
-    if (images && !Array.isArray(images)) {
-        images = [images]; // Chuyển đổi thành mảng nếu chỉ có một ảnh
-    }
-    
-    // Xử lý ảnh base64
-    if (images && Array.isArray(images)) {
-        for (const imageBase64 of images) {
-            const base64Data = imageBase64.replace(/^data:image\/png;base64,/, "");
-            const tempFilePath = path.join(__dirname, '../temp', `${Date.now()}.png`); // Lưu vào temp
-    
-            // Lưu tệp tạm thời để upload
-            fs.writeFileSync(tempFilePath, base64Data, 'base64');
-    
-            try {
-                // Upload lên Cloudinary
-                const secureUrl = await uploadToCloudinary(tempFilePath);
-                uploadedImages.push(secureUrl);
-            } catch (error) {
-                console.error(`Error uploading image: ${error.message}`);
-            } finally {
-                // Xóa tệp tạm thời sau khi upload
-                fs.unlinkSync(tempFilePath);
-            }
+    const images = req.files || []; // Lấy tất cả ảnh từ `req.files`
+    console.log("Received files:", images);
+      if (images) {
+
+        for (const file of images) {
+          const tempFilePath = file.path;
+          try {
+            // Upload file lên Cloudinary
+            const secureUrl = await uploadToCloudinary(tempFilePath);
+            uploadedImages.push(secureUrl);
+          } catch (error) {
+            console.error(`Error uploading image: ${error.message}`);
+          } finally {
+            // Xóa tệp tạm sau khi upload
+            fs.unlinkSync(tempFilePath);
+          }
         }
-    }
+      }
 
-    // Xác định model bài viết dựa trên category
-    let PostModel;
-    switch (category) {
-      case 'room':
-        PostModel = Room;
-        break;
-      case 'house':
-        PostModel = House;
-        break;
-      case 'apartment':
-        PostModel = Apartment;
-        break;
-      case 'find-roommate':
-        PostModel = FindRoommate;
-        break;
-      default:
-        return res.status(400).json({ message: 'Invalid category' });
-    }
-    // Lưu thông tin tỉnh, huyện, xã vào các collections tương ứng
-    const provinceData = await Province.findOneAndUpdate(
-      { id: provinceId }, // Điều kiện lọc
-      { $set: { updatedAt: new Date() } }, // Nếu cần cập nhật bất kỳ trường nào
-      { new: true } // Đảm bảo trả về giá trị sau khi cập nhật
-    ).exec();
+      // Xác định model bài viết dựa trên category
+      let PostModel;
+      switch (category) {
+          case 'room':
+              PostModel = Room;
+              break;
+          case 'house':
+              PostModel = House;
+              break;
+          case 'apartment':
+              PostModel = Apartment;
+              break;
+          case 'find-roommate':
+              PostModel = FindRoommate;
+              break;
+          default:
+              return res.status(400).json({
+                  message: 'Invalid category'
+              });
+      }
+      // Lưu thông tin tỉnh, huyện, xã vào các collections tương ứng
+      const provinceData = await Province.findOneAndUpdate({
+              id: provinceId
+          }, // Điều kiện lọc
+          {
+              $set: {
+                  updatedAt: new Date()
+              }
+          }, // Nếu cần cập nhật bất kỳ trường nào
+          {
+              new: true
+          } // Đảm bảo trả về giá trị sau khi cập nhật
+      ).exec();
 
-// Tìm và cập nhật quận
-let districtData = await District.findOneAndUpdate(
-  { id: districtId },
-  { $set: { updatedAt: new Date() } },
-  { new: true }
-).exec();
+      // Tìm và cập nhật quận
+      let districtData = await District.findOneAndUpdate({
+          id: districtId
+      }, {
+          $set: {
+              updatedAt: new Date()
+          }
+      }, {
+          new: true
+      }).exec();
 
-if (!districtData) {
-  // Nếu không tìm thấy districtData, gọi API để lấy dữ liệu quận/huyện
-  try {
-    const apiResponse = await axios.get(`https://esgoo.net/api-tinhthanh/2/${provinceId}.htm`);
-    const districtList = apiResponse.data.data;
+      if (!districtData) {
+          // Nếu không tìm thấy districtData, gọi API để lấy dữ liệu quận/huyện
+          try {
+              const apiResponse = await axios.get(`https://esgoo.net/api-tinhthanh/2/${provinceId}.htm`);
+              const districtList = apiResponse.data.data;
 
-    // Tìm thông tin quận/huyện trong dữ liệu lấy từ API
-    const districtFromApi = districtList.find(d => d.id === districtId);
+              // Tìm thông tin quận/huyện trong dữ liệu lấy từ API
+              const districtFromApi = districtList.find(d => d.id === districtId);
 
-    if (districtFromApi) {
-      // Tạo mới district trong cơ sở dữ liệu
-      districtData = await District.create({
-        id: districtFromApi.id,
-        name: districtFromApi.name,
-        full_name: districtFromApi.full_name,
-        latitude: districtFromApi.latitude,
-        longitude: districtFromApi.longitude,
-        provinceId: provinceData._id, // Thêm provinceId vào model
-        __v: 0, // Mặc định là 0 khi tạo mới
-        createdAt: new Date(),
-        updatedAt: new Date()
+              if (districtFromApi) {
+                  // Tạo mới district trong cơ sở dữ liệu
+                  districtData = await District.create({
+                      id: districtFromApi.id,
+                      name: districtFromApi.name,
+                      full_name: districtFromApi.full_name,
+                      latitude: districtFromApi.latitude,
+                      longitude: districtFromApi.longitude,
+                      provinceId: provinceData._id, // Thêm provinceId vào model
+                      __v: 0, // Mặc định là 0 khi tạo mới
+                      createdAt: new Date(),
+                      updatedAt: new Date()
+                  });
+              }
+          } catch (error) {
+              console.error("Error fetching district data from API:", error);
+          }
+      }
+
+      // Lấy districtData._id để sử dụng
+      const districtIdToUse = districtData ? districtData._id : null;
+
+      // Tìm và cập nhật xã/phường
+      let wardData = await Ward.findOneAndUpdate({
+          id: wardId
+      }, {
+          $set: {
+              updatedAt: new Date()
+          }
+      }, {
+          new: true
+      }).exec();
+
+      if (!wardData) {
+          // Nếu không tìm thấy wardData, gọi API để lấy dữ liệu xã/phường
+          try {
+              const apiResponse = await axios.get(`https://esgoo.net/api-tinhthanh/3/${districtId}.htm`);
+              const wardList = apiResponse.data.data;
+
+              // Tìm thông tin xã/phường trong dữ liệu lấy từ API
+              const wardFromApi = wardList.find(w => w.id === wardId);
+              if (wardFromApi) {
+                  // Tạo mới ward trong cơ sở dữ liệu
+                  wardData = await Ward.create({
+                      id: wardFromApi.id,
+                      name: wardFromApi.name,
+                      full_name: wardFromApi.full_name,
+                      latitude: wardFromApi.latitude,
+                      longitude: wardFromApi.longitude,
+                      districtId: districtData._id,
+                      __v: 0, // Mặc định là 0 khi tạo mới
+                      createdAt: new Date(),
+                      updatedAt: new Date()
+                  });
+              }
+          } catch (error) {
+              console.error("Error fetching ward data from API:", error);
+          }
+      }
+
+      // Lấy wardData._id để sử dụng
+      const wardIdToUse = wardData ? wardData._id : null;
+
+      // Tạo bài viết mới
+      const newPost = new PostModel({
+          title,
+          province: provinceData._id,
+          district: districtIdToUse,
+          ward: wardIdToUse,
+          street,
+          exactAddress,
+          price,
+          area,
+          details,
+          contactName,
+          contactMobile,
+          images: uploadedImages,
+          userId,
       });
-    }
-  } catch (error) {
-    console.error("Error fetching district data from API:", error);
-  }
-}
-
-// Lấy districtData._id để sử dụng
-const districtIdToUse = districtData ? districtData._id : null;
-
-// Tìm và cập nhật xã/phường
-let wardData = await Ward.findOneAndUpdate(
-  { id: wardId },
-  { $set: { updatedAt: new Date() } },
-  { new: true }
-).exec();
-
-if (!wardData) {
-  // Nếu không tìm thấy wardData, gọi API để lấy dữ liệu xã/phường
-  try {
-    const apiResponse = await axios.get(`https://esgoo.net/api-tinhthanh/3/${districtId}.htm`);
-    const wardList = apiResponse.data.data;
-
-    // Tìm thông tin xã/phường trong dữ liệu lấy từ API
-    const wardFromApi = wardList.find(w => w.id === wardId);
-    if (wardFromApi) {
-      // Tạo mới ward trong cơ sở dữ liệu
-      wardData = await Ward.create({
-        id: wardFromApi.id,
-        name: wardFromApi.name,
-        full_name: wardFromApi.full_name,
-        latitude: wardFromApi.latitude,
-        longitude: wardFromApi.longitude,
-        districtId: districtData._id, 
-        __v: 0, // Mặc định là 0 khi tạo mới
-        createdAt: new Date(),
-        updatedAt: new Date()
+      await newPost.save();
+      res.status(201).json({
+          message: 'Post created successfully!',
+          post: newPost
       });
-    }
+      console.log("Saved post:", newPost); // Kiểm tra xem dữ liệu được lưu đúng không
+      // Cập nhật postedRooms của user
+      await User.findByIdAndUpdate(
+        userId, // Lấy userId từ request
+        { $push: { postedRooms: newPost._id } }, // Thêm _id của bài đăng vào postedRooms
+        { new: true, useFindAndModify: false }
+      );
   } catch (error) {
-    console.error("Error fetching ward data from API:", error);
-  }
-}
-
-// Lấy wardData._id để sử dụng
-const wardIdToUse = wardData ? wardData._id : null;
-
-    // Tạo bài viết mới
-    const newPost = new PostModel({
-      title,
-      province: provinceData._id,
-      district: districtIdToUse,
-      ward: wardIdToUse,
-      street,
-      exactAddress,
-      price,
-      area,
-      details,
-      contactName,
-      contactMobile,
-      images: uploadedImages,
-      userId,
-    });
-    await newPost.save();
-    res.status(201).json({ message: 'Post created successfully!', post: newPost });
-  } catch (error) {
-    console.error('Error creating post:', error);
-    res.status(500).json({ message: 'Error creating post', error: error.message });
+      console.error('Error creating post:', error);
+      res.status(500).json({
+          message: 'Error creating post',
+          error: error.message
+      });
   }
 };
 

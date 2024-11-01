@@ -1,6 +1,7 @@
 const Province = require('../models/provinceModel');
 const District = require('../models/districtModel');
 const Room = require('../models/roomModel');
+const User = require('../models/userModel');
 const House = require('../models/houseModel');
 const Apartment = require('../models/apartmentModel');
 const FindRoommate = require('../models/findRoommateModel');
@@ -161,5 +162,30 @@ const searchLocation = async (req, res) => {
       }
       };
   
-  module.exports = { searchLocation, searchRoom };
+      const searchHost = async (req, res) => {
+        try {
+          const { query } = req; // Lấy thông tin từ query params
+          const searchTerm = query.q; // term là từ khóa tìm kiếm
+      
+          if (!searchTerm) {
+            return res.status(400).json({ message: 'Missing search term' });
+          }
+      
+          // Tìm kiếm người dùng có chứa fullName, email hoặc phone
+          const users = await User.find({
+            $or: [
+              { fullName: { $regex: searchTerm, $options: 'i' } }, // Tìm theo fullName
+              { email: { $regex: searchTerm, $options: 'i' } }, // Tìm theo email
+              { phone: { $regex: searchTerm, $options: 'i' } } // Tìm theo phone
+            ]
+          });
+      
+          return res.status(200).json(users);
+        } catch (error) {
+          console.error('Error searching users:', error);
+          return res.status(500).json({ message: 'Server error', error: error.message });
+        }
+      };
+      
+  module.exports = { searchLocation, searchRoom, searchHost };
 
