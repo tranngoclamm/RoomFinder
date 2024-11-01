@@ -7,6 +7,7 @@ const { getPosts, getLatestPosts, createPost, searchPosts } = require('../contro
 const { getFavorites, updateFavorites, addFavorite, removeFavorite} = require('../controllers/favoritesController');
 const { analyzeSearchHistory } = require('../controllers/searchHistory'); 
 const { searchLocation, searchRoom, searchHost } = require('../controllers/searchController');
+const { createArticle, getLatestArticles } = require('../controllers/articleController');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -45,5 +46,9 @@ router.get('/search-owner', searchHost); // Tìm kiếm ở HomePage
 
 // Phân tích lịch sử tìm kiếm
 router.get('/analyze-search-history', analyzeSearchHistory);
+
+// Đăng tin
+router.get('/article', getLatestArticles ); // Lấy tin mới nhất, có tìm kiếm, lọc theo loại và phân trang
+router.post('/article', createArticle); // Đăng tin 
 
 module.exports = router;

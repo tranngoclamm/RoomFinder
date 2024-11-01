@@ -54,6 +54,11 @@ const routes = [
     path: '/blog-posts',
     name: 'BlogPost',
     component: MainRoomInline,
+  },
+  {
+    path: '/blog-posts/:category',
+    name: 'BlogPostCategory',
+    component: MainRoomInline,
   }
 ]
 

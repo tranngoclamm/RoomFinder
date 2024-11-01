@@ -13,24 +13,24 @@
         <div class="homepage-news">
             <div class="sub_small-form d-flex justify-content-between gap-4 m-0 mt-3 w-100">
             <!-- Hai tin đầu -->
-            <router-link :to="{ path: '/blog-posts/' + post.blogType + '/' + post.url }" v-for="(post, index) in news.slice(0, 2)" :key="index" class="img_caption p-0">
+            <router-link :to="{ path: '/blog-posts/' + post.slug }" v-for="(post, index) in news.slice(0, 2)" :key="index" class="img_caption p-0">
               <img :src="post.image" alt="" class="resize-form" />
               <aside class="news-aside">
                 <span class="news-publish">
                   <img src="/img/time-svgrepo-com.4b9896ae.svg" alt="" class="icon-time" />
-                  {{ post.publishTime }}
+                  {{ post.createdAt }}
                 </span>
                 <h3 class="news-title">{{ post.title }}</h3>
               </aside>
             </router-link>
             <!-- Ba tin cuối -->
             <div class="img_caption no-filter p-0">
-              <router-link :to="{ path: '/blog-posts/' + post.blogType + '/' + post.url }" v-for="(post, index) in news.slice(2, 5)" :key="index">
+              <router-link :to="{ path: '/blog-posts/' + post.slug }" v-for="(post, index) in news.slice(2, 5)" :key="index">
                 <a class="news-item filter-bright d-flex w-100">
                   <aside class="news-aside margin-right-10">
                     <span class="news-publish">
                       <img src="/img/time-svgrepo-com.4b9896ae.svg" alt="" class="icon-time" />
-                      {{ post.publishTime }}
+                      {{ post.createdAt }}
                     </span>
                     <h3 class="news-title">{{ post.title }}</h3>
                   </aside>
@@ -53,49 +53,43 @@
   import '@/assets/css/app.css';
   import '@/assets/css/room-category.css';
   import '@/assets/css/blogpost.css';
-  
+  import {getLatestArticles } from '@/services/api'; // Import hàm gọi API từ api.js
+  import { formatDate } from '@/utils/dateUtils'; 
+
   export default {
     name: 'BlogHomePage',
     data() {
       return {
-        news: [
-          {
-            blogType:'kinh-nghiem',
-            title: 'Nhà thuê TP.HCM giảm giá 2-3 triệu đồng/tháng',
-            image: 'https://img.thuephongtro.com/images/uploads/20200531080439-2fupv.jpg',
-            publishTime: '5:24 09/03/2020',
-            url: 'nha-thue-tphcm-giam-gia.html'
-          },
-          {
-            blogType:'kinh-nghiem',
-            title: 'Top 10 website đăng tin cho thuê phòng trọ, nhà trọ hiệu quả nhất 2020',
-            image: 'https://img.thuephongtro.com/images/uploads/20200309135926-xinj2.jpg',
-            publishTime: '5:24 09/03/2020',
-            url: 'top-10-website-cho-thue-phong.html'
-          },
-          {
-            blogType:'kinh-nghiem',
-            title: 'Chủ nhà có phải chịu trách nhiệm khi người thuê phòng trọ sử dụng chất ma túy không?',
-            image: 'https://img.thuephongtro.com/images/uploads/20200309131415-dvtub.jpg',
-            publishTime: '5:24 09/03/2020',
-            url: 'chu-nha-trach-nhiem-ma-tuy.html'
-          },
-          {
-            blogType:'kinh-nghiem',
-            title: 'Mẫu nội quy cho thuê phòng trọ, nhà trọ mới nhất 2020',
-            image: 'https://img.thuephongtro.com/images/uploads/20200309125312-o0ty2.jpg',
-            publishTime: '5:24 09/03/2020',
-            url: 'noi-quy-cho-thue-phong.html'
-          },
-          {
-            blogType:'kinh-nghiem',
-            title: 'Bộ Công thương đề xuất giá điện sinh hoạt 5 bậc',
-            image: 'https://img.thuephongtro.com/images/uploads/20200309121311-d4ek3.jpg',
-            publishTime: '5:24 09/03/2020',
-            url: 'de-xuat-gia-dien-5-bac.html'
-          }
-        ]
+        news: []
       };
+    },
+    methods: {
+      async fetchLatestArticles() {
+      try {
+        const response = await getLatestArticles("", 1, 5, "");  // Gọi API lấy tin mới nhất
+        if (response && response.data) {
+          let data = Object.values(response.data)[0]; // Chuyển object sang mảng
+          data.forEach(newsItem => {
+          newsItem.createdAt = formatDate(newsItem.createdAt); // chuyển định dạng ngày
+          // Sử dụng biểu thức chính quy để tìm URL hình ảnh trong content
+          const imageUrlMatch = newsItem.content.match(/<img[^>]+src="([^">]+)"/);
+      
+          // Nếu tìm thấy URL, thêm trường image vào đối tượng
+          if (imageUrlMatch && imageUrlMatch[1]) {
+              newsItem.image = imageUrlMatch[1]; // thêm trường image
+          } else {
+              newsItem.image = 'https://cdn.dribbble.com/users/263641/screenshots/4517916/404_not_found_3_dribbble.jpg'; 
+          }
+          });
+          this.news=data;
+        }
+      } catch (error) {
+        console.error("Lỗi lấy tin mới nhất:", error);
+      }
+     },
+    },
+    mounted(){
+      this.fetchLatestArticles();
     }
   };
   </script>

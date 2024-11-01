@@ -14,16 +14,16 @@
             <div class="form-layout detail-section">
               <div class="form-group detail-section-category w-100">
                 <label>Chuyên mục cho thuê <span>*</span></label>
-                <select v-model="CategoryId" @change="handleCategoryChange" class="form-select" id="ddlPostCate" name="CategoryId" data-val="true"
-                  data-val-required="Vui lòng chọn chuyên mục">
+                <select v-model="CategoryId" @change="handleCategoryChange" class="form-select" id="ddlPostCate"
+                  name="CategoryId" data-val="true" data-val-required="Vui lòng chọn chuyên mục">
                   <option value="" disabled="" selected="">Chọn chuyên mục</option>
                   <option value="room">Cho thuê phòng trọ</option>
                   <option value="apartment">Cho thuê căn hộ</option>
                   <option value="house">Cho thuê nhà</option>
                   <option value="find-roommate">Tìm người ở ghép</option>
-                  <option value="blog-post">Đăng tin</option>
+                  <option value="news">Đăng tin</option>
                   <option value="owner-review">Review chủ trọ</option>
-                  <option value="share-experience">Chia sẻ kinh nghiệm</option>
+                  <option value="experience-sharing">Chia sẻ kinh nghiệm</option>
                 </select>
                 <span class="field-validation-valid text-danger" v-if="errors.CategoryId">{{ errors.CategoryId }}</span>
               </div>
@@ -185,7 +185,7 @@
       </div>
     </div>
   </div>
-  <BlogPostModal v-if="isBlogPostModal" @closeModal="closeBlogPostModal" :categoryId="CategoryId"/>
+  <BlogPostModal v-if="isBlogPostModal" @closeModal="closeBlogPostModal" @closeAll="closeModal" :categoryId="CategoryId" />
   <!-- Overlay mờ phía sau modal -->
   <div class="modal-backdrop fade show"></div>
 </template>
@@ -239,14 +239,14 @@
         this.$emit('close-modal');
       },
       handleCategoryChange() {
-      if (['blog-post', 'owner-review', 'share-experience'].includes(this.CategoryId)) {
-        this.isBlogPostModal=true;
-      } 
-    },
-    closeBlogPostModal(postType){
-      this.isBlogPostModal=false;
-      this.CategoryId=postType;
-    },
+        if (['news', 'owner-review', 'experience-sharing'].includes(this.CategoryId)) {
+          this.isBlogPostModal = true;
+        }
+      },
+      closeBlogPostModal(postType) {
+        this.isBlogPostModal = false;
+        this.CategoryId = postType;
+      },
       async fetchProvinces() {
         try {
           const response = await fetch('https://esgoo.net/api-tinhthanh/1/0.htm');
@@ -363,31 +363,31 @@
           return;
 
         }
-          // Validate Ward
-          if (!this.selectedWard) {
+        // Validate Ward
+        if (!this.selectedWard) {
           this.errors.WardId = 'Vui lòng chọn phường/xã';
           alert("Vui lòng nhập phường/xã");
           return;
 
         }
-          // Validate Address
-          if (!this.streetName) {
+        // Validate Address
+        if (!this.streetName) {
           this.errors.StreetId = 'Vui lòng chọn đường phố';
           alert("Vui lòng nhập đường phố");
           return;
 
         }
 
-          // Validate exactAdress
-          if (!this.exactAddress) {
+        // Validate exactAdress
+        if (!this.exactAddress) {
           this.errors.exactAddressId = 'Vui lòng chọn địa chỉ chính xác';
           alert("Vui lòng nhập địa chỉ chính xác");
           return;
 
         }
 
-          // Validate detail
-          if (!this.Detail) {
+        // Validate detail
+        if (!this.Detail) {
           this.errors.DetailId = 'Vui lòng nhập mô tả';
           alert("Vui lòng nhập mô tả");
           return;
@@ -455,13 +455,13 @@
         formData.append('userId', userId);
 
         try {
-        // Gửi formData tới server
-        const response = await postNew(formData);
-        console.log('Response:', response.data); // Log phản hồi từ server
-        if (response.data) {
-          // Xử lý phản hồi thành công
-          alert('Bài đăng đã được gửi thành công!');
-          this.closeModal(); // Đóng modal nếu gửi thành công
+          // Gửi formData tới server
+          const response = await postNew(formData);
+          console.log('Response:', response.data); // Log phản hồi từ server
+          if (response.data) {
+            // Xử lý phản hồi thành công
+            alert('Bài đăng đã được gửi thành công!');
+            this.closeModal(); // Đóng modal nếu gửi thành công
           }
         } catch (error) {
           console.error('Error:', error);
@@ -470,7 +470,9 @@
         async function blobToFile(blobUrl, fileName) {
           const response = await fetch(blobUrl);
           const blob = await response.blob();
-          return new File([blob], fileName, { type: blob.type });
+          return new File([blob], fileName, {
+            type: blob.type
+          });
         }
       },
 

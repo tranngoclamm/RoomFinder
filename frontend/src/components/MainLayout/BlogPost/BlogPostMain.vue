@@ -4,7 +4,7 @@
     <div class="breadcrumb-list">
       <router-link to="/">RoomFinder</router-link>
       <span> > </span>
-      <a href="">Tin tức</a>
+      <router-link to="/blog-posts">Tin tức</router-link>
     </div>
     <div class="view-switcher__element"><input type="hidden" value="en">
       <input v-model="searchQuery" type="text" placeholder="Nhập nội dung tìm kiếm" class="form-control">
@@ -36,13 +36,13 @@
           <div class="sidebarbox-body">
             <ul class="box-lastnews">
               <li>
-                <router-link to="/blog-posts/post">Tin tức</router-link>
+                <router-link to="/blog-posts/news">Tin tức</router-link>
               </li>
               <li>
                 <router-link to="/blog-posts/owner-review">Review chủ trọ</router-link>
               </li>
               <li>
-                <router-link to="/blog-posts/share-experience">Chia sẻ kinh nghiệm</router-link>
+                <router-link to="/blog-posts/experience-sharing">Chia sẻ kinh nghiệm</router-link>
               </li>
             </ul>
           </div>

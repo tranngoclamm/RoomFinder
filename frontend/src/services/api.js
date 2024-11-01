@@ -93,3 +93,15 @@ export const uploadImagePostToCloudinary = (formData) => {
     }
   });
 };
+
+// Hàm lấy danh sách tin mới nhất với các tham số tìm kiếm và phân trang
+export const getLatestArticles = (query = "", page = 1, size = 10, category = "") => {
+  return axios.get(`${API_URL}/article`, {
+    params: {query, page, size,category}
+  });
+};
+
+// Hàm tạo mới tin
+export const createArticle = (data) => {
+  return axios.post(`${API_URL}/article`, data);
+};

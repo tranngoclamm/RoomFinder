@@ -11,9 +11,9 @@
                         <option value="apartment">Cho thuê căn hộ</option>
                         <option value="house">Cho thuê nhà</option>
                         <option value="find-roommate">Tìm người ở ghép</option>
-                        <option value="blog-post">Đăng tin</option>
+                        <option value="news">Đăng tin</option>
                         <option value="owner-review">Review chủ trọ</option>
-                        <option value="share-experience">Chia sẻ kinh nghiệm</option>
+                        <option value="experience-sharing">Chia sẻ kinh nghiệm</option>
                     </select>
                 </div>
     
@@ -67,10 +67,10 @@
     </div>
 </template>
 <script>
-    import {searchOwner, uploadImagePostToCloudinary} from '@/services/api'; // Import hàm gọi API từ api.js
+    import {searchOwner, uploadImagePostToCloudinary, createArticle} from '@/services/api'; // Import hàm gọi API từ api.js
     export default {
         name: 'BlogPostModal',
-        emits: ['closeModal'],
+        emits: ['closeModal'] ['closeAll'],
         props: {
             categoryId: {
                 type: String,
@@ -85,9 +85,10 @@
                 createdByUserId:'',
                 input_select: true,
                 postType: '',
-                ownerUserId: '',
+                ownerId: '',
                 ownerName: '',
                 ownerAvatar: '',
+                titlePost:'',
                 inputsearchHost: "",
                 hostResults: [],
             };
@@ -237,6 +238,7 @@
                 this.postType = type;
             },
             autoResize(textarea) {
+                this.titlePost = textarea.value;
                 // Đặt chiều cao về 'auto' để reset chiều cao và đo lại chính xác
                 textarea.style.height = 'auto';
 
@@ -288,7 +290,7 @@
             },
             onPostTypeChange() {
                 // Kiểm tra nếu không phải loại bài đăng cho phép
-                if (!['blog-post', 'owner-review', 'share-experience'].includes(this.postType)) {
+                if (!['news', 'owner-review', 'experience-sharing'].includes(this.postType)) {
                     this.$emit('closeModal', this.postType); // Emit sự kiện để ẩn modal
                 }
             },
@@ -303,6 +305,7 @@
                     try {
                         const response = await searchOwner(this.inputsearchHost);
                         this.hostResults = response.data.map(user => ({
+                            _id: user._id,
                             fullName: user.fullName,
                             phone: user.phone,
                             profilePicture: user.profilePicture,
@@ -318,20 +321,39 @@
             selectHost(owner) {
                 this.ownerName = owner.fullName;
                 this.ownerAvatar = owner.profilePicture;
-                this.ownerUserId = owner._id;
+                this.ownerId = owner._id;
+                console.log(owner._id)
                 this.input_select = false;
                 this.$refs.inputOwner.blur(); // Loại bỏ focus từ input
             },
-            savePost() {
+            async savePost() {
                 const content = window.tinymce.get('tinymce-editor').getContent();
                 const postData = {
-                    type: this.postType,
+                    category: this.postType,
+                    title: this.titlePost,
                     content: content,
-                    owner: this.ownerDetails
+                    landlord: this.ownerId,
+                    author: this.createdByUserId,
                 };
-                console.log("Nội dung bài viết: ", postData)
-            }
-        },
+                console.log("Nội dung bài viết: ", postData);
+
+                try {
+                    // Gửi bài viết lên backend và chờ phản hồi
+                    const response = await createArticle(postData);
+                    console.log("Kết quả từ backend:", response.data);
+
+                    // Xử lý phản hồi từ backend, ví dụ: hiển thị thông báo thành công
+                    if (response.data && response.status === 201) {
+                        alert("Bài viết đã được tạo thành công!");
+                        this.$emit('closeAll');
+                    } else {
+                        alert("Đã xảy ra lỗi khi tạo bài viết.");
+                    }
+                } catch (error) {
+                    console.error("Lỗi khi tạo bài viết:", error);
+                } 
+            },
+        
         watch: {
             categoryId(type) {
                 if (!type) {
@@ -341,5 +363,6 @@
                 }
             },
         },
+        }
     };
 </script>

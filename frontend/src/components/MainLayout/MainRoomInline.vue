@@ -1,12 +1,12 @@
-<!-- RoomCategory.vue -->
+<!-- MainRoomInline.vue -->
 <template>
     <div id="app">
         <HeaderRoom class="header--small" @search="handleSearch"  @scroll-to-title="scrollToPostTitle" />  
         <div class="room-category d-flex flex-column justify-content-center align-items-center">
               
             <!-- Danh sách phòng -->
-            <RoomInline v-if="$route.path !== '/blog-posts'" ref="roomInline" />
-            <BlogPostMain v-if="$route.path === '/blog-posts'" />
+            <RoomInline v-if="!$route.path.includes('/blog-posts')" ref="roomInline" />
+            <BlogPostMain v-if="$route.path.includes('/blog-posts')" />
             <!-- Chi tiết phòng -->
             <DetailRoom v-if="showModal" @close-modal="showModal = false" :apartment="apartment" />
         </div>
