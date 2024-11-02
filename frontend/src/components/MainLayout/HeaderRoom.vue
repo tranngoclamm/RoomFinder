@@ -311,11 +311,13 @@
       </header>
 
       <PostNewModal v-if="showPostNew" @close-modal="showPostNew = false" />
+      <ChatModal/>
 </template>
 
 <script>
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@/assets/css/app.css'; // Nhúng file CSS
+import ChatModal from './Chat/ChatModal.vue';
 import PostNewModal from './RoomComponents/PostNewModal.vue';
 import 'bootstrap/dist/js/bootstrap.bundle.js';
 import { searchLocation
@@ -326,6 +328,7 @@ export default {
   emits: ['openPostModal', 'search', 'scroll-to-title','scroll-to-latestPostTitle','scrollToLatestPostTitle'], // Khai báo sự kiện
   components: {
     PostNewModal,
+    ChatModal
   },
   data() {
     return {
@@ -438,9 +441,7 @@ export default {
     if (dropdownPrice && !dropdownPrice.contains(event.target)) {
       this.isDropdownOpenPrice = false;
       return;
-    } else{
-      console.log("true");
-    }
+    } 
     if (dropdownArea && !dropdownArea.contains(event.target)) {
       this.isDropdownOpenArea = false;
     }
@@ -500,11 +501,6 @@ export default {
         districtId: item.districtId
       };
       this.isDropdownAreaVisible = false; // Ẩn dropdown sau khi chọn
-      console.log(this.selectedRoomType);
-      console.log(this.selectedLocation);
-      console.log(this.price);
-      console.log(this.area);
-      
     },
 
     close() {

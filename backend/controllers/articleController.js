@@ -86,5 +86,66 @@ const getLatestArticles = async (req, res) => {
   }
 };
 
+const getArticleDetail = async (req, res) => {
+    const { slug } = req.params;
+    try {
+      const article = await Article.findOne({ slug })
+        .populate({
+            path: 'landlord',
+            select: '-password' // loại bỏ trường password khỏi landlord
+        })
+        .populate({
+            path: 'author',
+            select: '-password' // loại bỏ trường password khỏi author
+        });
+      
+      if (!article) {
+        return res.status(404).json({ message: 'Bài viết không tồn tại' });
+      }
+      res.json(article);
+    } catch (error) {
+      console.error('Error details:', error);
+      res.status(500).json({ message: 'Đã xảy ra lỗi khi lấy bài viết' });
+    }
+  };
 
-module.exports = { createArticle, getLatestArticles };
+  const articlesByUser = async (req, res) => {
+    const { userId } = req.params;
+    const { page = 1, pageSize = 10 } = req.query; // Lấy page và pageSize từ query, mặc định là 1 và 10
+
+    try {
+        // Lấy tổng số lượng bài viết của người dùng
+        const totalArticles = await Article.countDocuments({ author: userId });
+
+        // Lấy bài viết theo trang
+        const articles = await Article.find({ author: userId })
+            .populate({
+                path: 'landlord',
+                select: '-password' // loại bỏ trường password khỏi landlord
+            })
+            .populate({
+                path: 'author',
+                select: '-password' // loại bỏ trường password khỏi author
+            })
+            .sort({ createdAt: -1 }) // Sắp xếp bài viết theo ngày tạo (mới nhất trước)
+            .skip((page - 1) * pageSize) // Bỏ qua số lượng bài viết ở các trang trước đó
+            .limit(Number(pageSize)); // Giới hạn số lượng bài viết trả về
+
+        // Kiểm tra nếu không có bài viết nào
+        if (!articles.length) {
+            return res.status(404).json({ message: 'Bài viết không tồn tại' });
+        }
+
+        // Trả về dữ liệu bao gồm bài viết và tổng số lượng bài viết
+        res.json({
+            total: totalArticles,  // Tổng số lượng bài viết
+            articles,              // Danh sách bài viết
+        });
+    } catch (error) {
+        console.error('Error details:', error);
+        res.status(500).json({ message: 'Đã xảy ra lỗi khi lấy bài viết' });
+    }
+};
+
+
+module.exports = { createArticle, getLatestArticles, getArticleDetail,articlesByUser  };

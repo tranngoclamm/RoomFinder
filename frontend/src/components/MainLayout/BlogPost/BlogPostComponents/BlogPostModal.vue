@@ -203,10 +203,7 @@
                         formData.append('file', blobInfo.blob());
                         formData.append('upload_preset', 'post_upload_preset'); // Thay bằng upload preset của bạn
                         try {
-                            console.log("Blob Info:", blobInfo); // Kiểm tra toàn bộ đối tượng blobInfo
-                            console.log("Blob:", blobInfo.blob()); // Kiểm tra blob dữ liệu của ảnh
                             const response = await uploadImagePostToCloudinary(formData);
-                            console.log(response.data)
                             if (response.data.secure_url) {
                                 return response.data.secure_url
                             } else {
@@ -322,7 +319,6 @@
                 this.ownerName = owner.fullName;
                 this.ownerAvatar = owner.profilePicture;
                 this.ownerId = owner._id;
-                console.log(owner._id)
                 this.input_select = false;
                 this.$refs.inputOwner.blur(); // Loại bỏ focus từ input
             },
@@ -335,13 +331,10 @@
                     landlord: this.ownerId,
                     author: this.createdByUserId,
                 };
-                console.log("Nội dung bài viết: ", postData);
 
                 try {
                     // Gửi bài viết lên backend và chờ phản hồi
                     const response = await createArticle(postData);
-                    console.log("Kết quả từ backend:", response.data);
-
                     // Xử lý phản hồi từ backend, ví dụ: hiển thị thông báo thành công
                     if (response.data && response.status === 201) {
                         alert("Bài viết đã được tạo thành công!");

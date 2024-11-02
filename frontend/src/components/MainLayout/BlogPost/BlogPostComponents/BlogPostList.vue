@@ -1,22 +1,24 @@
 <template>
   <div class="col-8">
+  <div>{{this.isProfileModal}}</div>
+
     <div class="apartment__inline__card blog__inline__card" v-for="item in blogPosts" :key="item._id">
-      <router-link :to="{ path: '/blog-posts/' + item.slug }" class="row blog-item">
-        <div class="col-md-4 col-6 pr-tablet-0">
-          <a>
+      <div class="row blog-item">
+        <div class="col-md-4 col-6 pr-tablet-0" >
+          <router-link :to="`/blog-posts/${item.slug}`" @click="openDetailPost(item.slug)">
             <img
               :src="item.image || 'https://cdn.dribbble.com/users/263641/screenshots/4517916/404_not_found_3_dribbble.jpg'"
               @error="this.src='https://cdn.dribbble.com/users/263641/screenshots/4517916/404_not_found_3_dribbble.jpg'"
               alt="" class="blog__inline__card__img" />
-          </a>
+          </router-link>
         </div>
         <div class="col-md-8 col-6 pl-0">
           <div class="apartment__inline__card__container blog__inline__card__container">
             <div class="apartment__inline__card__container__header">
               <div class="row">
-                <div class="col-11 apartment__inline__card__container__header-street-wrap">
+                <router-link :to="`/blog-posts/${item.slug}`" class="col-11 apartment__inline__card__container__header-street-wrap" @click="openDetailPost(item.slug)" >
                   <small>{{ item.title }}</small>
-                </div>
+                </router-link>
                 <div class="col-1 apartment__inline__card__container__header-price-wrap">
                   <div @click.prevent="toggleFavorite(item)"
                     class="apartment__list__card__container__facilities__balcony d-flex align-items-center">
@@ -37,7 +39,7 @@
                   <span class="time">{{ item.createdAt }}</span> <!-- Sử dụng phương thức formatDate -->
                 </div>
                 <div class="col-6 d-flex align-items-center">
-                  <div class="apartment__list__card__container__facilities__bedroom d-flex align-items-center" @click.prevent="isProfileModal = true">
+                  <div class="apartment__list__card__container__facilities__bedroom d-flex align-items-center" @click.stop="openProfileModal(item.author)">
                     <img :src="item.author ? item.author.profilePicture : require('@/assets/images/default-user.svg')" @error="onError"
                       alt="" class="icon-user text-black">
                     <span>
@@ -49,11 +51,10 @@
             </div>
           </div>
         </div>
-      </router-link>
+      </div>
     </div>
   </div>
-  
-  <ProfileModal v-if="isProfileModal" @closeModal="isProfileModal=false"/>
+  <ProfileModal v-if="isProfileModal" @closeModal="isProfileModal=false" :author="this.selectedUser"/>
 </template>
 
 <script>
@@ -63,9 +64,9 @@
   import {updateFavorites, addFavorite, removeFavorite, getLatestArticles} from '@/services/api'; // Import hàm gọi API từ api.js
   import ProfileModal from '../../ProfileModal.vue';
 
-
   export default {
     name: 'BlogPostList',
+    emits: ['openDetailPost'],
     components: {
       ProfileModal,
     },
@@ -75,6 +76,7 @@
         isFavorite: false,
         favorites: [], // Danh sách yêu thích của người dùng
         searchQuery: '',
+        selectedUser:{},
         loading: false, // Khai báo biến loading
         blogPosts: [],
         category: '',
@@ -86,8 +88,6 @@
         const response = await getLatestArticles("", 1, 7, this.category);  // Gọi API lấy tin mới nhất
         if (response && response.data) {
           let postData = response.data
-
-          // let data = Object.values(response.data)[0]; // Chuyển object sang mảng
           postData.data.forEach(newsItem => {
           newsItem.createdAt = formatDate(newsItem.createdAt); // chuyển định dạng ngày
           // Sử dụng biểu thức chính quy để tìm URL hình ảnh trong content
@@ -126,6 +126,13 @@
       } catch (error) {
         console.error("Lỗi lấy tin mới nhất:", error);
       }
+     },
+     openDetailPost(slug){
+      this.$emit('openDetailPost', slug);
+     },
+     openProfileModal(user){
+      this.selectedUser=user;
+      this.isProfileModal = true;
      },
       onError(event) {
         event.target.src = require('@/assets/images/avatar-mac-dinh-1.jpg');
@@ -232,7 +239,8 @@
     '$route.params.category': function(newCategory) {
       this.category = newCategory; // Cập nhật category
       this.fetchLatestArticles(); // Gọi lại hàm khi category thay đổi
-    }
-  },
+      },
+    },
+  
   };
 </script>

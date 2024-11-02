@@ -56,10 +56,15 @@ const routes = [
     component: MainRoomInline,
   },
   {
-    path: '/blog-posts/:category',
+    path: '/blog-posts/category/:category',
     name: 'BlogPostCategory',
     component: MainRoomInline,
-  }
+  },
+  {
+    path: '/blog-posts/:slug',
+    name: 'BlogPostDetail',
+    component: MainRoomInline,
+  },
 ]
 
 const router = createRouter({

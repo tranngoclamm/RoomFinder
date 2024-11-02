@@ -94,10 +94,25 @@ export const uploadImagePostToCloudinary = (formData) => {
   });
 };
 
+// Hàm lấy chi tiết tin
+export const getArticleDetail = (slug) => {
+  return axios.get(`${API_URL}/blog-posts/${slug}`);
+};
+
 // Hàm lấy danh sách tin mới nhất với các tham số tìm kiếm và phân trang
 export const getLatestArticles = (query = "", page = 1, size = 10, category = "") => {
   return axios.get(`${API_URL}/article`, {
     params: {query, page, size,category}
+  });
+};
+
+// Hàm lấy tin theo user
+export const getArticleByUser = (userId, page = 1, pageSize = 10) => {
+  return axios.get(`${API_URL}/article/user/${userId}`, {
+    params: {
+      page,      // Tham số page
+      pageSize   // Tham số pageSize
+    }
   });
 };
 

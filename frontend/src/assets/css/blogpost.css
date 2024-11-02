@@ -36,6 +36,15 @@
     padding-right: 0;
     width: 384px;
 }
+.blog-list-wrapper .icon-avatar{
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    transform: translateY(-1px);
+    margin-left: 6px;
+    margin-right: 4px;
+}
 .view-switcher .more {
     color: #3C70D1;
     text-decoration: none;

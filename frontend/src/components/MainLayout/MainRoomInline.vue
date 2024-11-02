@@ -6,7 +6,7 @@
               
             <!-- Danh sách phòng -->
             <RoomInline v-if="!$route.path.includes('/blog-posts')" ref="roomInline" />
-            <BlogPostMain v-if="$route.path.includes('/blog-posts')" />
+            <BlogPostMain v-if="$route.path.includes('/blog-posts')" :slug="$route.params.slug || null" />
             <!-- Chi tiết phòng -->
             <DetailRoom v-if="showModal" @close-modal="showModal = false" :apartment="apartment" />
         </div>
@@ -62,23 +62,17 @@
         const user = JSON.parse(userString);
         // Lấy ID
         const userId = user._id;
-            console.log(userId);
             const searchData = {
               searchString: this.searchQuery,
               userId: userId,
               timestamp: new Date().toISOString() // Current timestamp
             };
             try {
-              console.log(searchData.query);
               if (!searchData.searchString || typeof searchData.searchString !== 'string') {
               alert('Vui lòng nhập nội dung tìm kiếm hợp lệ.');
               return; // Stop execution if the search string is not valid
             }
-              const response = await search(searchData);
-
-              if (response && response.data) {
-                console.log('Search Results:', searchData);
-              }
+              await search(searchData);
             } catch (error) {
               if (error.response && error.response.data.message) {
                 alert(error.response.data.message);
