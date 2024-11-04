@@ -120,3 +120,34 @@ export const getArticleByUser = (userId, page = 1, pageSize = 10) => {
 export const createArticle = (data) => {
   return axios.post(`${API_URL}/article`, data);
 };
+
+
+// Hàm tạo mới conversations
+export const createConversation = (data) => {
+  return axios.post(`${API_URL}/conversations`, data);
+};
+
+// Hàm Lấy tất cả cuộc hội thoại của người dùng
+export const getUserConversations = (userId, page = 1, pageSize = 10) => {
+  return axios.get(`${API_URL}/conversations/${userId}`, {
+    params: {
+      page,      // Tham số page
+      pageSize   // Tham số pageSize
+    }
+  });
+};
+
+// Hàm gửi tin nhắn
+export const sendMessage = (data) => {
+  return axios.post(`${API_URL}/messages`, data);
+};
+
+// Hàm lấy tất cả tin nhắn trong một cuộc hội thoại
+export const getMessages = (conversationId , page = 1, pageSize = 10) => {
+  return axios.get(`${API_URL}/messages/${conversationId }`, {
+    params: {
+      page,      // Tham số page
+      pageSize   // Tham số pageSize
+    }
+  });
+};

@@ -1,34 +1,51 @@
 // src/store/index.js
-
 import { createStore } from 'vuex';
 
-export default createStore({
+const store = createStore({
   state: {
-    isProfileModal: false,    // Trạng thái mở modal
-    selectedUserProfile: null,     // Dữ liệu người dùng được chọn
+    userProfile: null,  // Dữ liệu người dùng sẽ được lưu ở đây
+    chatUser: null,      // Dữ liệu người dùng để chat sẽ được lưu ở đây
+    isMessageChat: false,
+    isMessageDetail: false,
+    isConversation: false
   },
   mutations: {
-    openProfileModal(state, user) {
-      console.log("Mở modal với user:", user); // Kiểm tra thông tin user
-      state.isProfileModal = true;
-      state.selectedUser = user;
+    // Đặt thông tin người dùng hiện tại
+    setUserProfile(state, profile) {
+      state.userProfile = profile;
     },
-    closeProfileModal(state) {
-        console.log("Đóng modal"); // Kiểm tra khi đóng modal
-      state.isProfileModal = false;
-      state.selectedUser = null;
-    }
+    // Đặt thông tin người dùng cần chat
+    setChatUser(state, chatUser) {
+      state.chatUser = chatUser;
+    },
+    setMessageDetailState(state, isMessageDetail) {
+      state.isMessageDetail = isMessageDetail;
+    },
+    setMessageChatState(state, isMessageChat) {
+      state.isMessageChat = isMessageChat;
+    },
+    setConversationState(state, isConversation) {
+      state.isConversation = isConversation;
+    },
   },
   actions: {
-    openProfileModal({ commit }, user) {
-      commit('openProfileModal', user);
+    // Gọi khi người dùng click vào icon chat
+    openChat({ commit }, chatUser) {
+      commit('setChatUser', chatUser);
     },
-    closeProfileModal({ commit }) {
-      commit('closeProfileModal');
+    openMessageDetail({ commit}){
+      commit('setMessageChatState', true),
+      commit('setMessageDetailState', true),
+      commit('setConversationState', false)
     }
   },
   getters: {
-    isProfileModal: state => state.isProfileModal,
-    selectedUser: state => state.selectedUser
+    getUserProfile: (state) => state.userProfile,
+    getChatUser: (state) => state.chatUser,
+    getMessageChatState: (state) => state.isMessageChat,
+    getMessageDetailState: (state) => state.isMessageDetail,
+    getConversationState: (state) => state.isConversation,
   }
 });
+
+export default store;

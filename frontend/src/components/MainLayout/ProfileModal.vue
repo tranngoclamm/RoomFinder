@@ -16,7 +16,7 @@
                                 <h4 class="mt-0 mb-0 text-white">{{author.fullName}}</h4>
                                 <p class="small text-white"><i class="fas fa-map-marker-alt mr-2"></i>New York</p>
                             </div>
-                            <div @click="$isMessageChat.value=true" class="chat-icon-wrapper cursor-pointer" v-if="author._id != userId">
+                            <div @click="sentDataAndOpenChat(author)" class="chat-icon-wrapper cursor-pointer" v-if="author._id != userId">
                                 <i class="fa-brands fa-rocketchat ml-3" style="color: #ffffff;"></i>
                             </div>
                         </div>
@@ -74,6 +74,7 @@
     import '@/assets/css/profile.css';
     import { formatDate } from '@/utils/dateUtils'; 
     import {getArticleByUser} from '@/services/api'; // Import hàm gọi API từ api.js
+    import { mapMutations, mapActions } from 'vuex';
 
     export default {
         name: 'ProfileModal',
@@ -98,8 +99,14 @@
             },
         },
         methods: {
+            ...mapMutations(['setChatUser']),
+            ...mapActions(['openMessageDetail']),
             toggleShowAll() {
                 this.showAll = !this.showAll;
+            },
+            sentDataAndOpenChat(user){
+                this.setChatUser(user)
+                this.openMessageDetail()
             },
             closeModal() {
                 this.$emit('closeModal'); // Phát ra sự kiện 'closeModal' để cha có thể nghe và xử lý
@@ -124,6 +131,7 @@
                             }
                         });
                         this.articles = postData; 
+                        console.log(this.articles)
                     }
                 } catch (error) {
                     console.error('Error fetching article detail:', error);

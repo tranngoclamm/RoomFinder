@@ -617,7 +617,7 @@ export default {
 
   mounted() {
     this.isHomePage = this.$route.path === '/';
-  document.addEventListener('click', this.handleClickOutside);
+    document.addEventListener('click', this.handleClickOutside);
    // Lấy thông tin user từ localStorage
    const user = JSON.parse(localStorage.getItem('user'));
     // Tách chuỗi fullName và lấy từ cuối cùng
