@@ -14,9 +14,11 @@
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
     "core-js": "^3.8.3",
+    "dayjs": "^1.11.13",
     "multer": "^1.4.5-lts.1",
     "vue": "^3.2.13",
-    "vue-router": "^4.4.5"
+    "vue-router": "^4.4.5",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

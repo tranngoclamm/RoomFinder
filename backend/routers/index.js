@@ -8,6 +8,8 @@ const { getFavorites, updateFavorites, addFavorite, removeFavorite} = require('.
 const { analyzeSearchHistory } = require('../controllers/searchHistory'); 
 const { searchLocation, searchRoom, searchHost } = require('../controllers/searchController');
 const { createArticle, getLatestArticles, getArticleDetail, articlesByUser } = require('../controllers/articleController');
+const { createConversation, getUserConversations } = require('../controllers/conversationController');
+const { sendMessage, getMessages } = require('../controllers/messageController');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -51,8 +53,13 @@ router.get('/analyze-search-history', analyzeSearchHistory);
 router.get('/article', getLatestArticles ); // Lấy danh sách tin mới nhất, có tìm kiếm, lọc theo loại và phân trang
 router.get('/article/user/:userId', articlesByUser );  // Lấy danh sách tin theo người dùng
 router.get('/blog-posts/:slug', getArticleDetail ); // Lấy chi tiết tin
-
 router.post('/article', createArticle); // Đăng tin 
 
+// Conversations
+router.get('/conversations/:userId', getUserConversations); // Lấy tất cả cuộc hội thoại của người dùng
+router.post('/conversations', createConversation); // Tạo cuộc hội thoại mới
 
+// Message
+router.get('/messages/:conversationId', getMessages); // Lấy tất cả tin nhắn trong cuộc hội thoại
+router.post('/messages', sendMessage); // Gửi tin nhắn
 module.exports = router;
