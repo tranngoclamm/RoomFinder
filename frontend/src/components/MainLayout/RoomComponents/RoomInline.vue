@@ -114,6 +114,10 @@
   import 'bootstrap/dist/css/bootstrap.min.css';
   import DetailRoom from './DetailRoom.vue';
   import {
+    mapGetters
+  } from 'vuex';
+
+  import {
     getPosts,
     getFavorites,
     updateFavorites,
@@ -125,6 +129,7 @@
     name: 'RoomInline',
     data() {
       return {
+        user: {},
         type: '',
         roomType: '',
         isFavorite: false,
@@ -139,6 +144,9 @@
         apartments: [], // Khai báo biến apartments
         loading: false // Khai báo biến loading
       };
+    },
+    computed: {
+      ...mapGetters(['getUserProfile']),
     },
     methods: {
       formatDate(dateString) {
@@ -181,23 +189,31 @@
           this.roomType = 'favorites';
           this.type = 'Danh sách yêu thích';
         }
-        const user = JSON.parse(localStorage.getItem('user'));
-        const query = {
+        let query = {
           type: this.$route.meta.type || 'default', // Lấy loại phòng từ meta
           page: this.$route.query.page || 1, // Lấy số trang từ query params (mặc định là 1)
           search: this.searchQuery || '',
-          userId: user._id
         };
         try {
-          if (this.roomType == 'favorites') {
-            const response = await getFavorites(query.userId); // Gọi API với query
-            this.items = response.data.results;
+          if (this.roomType === 'favorites') {
+            const user = this.getUserProfile; // Lấy dữ liệu người dùng từ getter
 
-            // Lấy tất cả các _id trong mảng favorites
-            const favoriteIds = this.items.map(item => item._id);
+            // Kiểm tra nếu `user` tồn tại và có `_id`
+            if (user && user._id) {
+              // Gán `userId` vào `query` khi người dùng đã đăng nhập
+              query.userId = user._id;
+              const response = await getFavorites(query.userId); // Gọi API với query
+              this.items = response.data.results;
 
-            // Nếu chỉ cần lưu danh sách _id vào this.favorites, gán trực tiếp
-            this.favorites = favoriteIds;
+              // Lấy tất cả các `_id` trong mảng favorites
+              const favoriteIds = this.items.map(item => item._id);
+
+              // Gán trực tiếp danh sách `_id` vào `this.favorites`
+              this.favorites = favoriteIds;
+            } else {
+              // Nếu `user` không tồn tại hoặc thiếu `_id`, chuyển hướng người dùng đến trang đăng nhập
+              this.$router.push('/login');
+            }
           } else {
             const response = await getPosts(query); // Gọi API với query
             this.items = response.data.posts;
@@ -207,6 +223,7 @@
         } finally {
           this.loading = false;
         }
+
       },
 
       async updateFavorites() {
@@ -309,8 +326,9 @@
       this.fetchData(); // Gọi hàm fetchData khi component được tạo
     },
     mounted() {
-      const user = JSON.parse(localStorage.getItem('user'));
-      if (user && user._id) {
+      this.user = this.getUserProfile;
+      // const user = JSON.parse(localStorage.getItem('user'));
+      if (this.user && this.user._id) {
         this.favoriteRooms = ['exampleRoomId1', 'exampleRoomId2']; // Placeholder cho danh sách yêu thích
       }
     },

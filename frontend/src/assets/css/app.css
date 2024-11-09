@@ -9043,7 +9043,7 @@ input[type="button"].btn-block {
 }
 .dropdown-menu[data-bs-popper] {
   top: 100%;
-  left: -70px;
+  left: -100px;
   margin-top: 14px;
 }
 .navbar-dark .navbar-text a:hover,

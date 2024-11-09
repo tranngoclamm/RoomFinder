@@ -137,6 +137,12 @@ export const getUserConversations = (userId, page = 1, pageSize = 10) => {
   });
 };
 
+// Hàm lấy tất cả tin nhắn trong một cuộc hội thoại
+export const getUserProfileById = (userId) => {
+  return axios.get(`${API_URL}/user/${userId }`, {
+  });
+};
+
 // Hàm gửi tin nhắn
 export const sendMessage = (data) => {
   return axios.post(`${API_URL}/messages`, data);
@@ -148,6 +154,32 @@ export const getMessages = (conversationId , page = 1, pageSize = 10) => {
     params: {
       page,      // Tham số page
       pageSize   // Tham số pageSize
+    }
+  });
+};
+
+// Hàm đánh dấu đã đọc
+export const resetUnreadMessages = (conversationId, userId) => {
+  return axios.post(`${API_URL}/resetUnreadMessages`, {
+    conversationId,
+    userId
+  });
+};
+
+// Hàm tạo giao dịch thanh toán 
+export const createPayment = (id, amount, buyUser) => {
+  return axios.post(`${API_URL}/payment/create`, {
+    id,
+    amount, 
+    buyUser
+  });
+};
+
+// 
+export const vnpayReturn = (vnp_ResponseCode , vnp_TxnRef, vnp_SecureHash) => {
+  return axios.get(`${API_URL}/vnpay_return`, {
+    params: {
+      vnp_ResponseCode , vnp_TxnRef, vnp_SecureHash
     }
   });
 };

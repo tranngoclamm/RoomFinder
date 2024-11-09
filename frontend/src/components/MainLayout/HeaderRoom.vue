@@ -87,13 +87,18 @@
                     <span class="navbar-text pe-2">
                       <div class="calltoaction ms-1">
                         <div class="login-nav">
-                          <div class="position-relative btn-login"  @click="showPostNew = true">
+                          <div class="position-relative btn-login"  @click="openPostNew">
                             <img src="@/assets/images/ic-edit-white.svg" alt="" class="ic-edit-white icon me-2">
                             <a class="ps-4 btn__post-new">Đăng tin</a>
                           </div>
     
-                           <div class="avatar ms-2 d-flex align-items-center jutify-content-center">
-    
+                          <div v-if="!lastName" class="ms-2 d-flex align-items-center font-bold jutify-content-center">
+                            <router-link class="nav-link" to="/login">
+                              <span>Đăng nhập</span>
+                          </router-link>
+                          </div>
+                      
+                           <div v-if="lastName" class="avatar ms-2 d-flex align-items-center jutify-content-center">
                              <img class="dropdown-toggle hover" role="button" data-bs-toggle="dropdown" aria-expanded="false" src="@/assets/images/default-user.svg" alt="avatar">
     
                              <div class="dropdown ms-2">
@@ -320,6 +325,7 @@ import '@/assets/css/app.css'; // Nhúng file CSS
 import ChatModal from './Chat/ChatModal.vue';
 import PostNewModal from './RoomComponents/PostNewModal.vue';
 import 'bootstrap/dist/js/bootstrap.bundle.js';
+import { mapGetters } from 'vuex';
 import { searchLocation
  } from '@/services/api'; // Import hàm gọi API từ api.js
 
@@ -332,6 +338,7 @@ export default {
   },
   data() {
     return {
+      user: {},
       lastName: '',
       selectedRoomType: 'NHÀ Ở', // Loại phòng được chọn hiện tại
       roomTypes: ['PHÒNG TRỌ', 'CĂN HỘ', 'TÌM NGƯỜI Ở GHÉP','DANH SÁCH YÊU THÍCH'], // Các tùy chọn còn lại
@@ -374,6 +381,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(['getUserProfile']), 
   priceDisplay() {
     if (this.price.from === 0 && this.price.to === 30) {
       return "Chọn giá";
@@ -390,10 +398,24 @@ export default {
   }
 },
   methods: {
+    checkLoginAndRedirect() {
+      if (!this.user  || !this.user._id) {
+        // Chuyển hướng đến trang đăng nhập nếu người dùng chưa đăng nhập
+        this.$router.push('/login');
+        return false;
+      }
+      return true;
+    },
     logout() {
       // Xóa thông tin người dùng khỏi localStorage và chuyển hướng về trang đăng nhập
       localStorage.removeItem('user');
       this.$router.push('/login');
+    },
+    openPostNew() {
+      // Chỉ mở "Đăng tin" nếu người dùng đã đăng nhập
+      if (this.checkLoginAndRedirect()) {
+        this.showPostNew = true;
+      }
     },
     navigateToPostTitle(name){
       if(name == 'homepage'){
@@ -618,16 +640,15 @@ export default {
   mounted() {
     this.isHomePage = this.$route.path === '/';
     document.addEventListener('click', this.handleClickOutside);
-   // Lấy thông tin user từ localStorage
-   const user = JSON.parse(localStorage.getItem('user'));
-    // Tách chuỗi fullName và lấy từ cuối cùng
-    if (user && user.fullName) {
-      const nameParts = user.fullName.trim().split(' ');
-      this.lastName = nameParts[nameParts.length - 1];
-    }
-    },
-    beforeUnmount() {
-      document.removeEventListener('click', this.handleClickOutside);
-    }
+   this.user = this.getUserProfile;    
+  if (this.user && this.user.fullName) {
+    const nameParts = this.user.fullName.trim().split(' ');
+    this.lastName = nameParts[nameParts.length - 1];
+  }
+  },
+
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleClickOutside);
+  }
 };
 </script>

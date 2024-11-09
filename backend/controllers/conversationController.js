@@ -1,9 +1,9 @@
 const Conversation = require('../models/conversationModel');
+const User = require('../models/userModel');
 
 // Tạo cuộc hội thoại mới
 const createConversation = async (req, res) => {
   const { participants } = req.body;
-  
   try {
     // Kiểm tra nếu cuộc hội thoại giữa hai người dùng đã tồn tại
     let conversation = await Conversation.findOne({
@@ -47,4 +47,46 @@ const getUserConversations = async (req, res) => {
     }
   };
   
-module.exports = { createConversation, getUserConversations  };
+// Hàm lấy thông tin người dùng 
+const getUserProfileById = async (req, res) => {
+  const userId = req.params.userId; // Lấy userId từ tham số của yêu cầu (req.params)
+
+  try {
+    const user = await User.findById(userId).select('-password -favorites -username'); 
+
+    if (!user) {
+      return res.status(404).json({ message: 'User không tồn tại' });
+    }
+
+    res.status(200).json(user); // Trả về dữ liệu người dùng
+  } catch (error) {
+    console.error('Lỗi khi lấy thông tin người dùng:', error);
+    res.status(500).json({ message: 'Đã xảy ra lỗi khi lấy thông tin người dùng' });
+  }
+};
+
+// Đặt lại tin nhắn chưa đọc của người dùng về 0
+const resetUnreadMessages = async (req, res) => {
+  const { conversationId, userId } = req.body;
+
+  try {
+    // Tìm cuộc hội thoại theo conversationId
+    let conversation = await Conversation.findById(conversationId);
+
+    if (!conversation) {
+      return res.status(404).json({ error: 'Conversation not found' });
+    }
+
+    // Đặt lại số lượng tin nhắn chưa đọc của userId về 0 trong trường unreadMessages
+    conversation.unreadMessages.set(userId, 0);
+
+    // Lưu thay đổi vào database
+    await conversation.save();
+
+    res.status(200).json({ message: 'Unread messages reset to 0', conversation });
+  } catch (error) {
+    res.status(500).json({ error: 'Error resetting unread messages' });
+  }
+};
+
+module.exports = { createConversation, getUserConversations, getUserProfileById, resetUnreadMessages  };

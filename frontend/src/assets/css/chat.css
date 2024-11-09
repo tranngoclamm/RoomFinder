@@ -306,11 +306,16 @@
 .chat-modal .text-muted {
     color: #4f4f4fbf !important;
 }
-.chat-modal-wrapper .icon-chat {
+.chat-modal-wrapper .icon_message-wrapper {
     position: fixed;
     bottom: 80px;
     right: 48px;
     z-index: 1001;
+}
+.chat-modal-wrapper .icon_message-wrapper .badge.badge-pill {
+    position: absolute;
+    right: 1px;
+    bottom: -1px;
 }
 .chat-modal .fa-angles-left{
     transform: translateX(-6px);
