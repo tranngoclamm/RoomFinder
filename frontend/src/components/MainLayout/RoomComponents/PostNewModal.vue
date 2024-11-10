@@ -196,6 +196,9 @@
   import '@/assets/css/app.css';
   import BlogPostModal from '../BlogPost/BlogPostComponents/BlogPostModal.vue';
   import {
+    mapGetters
+  } from 'vuex';
+  import {
     postNew
   } from '@/services/api'; // Import hàm gọi API từ api.js
 
@@ -205,6 +208,9 @@
     emits: ['close-modal'],
     components: {
       BlogPostModal
+    },
+    computed: {
+      ...mapGetters(['getUserProfile']),
     },
     data() {
       return {
@@ -401,6 +407,13 @@
           return;
         }
 
+        // Validate Area
+        if (!this.Area || isNaN(this.Area)) {
+          this.errors.Area = 'Vui lòng nhập diện tích hợp lệ';
+          alert("Vui lòng nhập nhập diện tích hợp lệ");
+          return;
+        }
+
         // Validate ContactName
         if (!this.ContactName) {
           this.errors.ContactName = 'Vui lòng nhập tên liên hệ';
@@ -409,7 +422,13 @@
         }
 
         // Validate ContactMobile
-        if (!this.ContactMobile) {
+        if (!this.ContactMobile || isNaN(this.ContactMobile)) {
+          this.errors.ContactMobile = 'Vui lòng nhập số điện thoại hợp lệ';
+          alert("Vui lòng nhập số điện thoại hợp lệ");
+          return;
+        }
+        // Validate ContactMobile
+        if (!this.ContactPhone || isNaN(this.ContactPhone)) {
           this.errors.ContactMobile = 'Vui lòng nhập số điện thoại hợp lệ';
           alert("Vui lòng nhập số điện thoại hợp lệ");
           return;
@@ -425,9 +444,9 @@
         if (!this.validateForm()) {
           return;
         }
-        const user = JSON.parse(localStorage.getItem('user')); // Get user data from localStorage
+        const user = this.getUserProfile; // Get user data from localStorage
         const userId = user ? user._id : null; // Get user ID
-
+        console.log(userId)
         const formData = new FormData();
 
         // Đưa ảnh gốc vào formData
@@ -493,7 +512,7 @@
     mounted() {
       this.fetchProvinces();
       // Lấy thông tin user từ localStorage
-      const user = JSON.parse(localStorage.getItem('user'));
+      const user = this.getUserProfile
 
       if (user && user.fullName) {
         // Gán fullName vào ContactName

@@ -47,8 +47,8 @@
                     <h6 data-v-524c0c0c="">Mô tả</h6>
                     <p data-v-524c0c0c="" style="min-height:100px">{{ apartment.details }}</p> <!-- Sử dụng giá trị động từ apartment -->
                   </div>
-                  <div data-v-524c0c0c="" class="info__details__list d-flex align-items-center position-relative">
-                    <h6 data-v-524c0c0c="" class="m-0">Liên hệ: {{ apartment.contactName }}</h6> <!-- Sử dụng giá trị động từ apartment -->
+                  <div v-if="(apartment.userId?._id || '') !== (this.getUserProfile?._id || '')" data-v-524c0c0c="" class="info__details__list d-flex align-items-center position-relative">
+                    <h6 data-v-524c0c0c="" @click="sentDataAndOpenChat(apartment.userId)" class="m-0">Liên hệ: {{ apartment.contactName }}</h6> <!-- Sử dụng giá trị động từ apartment -->
                     <p class="m-0 ps-2"> (+{{ apartment.contactMobile }})</p> <!-- Sử dụng giá trị động từ apartment -->
                     <div data-v-524c0c0c="" style="right: -8%" class="position-absolute top-50 translate-middle hover list-inline info__details__social d-flex align-items-center">
                       <a data-v-524c0c0c="" class="list-inline-item" @click.prevent="redirectToVnpay">
@@ -68,7 +68,7 @@
   <script>
   import ImageCarousel from './ImageCarousel.vue'; // Import component carousel
   import {
-    mapGetters,
+    mapGetters,mapActions, mapMutations
   } from 'vuex';
   import {
     createPayment
@@ -85,6 +85,12 @@
       ...mapGetters(['getUserProfile']),
     },
     methods: {
+      ...mapMutations(['setChatUser']),
+      ...mapActions(['openMessageDetail']),
+      sentDataAndOpenChat(user){
+                this.setChatUser(user)
+                this.openMessageDetail()
+      },
       close() {
         this.$emit('close-modal');
       },

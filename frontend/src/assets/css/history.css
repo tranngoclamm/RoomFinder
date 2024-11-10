@@ -1,0 +1,33 @@
+.user-wrapper .table thead th {
+    vertical-align: bottom;
+    /* border-bottom: 2px solid #dee2e6; */
+    border-top: none;
+    border-bottom: 1px solid #dee2e6
+}
+.user-wrapper .card.bootstrap-table{
+    border-bottom: none;
+    height: fit-content;
+}
+.user-wrapper .card-body{
+    height: fit-content;
+}
+.user-wrapper .image-modify{
+    height: 48px;
+}
+.user-wrapper #bootstrap-table{
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+.user-wrapper input.form-control{
+    transform: translateY(5px);
+}
+.search-wrapper .search-icon {
+    font-size: 23px;
+    padding: 8px;
+    border-radius: 4px;
+    width: 39px;
+    height: 39px;
+    margin-left: 7px;
+    color: #CBCBCB;
+    line-height: 0;
+}

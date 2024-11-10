@@ -183,3 +183,13 @@ export const vnpayReturn = (vnp_ResponseCode , vnp_TxnRef, vnp_SecureHash) => {
     }
   });
 };
+
+// Hàm lấy lịch sử giao dịch của người dùng
+export const getHistories = (userId , page = 1, pageSize = 10) => {
+  return axios.get(`${API_URL}/history/${userId }`, {
+    params: {
+      page,      // Tham số page
+      pageSize   // Tham số pageSize
+    }
+  });
+};
