@@ -51,7 +51,7 @@
                     <h6 data-v-524c0c0c="" class="m-0">Liên hệ: {{ apartment.contactName }}</h6> <!-- Sử dụng giá trị động từ apartment -->
                     <p class="m-0 ps-2"> (+{{ apartment.contactMobile }})</p> <!-- Sử dụng giá trị động từ apartment -->
                     <div data-v-524c0c0c="" style="right: -8%" class="position-absolute top-50 translate-middle hover list-inline info__details__social d-flex align-items-center">
-                      <a data-v-524c0c0c="" class="list-inline-item">
+                      <a data-v-524c0c0c="" class="list-inline-item" @click.prevent="redirectToVnpay">
                         <p data-v-524c0c0c="" href="https://www.facebook.com/rentroom.md/" target="_blank">Đặt cọc</p>
                       </a>
                     </div>
@@ -67,7 +67,13 @@
   
   <script>
   import ImageCarousel from './ImageCarousel.vue'; // Import component carousel
-  
+  import {
+    mapGetters,
+  } from 'vuex';
+  import {
+    createPayment
+  } from '@/services/api'; // Import hàm gọi API từ api.js
+
   export default {
     props: {
       apartment: {
@@ -75,10 +81,28 @@
         required: true,
       },
     },
+    computed: {
+      ...mapGetters(['getUserProfile']),
+    },
     methods: {
       close() {
         this.$emit('close-modal');
       },
+      async redirectToVnpay() {
+        try {
+            const response = await createPayment(this.apartment._id, this.apartment.price, this.getUserProfile._id); 
+            console.log(response.data)
+            if (response.data) {
+              // Chuyển hướng đến VNPAY với URL thanh toán
+              // window.location.href = response.data;
+              window.open(response.data, '_blank');
+
+            }
+          } catch (error) {
+            console.error('Lỗi khi tạo giao dịch:', error);
+
+          }
+      }
     },
     components: {
       ImageCarousel, // Đăng ký component

@@ -5,7 +5,6 @@ const Conversation = require('../models/conversationModel');
 const sendMessage = async (req, res) => {
   try {
     const { conversationId, sender, text, attachment } = req.body;
-
     // Tạo tin nhắn mới
     const message = await Message.create({
       conversationId,

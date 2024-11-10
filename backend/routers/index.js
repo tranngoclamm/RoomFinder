@@ -70,5 +70,4 @@ router.post('/messages', sendMessage); // Gửi tin nhắn
 router.post('/payment/create', createPayment);  // Tạo giao dịch thanh toán
 router.get('/vnpay_return', vnpayReturn);  // Xử lý kết quả thanh toán từ VNPAY
 
-
 module.exports = router;
