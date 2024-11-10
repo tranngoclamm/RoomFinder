@@ -1,6 +1,7 @@
 <template>
     <div class="carousel-container">
-      <div class="carousel" :style="{ backgroundImage: `url(${images[currentIndex]})` }">
+      <!-- <div class="carousel" :style="{ backgroundImage: url(${images[currentIndex]}) }"></div> -->
+      <div class="carousel" :style="{ backgroundImage: `url(${images && images.length > 0 ? images[currentIndex] : 'https://cdn.dribbble.com/users/263641/screenshots/4517916/404_not_found_3_dribbble.jpg'})` }">
         <!-- Nút mũi tên chuyển ảnh -->
         <button @click="prevImage" class="arrow prev-arrow">&lt;</button>
         <button @click="nextImage" class="arrow next-arrow">&gt;</button>

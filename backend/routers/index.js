@@ -11,6 +11,7 @@ const { createArticle, getLatestArticles, getArticleDetail, articlesByUser } = r
 const { createConversation, getUserConversations, getUserProfileById, resetUnreadMessages  } = require('../controllers/conversationController');
 const { sendMessage, getMessages } = require('../controllers/messageController');
 const { createPayment, vnpayReturn } = require('../controllers/paymentController');
+const { getHistory } = require('../controllers/historyController');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -69,5 +70,8 @@ router.post('/messages', sendMessage); // Gửi tin nhắn
 // Thanh toán
 router.post('/payment/create', createPayment);  // Tạo giao dịch thanh toán
 router.get('/vnpay_return', vnpayReturn);  // Xử lý kết quả thanh toán từ VNPAY
+
+// Lịch sử
+router.get('/history/:userId', getHistory);  // Xử lý kết quả thanh toán từ VNPAY
 
 module.exports = router;

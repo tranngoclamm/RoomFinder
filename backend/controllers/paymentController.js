@@ -158,9 +158,11 @@ const vnpayReturn = async (req, res) => {
   const {
     vnp_ResponseCode,
     vnp_TxnRef,
-    vnp_SecureHash
+    vnp_SecureHash,
+    vnp_CardType,
+    vnp_BankCode
   } = req.query;
-
+  console.log("req: ", req)
   // Kiểm tra chữ ký (secure hash) để đảm bảo tính xác thực
   // const isValid = verifyVnpaySignature(req.query, vnp_SecureHash);
 
@@ -185,31 +187,45 @@ const vnpayReturn = async (req, res) => {
 
   await payment.save(); // Lưu thông tin thanh toán vào database
 
-  // Sau khi lưu thanh toán thành công, cập nhật trạng thái của bài viết
-  let updateData = { status: 'sold' };
-
-  // Cập nhật bài viết theo loại và itemId
-  if (type === 'room') {
-    Room.status = 'sold'
-    await Room.save();  // Cập nhật phòng
-  } else if (type === 'house') {
-    House.status = 'sold'
-    await House.save();  // Cập nhật nhà
-  } else if (type === 'apartment') {
-    Apartment.status = 'sold'
-
-    await Apartment.save();  // Cập nhật căn hộ
-  } else if (type === 'findRoommate') {
-    findRoommate.status = 'sold'
-
-    await FindRoommate.save();  // Cập nhật tìm bạn phòng
+// Cập nhật bài viết theo loại và itemId
+if (type === 'Room') {
+  const room = await Room.findById(itemId); // Tìm phòng theo itemId
+  if (room) {
+    room.status = 'sold'; // Cập nhật trạng thái phòng
+    await room.save();  // Lưu lại phòng với trạng thái mới
+  } else {
+    console.error('Không tìm thấy phòng');
   }
-    // Thanh toán thành công
-    // const payment = await Payment.findOne({ txnRef: vnp_TxnRef });
-    // payment.status = 'success';  // Cập nhật trạng thái thanh toán
-    // await payment.save();
+} else if (type === 'House') {
+  const house = await House.findById(itemId); // Tìm nhà theo itemId
+  if (house) {
+    house.status = 'sold'; // Cập nhật trạng thái nhà
+    await house.save();  // Lưu lại nhà với trạng thái mới
+  } else {
+    console.error('Không tìm thấy nhà');
+  }
+} else if (type === 'Apartment') {
+  const apartment = await Apartment.findById(itemId); // Tìm căn hộ theo itemId
+  if (apartment) {
+    apartment.status = 'sold'; // Cập nhật trạng thái căn hộ
+    await apartment.save();  // Lưu lại căn hộ với trạng thái mới
+  } else {
+    console.error('Không tìm thấy căn hộ');
+  }
+} else if (type === 'FindRoommate') {
+  const findRoommate = await FindRoommate.findById(itemId); // Tìm tìm bạn phòng theo itemId
+  if (findRoommate) {
+    findRoommate.status = 'sold'; // Cập nhật trạng thái tìm bạn phòng
+    await findRoommate.save();  // Lưu lại tìm bạn phòng với trạng thái mới
+  } else {
+    console.error('Không tìm thấy tìm bạn phòng');
+  }
+}
 
-    return res.redirect('/payment-success');
+    // return res.redirect('/payment-success');
+    const successUrl = `http://localhost:8080/payment/success?txnRef=${vnp_TxnRef}&amount=${amount}&type=${vnp_CardType}&bank=${vnp_BankCode}&date=${new Date().toISOString()}`;
+    return res.redirect(successUrl);
+
   } else {
     // Thanh toán thất bại
 

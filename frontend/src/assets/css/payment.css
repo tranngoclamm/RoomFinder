@@ -1,0 +1,111 @@
+.bg-gray-100 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(243 244 246);
+}
+.justify-center {
+    justify-content: center;
+}
+.items-center {
+    align-items: center;
+}
+.flex-col {
+    flex-direction: column;
+}
+.min-h-screen {
+    min-height: 100vh;
+}
+.flex {
+    display: flex;
+}
+.shadow-md {
+    --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+.p-6 {
+    padding: 1.5rem;
+}
+.bg-white {
+    --tw-bg-opacity: 1;
+    background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+.rounded-lg {
+    border-radius: var(--radius);
+}
+.max-w-md {
+    max-width: 28rem;
+}
+.w-full {
+    width: 100%;
+}
+.bg-green-500 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(34 197 94);
+}
+
+.rounded-full {
+    border-radius: 9999px;
+}
+.text-gray-900 {
+    --tw-text-opacity: 1;
+    color: rgb(17 24 39);
+}
+
+.font-bold {
+    font-weight: 700;
+}
+.payment__success-wrapper {
+    font-family: 'Libre Franklin', sans-serif;
+    --font-sans: 'Libre Franklin';
+}
+.payment__success-wrapper svg{
+    display: block;
+    vertical-align: middle;
+    height: 32px;
+    width: 32px;
+    position: absolute;
+    top: 52%;
+    left: 51%;
+    transform: translate(-50%, -50%);
+}
+.payment__success-wrapper .text-gray-500 {
+    --tw-text-opacity: 1;
+    color:#6b7280;
+    font-size: 16px;
+}
+.payment__success-wrapper h1{
+    font-family: 'Cormorant Garamond', serif;
+    --font-serif: 'Cormorant Garamond';
+    font-weight: 700;
+    font-size: 24px;
+    margin-top: 16px;
+} 
+.payment__success-wrapper .border-t {
+    border-top-width: 1px;
+}
+.payment__success-wrapper .bg-green-500.rounded-full.p-4{
+    position: relative;
+    height: 64px;
+    width: 64px;
+}
+.payment__success-wrapper .gap-4 {
+    gap: 1rem;
+}
+.payment__success-wrapper .grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.payment__success-wrapper .grid {
+    display: grid;
+}
+.payment__success-wrapper .text-sm.font-medium{
+    margin-bottom: 0px;
+    font-size: 14px;
+}
+.payment__success-wrapper .bg-gray-900 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(17 24 39);
+    border-radius: 6px;
+}
+.payment__success-wrapper .mt-6{
+    margin-top: 12px;
+}

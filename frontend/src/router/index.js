@@ -3,6 +3,8 @@ import Login from '../components/Authentication/LoginForm.vue';
 import Register from '../components/Authentication/RegisterForm.vue';
 import HomePage from '../components/MainLayout/HomePage.vue';
 import MainRoomInline from '../components/MainLayout/MainRoomInline.vue';
+import SuccessPaymentPage from '@/components/Notification/SuccessPaymentPage.vue';
+import HistoryListMain from '@/components/MainLayout/HistoryListMain.vue';
 
 const routes = [
   {
@@ -64,6 +66,16 @@ const routes = [
     path: '/blog-posts/:slug',
     name: 'BlogPostDetail',
     component: MainRoomInline,
+  },
+  {
+    path: '/payment/success',
+    name: 'SuccessPaymentPage',
+    component: SuccessPaymentPage,
+  },
+  {
+    path: '/history',
+    name: 'HistoryList',
+    component: HistoryListMain,
   },
 ]
 

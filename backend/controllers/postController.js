@@ -54,17 +54,20 @@ const getPosts = async (req, res) => {
         { contactMobile: { $regex: searchQuery, $options: 'i' } } // Tìm theo contactMobile
       ]
     };
+    const statusCondition = { status: { $ne: 'sold' } };
     var posts;
     if(postType == 'favorites'){
-      posts = await Model.find(searchCondition)
-        .populate('favorites') // Populate favorites
+      posts = await Model.find({ ...searchCondition }) // Loại bỏ các bài viết có status = 'sold'
+      .and([{ ...statusCondition }]) // Áp dụng lọc chỉ khi có trường status
+      .populate('favorites') // Populate favorites
         .sort({ createdAt: -1 }) // Sắp xếp từ mới đến cũ
         .skip((page - 1) * limit) // Bỏ qua số bài viết đã có trên các trang trước
         .limit(limit); // Giới hạn số bài viết trả về
     } else{
       // Lấy bài viết mới nhất đến cũ và sử dụng populate
-      posts = await Model.find(searchCondition)
-        .populate('province') // Populate province
+      posts = await Model.find({ ...searchCondition }) // Loại bỏ các bài viết có status = 'sold'
+      .and([{ ...statusCondition }]) // Áp dụng lọc chỉ khi có trường status
+      .populate('province') // Populate province
         .populate('district') // Populate district
         .populate('ward') // Populate ward
         .populate({
@@ -108,34 +111,41 @@ const getLatestPosts = async (req, res) => {
       ]
     };
 
-    // Lấy dữ liệu từ tất cả các collections và áp dụng điều kiện tìm kiếm
-    const roomPromise = Room.find(searchCondition).populate('province').populate('district').populate('ward').populate({
+    // Kiểm tra có trường status trong từng collection và thêm điều kiện lọc status = 'sold' nếu có
+    const roomPromise = Room.find({
+      ...searchCondition,
+      status: { $ne: 'sold' } // Loại bỏ bài viết có status 'sold'
+    }).populate('province').populate('district').populate('ward').populate({
       path: 'userId',
       select: '-password' // Không lấy trường password
     }).sort({ createdAt: -1 });
     
-    const housePromise = House.find(searchCondition).populate('province').populate('district').populate('ward').populate({
+    const housePromise = House.find({
+      ...searchCondition,
+      status: { $ne: 'sold' } // Loại bỏ bài viết có status 'sold'
+    }).populate('province').populate('district').populate('ward').populate({
       path: 'userId',
       select: '-password' // Không lấy trường password
     }).sort({ createdAt: -1 });
     
-    const apartmentPromise = Apartment.find(searchCondition).populate('province').populate('district').populate('ward').populate({
+    const apartmentPromise = Apartment.find({
+      ...searchCondition,
+      status: { $ne: 'sold' } // Loại bỏ bài viết có status 'sold'
+    }).populate('province').populate('district').populate('ward').populate({
       path: 'userId',
       select: '-password' // Không lấy trường password
     }).sort({ createdAt: -1 });
     
-    const findRoommatePromise = FindRoommate.find(searchCondition).populate('province').populate('district').populate('ward').populate({
+    const findRoommatePromise = FindRoommate.find({
+      ...searchCondition,
+      status: { $ne: 'sold' } // Loại bỏ bài viết có status 'sold'
+    }).populate('province').populate('district').populate('ward').populate({
       path: 'userId',
       select: '-password' // Không lấy trường password
     }).sort({ createdAt: -1 });
 
     // Đợi tất cả các truy vấn hoàn tất
-    const [rooms, houses, apartments, findRoommates] = await Promise.all([
-      roomPromise, 
-      housePromise, 
-      apartmentPromise, 
-      findRoommatePromise
-    ]);
+    const [rooms, houses, apartments, findRoommates] = await Promise.all([roomPromise, housePromise, apartmentPromise, findRoommatePromise]);
 
     // Tổng hợp dữ liệu từ các collections và sắp xếp theo thời gian tạo
     const allPosts = [...rooms, ...houses, ...apartments, ...findRoommates].sort(
@@ -147,10 +157,10 @@ const getLatestPosts = async (req, res) => {
     const paginatedPosts = allPosts.slice(startIndex, startIndex + limit);
 
     // Đếm tổng số mục trong tất cả các collections
-    const totalRooms = await Room.countDocuments(searchCondition);
-    const totalHouses = await House.countDocuments(searchCondition);
-    const totalApartments = await Apartment.countDocuments(searchCondition);
-    const totalFindRoommates = await FindRoommate.countDocuments(searchCondition);
+    const totalRooms = await Room.countDocuments({ ...searchCondition, status: { $ne: 'sold' } });
+    const totalHouses = await House.countDocuments({ ...searchCondition, status: { $ne: 'sold' } });
+    const totalApartments = await Apartment.countDocuments({ ...searchCondition, status: { $ne: 'sold' } });
+    const totalFindRoommates = await FindRoommate.countDocuments({ ...searchCondition, status: { $ne: 'sold' } });
     
     const totalItems = totalRooms + totalHouses + totalApartments + totalFindRoommates;
     
@@ -166,6 +176,7 @@ const getLatestPosts = async (req, res) => {
     return res.status(500).json({ message: 'Đã xảy ra lỗi khi lấy dữ liệu' });
   }
 };
+
 
 
 // Đăng bài

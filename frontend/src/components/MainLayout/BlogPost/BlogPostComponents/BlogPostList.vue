@@ -1,7 +1,5 @@
 <template>
   <div class="col-8">
-  <div>{{this.isProfileModal}}</div>
-
     <div class="apartment__inline__card blog__inline__card" v-for="item in blogPosts" :key="item._id">
       <div class="row blog-item">
         <div class="col-md-4 col-6 pr-tablet-0" >
@@ -60,6 +58,7 @@
 <script>
   import 'bootstrap/dist/css/bootstrap.min.css';
   import '@/assets/css/blogpost.css';
+  import '@/assets/css/history.css';
   import { formatDate } from '@/utils/dateUtils'; 
   import {updateFavorites, addFavorite, removeFavorite, getLatestArticles} from '@/services/api'; // Import hàm gọi API từ api.js
   import ProfileModal from '../../ProfileModal.vue';

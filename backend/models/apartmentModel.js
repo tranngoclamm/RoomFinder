@@ -13,6 +13,7 @@ const apartmentSchema = new mongoose.Schema({
   contactName: { type: String, required: true },
   contactMobile: { type: String, required: true },
   contactPhone: { type: String },
+  status: { type: String },
   images: [{ type: String }], // Array of image file names
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Tham chiếu tới User
 }, { timestamps: true });

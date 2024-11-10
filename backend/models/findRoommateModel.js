@@ -12,6 +12,7 @@ const findRoommateSchema = new mongoose.Schema({
   details: { type: String, required: true, maxlength: 5000 },
   contactName: { type: String, required: true },
   contactMobile: { type: String, required: true },
+  status: { type: String },
   contactPhone: { type: String },
   images: [{ type: String }], // Array of image file names
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Tham chiếu tới User
