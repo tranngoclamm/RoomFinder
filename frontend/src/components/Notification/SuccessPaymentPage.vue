@@ -33,11 +33,11 @@
         </div>
         <div class="mt-6 flex justify-center">
           <a class="inline-flex items-center justify-center px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800"
-             href="#">
+             href="/history">
             Xem lịch sử giao dịch
           </a>
           <router-link to="/" class="inline-flex items-center justify-center px-4 py-2 ml-4 text-gray-900 rounded-md hover:bg-gray-200"
-             href="#">
+             href="/">
             Quay lại trang chủ
           </router-link>
         </div>

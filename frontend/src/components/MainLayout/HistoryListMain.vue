@@ -7,7 +7,7 @@
     <div class="breadcrumb-list">
       <router-link to="/">RoomFinder</router-link>
       <span> > </span>
-      <router-link to="/blog-posts" @click="isBlogPostDetail=false">Lịch sử</router-link>
+      <router-link to="/history" @click="isBlogPostDetail=false">Lịch sử giao dịch</router-link>
     </div>
     <div class="search-wrapper d-flex">
       <input type="hidden" value="en">
@@ -28,8 +28,10 @@
   <!-- Danh sách bài đăng -->
   <div class="apartment__inline post__inline">
     <div class="row">
-      <!-- Danh sách tin tức -->
+      <!-- lịch sử giao dịch -->
       <HistoryList :searchQuery="searchQuery" />
+      <ManagementRoom v-if="1>2"/>
+      
 
       <!-- danh mục bên phải -->
       <!-- <div class="blogpage-right col-4">
@@ -69,6 +71,8 @@
   import '@/assets/css/blogpost.css';
   import '@/assets/css/history.css';
   import HistoryList from './RoomComponents/HistoryList.vue';
+  import ManagementRoom from './RoomComponents/ManagementRoom.vue';
+
   // import SuggestedPosts from './BlogPost/BlogPostComponents/SuggestedPosts.vue';
   import HeaderRoom from './HeaderRoom.vue';
   import FooterRoom from './FooterRoom.vue';
@@ -80,6 +84,7 @@
     components: {
       HeaderRoom,
       ProfileModal,
+      ManagementRoom,
       // SuggestedPosts,
       HistoryList,
       FooterRoom

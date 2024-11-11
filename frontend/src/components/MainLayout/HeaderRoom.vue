@@ -109,8 +109,8 @@
                               <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="#">Thông tin</a></li>
                                 <li><a class="dropdown-item" href="#">Quản lý tin</a></li>
+                                <li><router-link to="/history" class="dropdown-item" href="#">Lịch sử giao dịch</router-link></li>
                                 <li><a class="dropdown-item" href="#">Đổi mật khẩu</a></li>
-                                <li><a class="dropdown-item" href="#">Liên hệ</a></li>
                                 <li @click="logout()"><a class="dropdown-item" href="#">Đăng xuất</a></li>
                               </ul>
                             </div>
@@ -224,6 +224,7 @@
                                 <template v-if="results.length > 0">
                                   <li v-for="(item, index) in results" :key="index">
                                     <a class="dropdown-item" @click="selectItem(item)">
+                                      <span v-if="item.wardName">{{ item.wardName }}, </span>
                                       <span v-if="item.districtName">{{ item.districtName }}, </span>
                                       <span>{{ item.provinceName }}</span>
                                     </a>
@@ -341,7 +342,7 @@ export default {
       user: {},
       lastName: '',
       selectedRoomType: 'NHÀ Ở', // Loại phòng được chọn hiện tại
-      roomTypes: ['PHÒNG TRỌ', 'CĂN HỘ', 'TÌM NGƯỜI Ở GHÉP','DANH SÁCH YÊU THÍCH'], // Các tùy chọn còn lại
+      roomTypes: ['PHÒNG TRỌ', 'CĂN HỘ', 'TÌM NGƯỜI Ở GHÉP'], // Các tùy chọn còn lại
       inputsearchLocation: '',
       isHomePage: true,
       selectedLocation:'',
@@ -372,25 +373,25 @@ export default {
       hamburger_menu: false,
       price: {
         from: 0,
-        to: 30,
+        to: "30+",
       },
       area: {
         from: 0,
-        to: 50,
+        to: "50+",
       },
     };
   },
   computed: {
     ...mapGetters(['getUserProfile']), 
   priceDisplay() {
-    if (this.price.from === 0 && this.price.to === 30) {
+    if (this.price.from === 0 && this.price.to === "30+") {
       return "Chọn giá";
     } else {
       return `${this.price.from} - ${this.price.to} triệu`;
     }
   },
   areaDisplay() {
-    if (this.area.from === 0 && this.area.to === 50) {
+    if (this.area.from === 0 && this.area.to === "50+") {
       return "Chọn diện tích";
     } else {
       return `${this.area.from} - ${this.area.to} m2`;
@@ -514,17 +515,26 @@ export default {
 
 
     selectItem(item) {
-      // Lưu giá trị đã chọn vào ô input
-      const location = item.districtName ? `${item.districtName}, ${item.provinceName}` : item.provinceName;
-      this.inputsearchLocation = location; // Gán giá trị vào input
+  // Xây dựng địa chỉ đầy đủ bao gồm ward, district, và province nếu có
+  const location = item.wardName 
+    ? `${item.wardName}, ${item.districtName}, ${item.provinceName}` 
+    : item.districtName 
+    ? `${item.districtName}, ${item.provinceName}` 
+    : item.provinceName;
 
-      this.selectedLocation = {
-        provinceId: item.provinceId,
-        districtId: item.districtId
-      };
-      this.isDropdownAreaVisible = false; // Ẩn dropdown sau khi chọn
-    },
+  // Gán giá trị vào input
+  this.inputsearchLocation = location;
 
+  // Lưu thông tin đã chọn (bao gồm province, district và ward nếu có)
+  this.selectedLocation = {
+    provinceId: item.provinceId,
+    districtId: item.districtId,
+    wardId: item.wardId // Lưu wardId vào selectedLocation
+  };
+
+  // Ẩn dropdown sau khi chọn
+  this.isDropdownAreaVisible = false;
+},
     close() {
         this.$emit('close-modal');
     },

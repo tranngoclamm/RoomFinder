@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const { registerUser, loginUser } = require('../controllers/authController');
-const { getPosts, getLatestPosts, createPost, searchPosts } = require('../controllers/postController');
+const { getPosts, getLatestPosts, createPost, searchPosts, getAllPostsForAnalytics } = require('../controllers/postController');
 const { getFavorites, updateFavorites, addFavorite, removeFavorite} = require('../controllers/favoritesController');
 const { analyzeSearchHistory } = require('../controllers/searchHistory'); 
 const { searchLocation, searchRoom, searchHost } = require('../controllers/searchController');
@@ -74,4 +74,6 @@ router.get('/vnpay_return', vnpayReturn);  // Xử lý kết quả thanh toán t
 // Lịch sử
 router.get('/history/:userId', getHistory);  // Xử lý kết quả thanh toán từ VNPAY
 
+// Phân tích 
+router.get('/analytic', getAllPostsForAnalytics);  // Xử lý kết quả thanh toán từ VNPAY
 module.exports = router;
