@@ -227,7 +227,7 @@
       },
 
       async updateFavorites() {
-        const user = JSON.parse(localStorage.getItem('user'));
+        const user = this.getUserProfile;
 
         try {
           if (!user || !user._id) {
@@ -251,7 +251,7 @@
       },
 
       async toggleFavorite(item) {
-        const user = JSON.parse(localStorage.getItem('user'));
+        const user = this.getUserProfile;
         try {
           if (!user._id) {
             console.error("Người dùng không hợp lệ.");

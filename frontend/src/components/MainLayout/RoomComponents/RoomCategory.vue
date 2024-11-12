@@ -67,19 +67,6 @@
          
          <DetailRoom v-show="showDetailRoom" @close-modal="showDetailRoom = false" :apartment="apartment" />
 
-        <!-- navigation -->
-        <ul role="navigation" class="pagination mb-3">
-            <li @click="goToPage(currentPage - 1)" :disabled="currentPage === 1" aria-disabled="true" aria-label="« Previous" class="page-item disabled"><span aria-hidden="true" class="page-link">‹</span></li> 
-            <li aria-current="page" class="page-item active"><span class="page-link">1</span></li>
-            <li class="page-item"><a href="http://rentroom.md/en/list?page=2" class="page-link">2</a></li>
-                        <!-- Nút cho từng trang -->
-            <li v-for="page in totalPages" :key="page" @click="goToPage(page)" :class="{ active: currentPage === page }">
-                <span class="page-link">{{ page }}</span>
-            </li>
-            <li @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages" class="page-item"><a href="http://rentroom.md/en/list?page=2" rel="next" aria-label="Next »" class="page-link">›</a></li>
-        </ul>
-        
-
     </div>
   </template>
   

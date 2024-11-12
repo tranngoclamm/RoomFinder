@@ -303,7 +303,7 @@
                       <div class="col-12 col-lg-2">
                         <div class="booking__form__block__el">
                           <div class="btn__submit__wrap">
-                            <button type="submit" @click.prevent="searchRoom" @click="navigateToPostTitle('latestPost')" class="search_btn">Tìm</button>
+                            <button type="submit" @click.prevent="searchRoom" @click="emitScrollToLatestPost" class="search_btn">Tìm</button>
                           </div>
                         </div>
                       </div>
@@ -341,8 +341,8 @@ export default {
     return {
       user: {},
       lastName: '',
-      selectedRoomType: 'NHÀ Ở', // Loại phòng được chọn hiện tại
-      roomTypes: ['PHÒNG TRỌ', 'CĂN HỘ', 'TÌM NGƯỜI Ở GHÉP'], // Các tùy chọn còn lại
+      selectedRoomType: 'TẤT CẢ', // Loại phòng được chọn hiện tại
+      roomTypes: ['NHÀ Ở','PHÒNG TRỌ', 'CĂN HỘ', 'TÌM NGƯỜI Ở GHÉP'], // Các tùy chọn còn lại
       inputsearchLocation: '',
       isHomePage: true,
       selectedLocation:'',
@@ -406,6 +406,9 @@ export default {
         return false;
       }
       return true;
+    },
+    emitScrollToLatestPost() {
+      this.$emit('scroll-to-latestPostTitle', 'latestPost');
     },
     logout() {
       // Xóa thông tin người dùng khỏi localStorage và chuyển hướng về trang đăng nhập
@@ -645,6 +648,16 @@ export default {
   }
 
     },
+
+    emitFormData() {
+      const formData = {
+        roomType: this.selectedRoomType,
+        location: this.selectedLocation,
+        price: this.price,
+        area: this.area
+      };
+      this.$emit('search', formData); // Gửi formData đến component cha
+    },
   },
 
   mounted() {
@@ -659,6 +672,20 @@ export default {
 
   beforeUnmount() {
     document.removeEventListener('click', this.handleClickOutside);
-  }
+  },
+  watch: {
+    selectedRoomType() {
+      this.emitFormData(); // Emit khi roomType thay đổi
+    },
+    selectedLocation() {
+      this.emitFormData(); // Emit khi location thay đổi
+    },
+    price() {
+      this.emitFormData(); // Emit khi price thay đổi
+    },
+    area() {
+      this.emitFormData(); // Emit khi area thay đổi
+    }
+  },
 };
 </script>

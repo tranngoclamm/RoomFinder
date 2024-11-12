@@ -97,7 +97,6 @@
       async redirectToVnpay() {
         try {
             const response = await createPayment(this.apartment._id, this.apartment.price, this.getUserProfile._id); 
-            console.log(response.data)
             if (response.data) {
               // Chuyển hướng đến VNPAY với URL thanh toán
               // window.location.href = response.data;

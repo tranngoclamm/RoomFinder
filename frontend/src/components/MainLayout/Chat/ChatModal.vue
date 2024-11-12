@@ -109,7 +109,7 @@
                   <div class="d-flex"
                     :class="{ 'justify-content-end': group.senderId != userProfile._id, 'justify-content-start': group.senderId == userProfile._id }">
                     <!-- Avatar (only displayed once per group) -->
-                    <img v-if="group.senderId == userProfile._id" :src="userProfile.profilePicture"
+                    <img v-if="group.senderId == userProfile._id" :src="userProfile.profilePicture || defaultProfilePicture"
                       class="rounded-circle" alt="avatar" style="width: 45px; height: 100%;" />
 
                     <!-- Messages within the group -->
@@ -157,7 +157,7 @@
                     </div>
 
                     <!-- Avatar for the sender's messages only displayed once per group -->
-                    <img v-if="group.senderId !== userProfile._id" :src="group.senderProfilePicture"
+                    <img v-if="group.senderId !== userProfile._id" :src="group.senderProfilePicture || defaultProfilePicture"
                       class="rounded-circle" alt="avatar" style="width: 45px; height: 100%;" />
                   </div>
                 </template>

@@ -28,7 +28,14 @@ export const getPosts = (query) => {
 // Hàm lấy bài đăng mới nhất
 export const getLatestPosts = (query) => {
   return axios.get(`${API_URL}/latest-posts`, {
-    params: { page: query.page, limit: query.limit, search: query.search }
+    params: { page: query.page,
+              limit: query.limit,
+              search: query.search,
+              roomType: query.roomType, 
+              location: query.location, 
+              price: query.price, 
+              area: query.area,
+           }
   });
 };
 
@@ -175,7 +182,7 @@ export const createPayment = (id, amount, buyUser) => {
   });
 };
 
-// 
+// Trả về thông báo
 export const vnpayReturn = (vnp_ResponseCode , vnp_TxnRef, vnp_SecureHash) => {
   return axios.get(`${API_URL}/vnpay_return`, {
     params: {
