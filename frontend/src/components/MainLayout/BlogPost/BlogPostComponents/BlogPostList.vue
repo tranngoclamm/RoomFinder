@@ -38,7 +38,7 @@
                 </div>
                 <div class="col-6 d-flex align-items-center">
                   <div class="apartment__list__card__container__facilities__bedroom d-flex align-items-center" @click.stop="openProfileModal(item.author)">
-                    <img :src="item.author ? item.author.profilePicture : require('@/assets/images/default-user.svg')" @error="onError"
+                    <img :src="item.author.profilePicture || require('@/assets/images/default-user.svg')" @error="onError"
                       alt="" class="icon-user text-black">
                     <span>
                       {{ item.author ? item.author.fullName : 'Chưa có tác giả' }}
