@@ -25,13 +25,13 @@
       <!-- Danh sách tin tức -->
       <BlogPostList v-if="!isBlogPostDetail"  @openDetailPost="handleOpenDetailPost"/>
       <div v-if="isBlogPostDetail" class="col-8 blog-list-wrapper">
-        <img v-if="article.content==null" src="@/assets/images/404-error-with-landscape-concept-illustration_114360-7898.jpg" alt="">
-        <div v-html="article.content"></div>
-        <div :style="{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', float: !article.landlord ? 'right' : '' }">
+        <div v-if="article.content && isContentLoaded" v-html="article.content"></div>
+        <img v-if="isError" src="@/assets/images/404-error-with-landscape-concept-illustration_114360-7898.jpg" alt="">
+        <div class="mt-1" :style="{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', float: !article.landlord ? 'right' : '' }">
           <div v-if="article.landlord && article.landlord.fullName">
             <a class="user-name" href="/" @click.prevent="openProfileModal(article.landlord)">
               Chủ trọ: 
-              <img :src="article.landlord ? article.landlord.profilePicture : 'https://cdn.dribbble.com/users/263641/screenshots/4517916/404_not_found_3_dribbble.jpg'" 
+              <img :src="article.landlord.profilePicture || 'https://res.cloudinary.com/dlawgdb8h/image/upload/v1730344959/avatars/kn6xdlvb6hivqkhka000.jpg'" 
                    alt="" class="icon-avatar" /> 
                   {{ article.landlord?.fullName ?? '?' }}
             </a>
@@ -39,7 +39,7 @@
           <div v-if="article.author && article.author.fullName" style="text-align: right; float:right">
             <a class="user-name" href="/" @click.prevent="openProfileModal(article.author)">
               Người đăng: 
-              <img :src="article.author ? article.author.profilePicture : 'https://cdn.dribbble.com/users/263641/screenshots/4517916/404_not_found_3_dribbble.jpg'" 
+              <img :src="article.author.profilePicture || 'https://res.cloudinary.com/dlawgdb8h/image/upload/v1730344959/avatars/kn6xdlvb6hivqkhka000.jpg'" 
                    alt="" class="icon-avatar" /> 
               {{ article.author?.fullName ?? '?' }}
             </a>
@@ -73,16 +73,6 @@
       </div>
     </div>
   </div>
-
-  <ul v-show="!loading" role="navigation" class="pagination mb-3">
-    <li aria-disabled="true" aria-label="« Previous" class="page-item disabled"><span aria-hidden="true"
-        class="page-link">‹</span></li>
-    <li aria-current="page" class="page-item active"><span class="page-link">1</span></li>
-    <li class="page-item"><a href="/list?page=2" class="page-link">2</a></li>
-    <li class="page-item"><a href="/list?page=3" class="page-link">3</a></li>
-    <li class="page-item"><a href="/list?page=4" class="page-link">4</a></li>
-    <li class="page-item"><a href="/list?page=2" rel="next" aria-label="Next »" class="page-link">›</a></li>
-  </ul>
 </template>
 
 <script>
@@ -110,7 +100,9 @@
       return {
         isProfileModal: false,
         article: {},
+        isContentLoaded: false,
         roomType:'',
+        isError:false,
         loading:'',
         searchQuery: '',
         isBlogPostDetail: false,
@@ -125,9 +117,12 @@
           // Lấy slug từ URL
           const response = await getArticleDetail(slug); // Gọi hàm API
           this.article = response.data; // Gán dữ liệu bài viết vào state
-          window.scrollTo(0, 0);
         } catch (error) {
+          this.isError = true;
           console.error('Error fetching article detail:', error);
+        } finally{
+          this.isContentLoaded = true;
+          window.scrollTo(0, 0);
         }
       }
     },

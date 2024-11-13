@@ -94,7 +94,9 @@
                 <!-- Profile Receiver Information -->
                 <div v-if="messages.length == 0"
                   class="profile-receiver d-flex justify-content-center align-items-center flex-column">
-                  <img :src="chatUser.profilePicture || defaultProfilePicture" alt="" class="avatar-icon" />
+                  <img v-if="chatUser.profilePicture" :src="chatUser.profilePicture" alt="Avatar" class="avatar-icon" />
+                  <img v-else :src="defaultProfilePicture" alt="Default Avatar" class="avatar-icon" />
+
                   <p class="name-user">{{ chatUser.fullName }}</p>
                 </div>
 
@@ -176,7 +178,7 @@
 
                   <!-- Avatar của người dùng -->
                   <img v-else class="rounded-circle"
-                    :src="userProfile.profilePicture || 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3-bg.webp'"
+                    :src="userProfile.profilePicture || 'https://res.cloudinary.com/dlawgdb8h/image/upload/v1730344959/avatars/kn6xdlvb6hivqkhka000.jpg'"
                     alt="avatar" style="width: 40px; height: 100%;">
 
                   <!-- Input tin nhắn -->
@@ -307,6 +309,18 @@
       ...mapMutations(['setUserProfile', 'setChatUser', 'setMessageDetailState', 'setMessageChatState',
         'setConversationState'
       ]),
+      // Hàm tìm id của cuộc trò chuyện có 2 participants
+      findConversationId (conversations, participantId1, participantId2) {
+        for (let conversation of conversations) {
+          const participants = conversation.participants.map(p => p._id);
+          // Kiểm tra nếu có đúng 2 participantId trong conversation
+          if (participants.includes(participantId1) && participants.includes(participantId2)) {
+            return conversation._id; // Trả về id của cuộc trò chuyện
+          }
+        }
+        
+        return null; // Trả về null nếu không tìm thấy
+      },
       async fetchConversations() {
         if (this.userProfile && this.userProfile._id) {
           this.totalUnreadMessages = 0;
@@ -350,18 +364,20 @@
         try {
 
           this.isFetching = true;
-          const response = await getMessages(this.activeConversationId, this.page,''); // Gọi hàm API với page hiện tại
-          if (response && response.data.messages) {
-            let newMessages = response.data.messages.map((message) => {
-              const messageDate = dayjs(message.lastMessageAt);
-              message.relativeTime = messageDate; // chuyển định dạng ngày
-              return message;
-            });
-            // Kết hợp tin nhắn mới vào đầu danh sách tin nhắn hiện tại
-            this.messages = [...this.messages, ...newMessages];
-            await this.$nextTick();
-            const newScrollHeight = container.scrollHeight;
-            container.scrollTop = newScrollHeight - this.currentScrollHeight;
+          if(this.activeConversationId){
+            const response = await getMessages(this.activeConversationId, this.page,''); // Gọi hàm API với page hiện tại
+            if (response && response.data.messages) {
+              let newMessages = response.data.messages.map((message) => {
+                const messageDate = dayjs(message.lastMessageAt);
+                message.relativeTime = messageDate; // chuyển định dạng ngày
+                return message;
+              });
+              // Kết hợp tin nhắn mới vào đầu danh sách tin nhắn hiện tại
+              this.messages = [...this.messages, ...newMessages];
+              await this.$nextTick();
+              const newScrollHeight = container.scrollHeight;
+              container.scrollTop = newScrollHeight - this.currentScrollHeight;
+            }
           }
         } catch (error) {
           console.error('Error fetching article detail:', error);
@@ -413,8 +429,9 @@
         await this.$nextTick();
 
         this.scrollToBottom("messagesContainer");
-
-        await resetUnreadMessages(this.activeConversationId, this.userProfile._id)
+        if(this.activeConversationId){
+          await resetUnreadMessages(this.activeConversationId, this.userProfile._id)
+        }
         this.fetchConversations();
       },
       async sendMessage() {
@@ -532,7 +549,9 @@
     },
     async mounted() {
       const user = JSON.parse(localStorage.getItem('user'));
+      // localStorage.setItem('user', JSON.stringify(response.data.user));
       this.setUserProfile(user);
+      // localStorage.setItem('user', user)
       this.userProfile = this.getUserProfile;
       this.fetchConversations();
       // Kết nối tới server socket.io
@@ -541,11 +560,10 @@
       });
 
       // Đăng ký người dùng sau khi kết nối
-      this.socket.emit('registerUser', this.userProfile._id);
+      this.socket.emit('registerUser', this.userProfile);
 
       // Lắng nghe sự kiện nhận tin nhắn từ server
       this.socket.on('receiveMessage', async (messageData) => {
-        console.log('New message received:', messageData);
         let oldActiveConversationId = this.activeConversationId;
         // if(this.activeConversationId == messageData.conversationId){
         // }
@@ -553,7 +571,9 @@
           this.messages = [];
           this.activeConversationId = messageData.conversationId;
           this.fetchMessageDetail();
-          await resetUnreadMessages(messageData.conversationId, this.userProfile._id)
+          if(messageData.conversationId){
+            await resetUnreadMessages(messageData.conversationId, this.userProfile._id)
+          }
         }
         await this.fetchConversations();
 
@@ -562,6 +582,22 @@
         // this.scrollToBottom();
       });
     },
+    watch:{
+      async isMessageDetail(){
+        this.messages=[]
+        if(this.isMessageDetail == true){
+          let response = await getUserConversations(this.userProfile._id, 1, ''); // Gọi hàm API với page = 1
+            if (response && response.data.conversations != []){
+              const conversationId = this.findConversationId(response.data.conversations, this.userProfile._id, this.getChatUser._id )
+              this.activeConversationId = conversationId
+              await this.openMessageDetail(conversationId, this.getChatUser._id)
+              }
+
+              this.scrollToBottom("messagesContainer");
+            }
+        }
+      
+    }
 
   }
 </script>

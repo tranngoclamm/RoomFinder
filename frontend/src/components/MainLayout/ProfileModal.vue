@@ -61,20 +61,26 @@
                                 <img :src="article.image" :alt="article.title" :title="article.title + ' '+ article.createdAt" class="img-fluid rounded shadow-sm" />
                             </a>
                         </div>
+                        <div v-for="(post, index) in displayedPosts" :key="post._id" class="col-lg-6 mb-2" :class="index % 2 === 0 ? 'pr-lg-1' : 'pl-lg-1'">
+                            <a href="" @click.prevent="openDetailRoomModal(post)">
+                                <img :src="post.image" :alt="post.title" :title="post.title + ' '+ post.createdAt" class="img-fluid rounded shadow-sm" />
+                            </a>
+                        </div>
                     </div>
                                       
                 </div>
             </div>
         </div>
     </div>
-    
+    <DetailRoom v-if="showModal" @close-modal="closeDetailRoomModal" :apartment="apartment" />
 </template>
 <script>
     import 'bootstrap/dist/css/bootstrap.min.css';
     import '@/assets/css/profile.css';
     import { formatDate } from '@/utils/dateUtils'; 
-    import {getArticleByUser} from '@/services/api'; // Import hàm gọi API từ api.js
-    import { mapMutations, mapActions } from 'vuex';
+    import {getArticleByUser, getUserPosts} from '@/services/api'; // Import hàm gọi API từ api.js
+    import { mapMutations, mapActions, mapGetters } from 'vuex';
+    import DetailRoom from './RoomComponents/DetailRoom.vue'; 
 
     export default {
         name: 'ProfileModal',
@@ -91,18 +97,33 @@
                 articles: [],
                 userId: '',
                 showAll: false,
+                displayedPosts: [],
+                showModal: false,
+                apartment: null,
             }
+        },
+        components:{
+            DetailRoom
         },
         computed: {
             displayedArticles() {
             return this.showAll ? this.articles : this.articles.slice(0, 4);
             },
+            ...mapGetters(['getUserProfile'])
         },
         methods: {
             ...mapMutations(['setChatUser']),
             ...mapActions(['openMessageDetail']),
             toggleShowAll() {
                 this.showAll = !this.showAll;
+            },
+            openDetailRoomModal(post) {
+                this.apartment = post; // Cập nhật bài đăng được chọn
+                this.showModal = true;    // Hiển thị modal
+            },
+            closeDetailRoomModal() {
+                this.showModal = false;   // Ẩn modal
+                this.apartment = null; // Đặt lại bài đăng được chọn
             },
             sentDataAndOpenChat(user){
                 this.setChatUser(user)
@@ -131,8 +152,31 @@
                             }
                         });
                         this.articles = postData; 
-                        console.log(this.articles)
                     }
+                } catch (error) {
+                    console.error('Error fetching article detail:', error);
+                }
+
+                try{
+                    const response = await getUserPosts(this.author._id); 
+                    // this.articles = response.data.; 
+                    if (response && response.data.results.length != 0) {
+                        let postData = response.data.results
+                        postData.forEach(newsItem => {
+                            newsItem.createdAt = formatDate(newsItem.createdAt); // chuyển định dạng ngày
+                            // Sử dụng biểu thức chính quy để tìm URL hình ảnh trong content
+                            
+                            // Nếu tìm thấy URL, thêm trường image vào đối tượng
+                            if (newsItem.images.length != 0) {
+                                newsItem.image = newsItem.images[0]; // thêm trường image
+                            } else {
+                                newsItem.image = 'https://cdn.dribbble.com/users/263641/screenshots/4517916/404_not_found_3_dribbble.jpg'; 
+                            }
+                        },
+                        this.displayedPosts = postData,
+                    );
+                    }
+                    
                 } catch (error) {
                     console.error('Error fetching article detail:', error);
                 }

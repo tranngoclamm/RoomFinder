@@ -50,7 +50,6 @@ const getHistory = async (req, res) => {
             payment.buyUser._id.equals(userId) || 
             (payment.itemId && payment.itemId.userId.equals(userId) && payment.itemId.status === 'sold')
         );
-        console.log(filteredPayments)
         res.json({
             currentPage: parseInt(page),
             pageSize: parseInt(pageSize),

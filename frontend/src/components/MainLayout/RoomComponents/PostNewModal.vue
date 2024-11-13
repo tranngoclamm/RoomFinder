@@ -326,7 +326,6 @@
       // Handle file selection and store the selected images
       handleFileUpload(event) {
         const files = event.target.files; // Lấy các file đã chọn
-        console.log(files);
         if (files.length) {
           this.selectedImages = []; // Xóa các ảnh đã chọn trước đó
 
@@ -337,7 +336,6 @@
             this.selectedImages.push(imageUrl); // Lưu URL thay vì lưu trực tiếp File object
           }
         }
-        console.log(this.selectedImages);
       },
       validateForm() {
         this.errors = {}; // Clear previous errors
@@ -446,17 +444,12 @@
         }
         const user = this.getUserProfile; // Get user data from localStorage
         const userId = user ? user._id : null; // Get user ID
-        console.log(userId)
         const formData = new FormData();
 
         // Đưa ảnh gốc vào formData
         for (let i = 0; i < this.selectedImages.length; i++) {
           const file = await blobToFile(this.selectedImages[i], `image-${i}.jpg`);
           formData.append('images', file);
-        }
-        // Lặp qua các giá trị của formData để kiểm tra
-        for (let [key, value] of formData.entries()) {
-          console.log(key, value);
         }
         // Add other fields to formData
         formData.append('category', this.CategoryId);
@@ -476,7 +469,6 @@
         try {
           // Gửi formData tới server
           const response = await postNew(formData);
-          console.log('Response:', response.data); // Log phản hồi từ server
           if (response.data) {
             // Xử lý phản hồi thành công
             alert('Bài đăng đã được gửi thành công!');

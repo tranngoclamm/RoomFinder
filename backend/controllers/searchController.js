@@ -68,9 +68,9 @@ const searchRoom = async (req, res) => {
     roomType,
     location,
     price,
-    area
+    area,
+    searchInput
   } = req.body;
-  console.log("reqbody: ", req.body);
 
   try {
     let query; // Khởi tạo truy vấn
@@ -79,20 +79,52 @@ const searchRoom = async (req, res) => {
     } = req.query; // Lấy page và limit từ query string (mặc định page 1, mỗi trang 9 mục)
     page = parseInt(page, 10);
     limit = parseInt(limit, 10);
-
+    var totalItems = 0;
+    var totalPages = 0;
+    var results = [];
     // Lựa chọn collection dựa trên roomType
     switch (roomType) {
       case 'PHÒNG TRỌ':
-        query = Room.find(); // Sử dụng Room
+        query = Room.find({ status: { $ne: 'sold' }}); // Sử dụng Room
         break;
       case 'NHÀ Ở':
-        query = House.find(); // Sử dụng House
+
+        query = House.find({ status: { $ne: 'sold' }}); // Sử dụng House
         break;
       case 'CĂN HỘ':
-        query = Apartment.find(); // Sử dụng Apartment
+        query = Apartment.find({ status: { $ne: 'sold' }}); // Sử dụng Apartment
         break;
       case 'TÌM NGƯỜI Ở GHÉP':
-        query = FindRoommate.find(); // Sử dụng FindRoommate
+
+        query = FindRoommate.find({ status: { $ne: 'sold' }}); // Sử dụng FindRoommate
+        break;
+      case 'TẤT CẢ':
+        // Truy vấn tất cả các collection và kết hợp kết quả
+        const rooms = await Room.find().populate('province').populate('district').populate('ward').populate({
+          path: 'userId',
+          select: '-password' // Không lấy trường password
+        }).sort({ createdAt: -1 });
+        const houses = await House.find().populate('province').populate('district').populate('ward').populate({
+          path: 'userId',
+          select: '-password' // Không lấy trường password
+        }).sort({ createdAt: -1 });
+        const apartments = await Apartment.find().populate('province').populate('district').populate('ward').populate({
+          path: 'userId',
+          select: '-password' // Không lấy trường password
+        }).sort({ createdAt: -1 });
+        const findRoommates = await FindRoommate.find().populate('province').populate('district').populate('ward').populate({
+          path: 'userId',
+          select: '-password' // Không lấy trường password
+        }).sort({ createdAt: -1 });
+        
+    
+        // Kết hợp tất cả kết quả vào một mảng
+        results = [...rooms, ...houses, ...apartments, ...findRoommates].sort(
+          (a, b) => b.createdAt - a.createdAt
+        );
+      // console.log("tatsc ả; ", results)
+        // Không cần sử dụng .where() nữa, vì kết quả đã là mảng
+        query = results;
         break;
       default:
         return res.status(400).json({
@@ -100,117 +132,244 @@ const searchRoom = async (req, res) => {
         });
     }
 
-    // Truy vấn province, district và ward từ collections
-    if (location) {
-      let provinceObjectId;
-      let districtObjectId;
-      let wardObjectId;
-
-      // Tìm kiếm ObjectId của tỉnh
-      if (location.provinceId) {
-        const province = await Province.findOne({
-          id: location.provinceId
-        }).exec();
-
-        if (!province) {
-          return res.status(404).json({
-            message: 'Province not found'
-          });
-        }
-        provinceObjectId = province._id; // Lưu ObjectId của tỉnh
-      }
-
-      // Tìm kiếm ObjectId của quận
-      if (location.districtId) {
-        const district = await District.findOne({
-          id: location.districtId
-        }).exec();
-
-        if (!district) {
-          return res.status(204).json({
-            message: 'District not found'
-          });
-        }
-        districtObjectId = district._id; // Lưu ObjectId của quận
-      }
-
-      // Tìm kiếm ObjectId của phường
-      if (location.wardId) {
-        const ward = await Ward.findOne({
-          id: location.wardId
-        }).exec();
-
-        if (!ward) {
-          return res.status(204).json({
-            message: 'Ward not found'
-          });
-        }
-        wardObjectId = ward._id; // Lưu ObjectId của phường
-      }
-
-      // Thêm điều kiện province vào truy vấn
-      if (provinceObjectId) {
-        query = query.where('province').equals(provinceObjectId);
-      }
-
-      // Thêm điều kiện district vào truy vấn
-      if (districtObjectId) {
-        query = query.where('district').equals(districtObjectId);
-      }
-
-      // Thêm điều kiện ward vào truy vấn
-      if (wardObjectId) {
-        query = query.where('ward').equals(wardObjectId);
-      }
-    }
-
-    // Thêm điều kiện cho giá
-    if (price) {
-      if (typeof price.to == 'string' && price.to.endsWith('+')) {
-        const minPrice = parseInt(price.from, 10); // Lấy giá trị trước dấu +
-        if (!isNaN(minPrice)) {
-          query = query.where('price').gte(minPrice);
-        }
-      } else if (typeof price === 'object' && price.from !== undefined && price.to !== undefined) {
-        const fromPrice = parseInt(price.from, 10);
-        const toPrice = parseInt(price.to, 10);
+    if (Array.isArray(query)) {
+      // Nếu query là mảng (trong trường hợp 'TẤT CẢ')
+      query = query.filter(item => !item.status || item.status !== 'sold'); // loại bỏ bài đã bán
+      // Tìm kiếm trong mảng theo từ khóa
+      if (searchInput) {
+        const keywordRegex = new RegExp(searchInput, 'i');
+        query = query.filter(item => 
+          item.title.match(keywordRegex) ||
+          item.exactAddress.match(keywordRegex) ||
+          item.street.match(keywordRegex) ||
+          item.details.match(keywordRegex) ||
+          item.contactMobile.match(keywordRegex) ||
+          item.contactName.match(keywordRegex)
+        );
         
-        if (!isNaN(fromPrice) && !isNaN(toPrice)) {
-          query = query.where('price').gte(fromPrice).lte(toPrice);
+        // Nếu searchInput có thể được chuyển đổi sang số, thì thêm điều kiện cho price và area
+        const searchInputNumber = Number(searchInput);
+        if (!isNaN(searchInputNumber)) {
+          query = query.filter(item => 
+            item.price === searchInputNumber || item.area === searchInputNumber || item.details === searchInputNumber 
+          );
         }
       }
-    }
 
-    // Thêm điều kiện cho diện tích
-    if (area) {
-      if (typeof area.to == 'string' && area.to.endsWith('+')) {
-        const minArea = parseInt(area.from, 10); // Lấy giá trị trước dấu +
-        if (!isNaN(minArea)) {
-          query = query.where('area').gte(minArea);
+      // Truy vấn province, district và ward từ mảng
+      if (location) {
+        let provinceObjectId, districtObjectId, wardObjectId;
+
+        // Tìm kiếm ObjectId của tỉnh trong mảng
+        if (location.provinceId) {
+          const province = await Province.findOne({ id: location.provinceId }).exec();
+          if (!province) {
+            return res.status(404).json({ message: 'Province not found' });
+          }
+          provinceObjectId = province._id;
         }
-      } else if (typeof area === 'object' && area.from !== undefined && area.to !== undefined) {
-        const fromArea = parseInt(area.from, 10);
-        const toArea = parseInt(area.to, 10);
-        
-        if (!isNaN(fromArea) && !isNaN(toArea)) {
-          query = query.where('area').gte(fromArea).lte(toArea);
+
+        // Tìm kiếm ObjectId của quận trong mảng
+        if (location.districtId) {
+
+          const district = await District.findOne({ id: location.districtId }).exec();
+          if (!district) {
+            return res.status(404).json({ message: 'District not found' });
+          }
+          districtObjectId = district._id;
+        }
+
+        // Tìm kiếm ObjectId của phường trong mảng
+        if (location.wardId) {
+          const ward = await Ward.findOne({ id: location.wardId }).exec();
+          if (!ward) {
+            return res.status(404).json({ message: 'Ward not found' });
+          }
+          wardObjectId = ward._id;
+        }
+
+        // Lọc mảng theo các điều kiện province, district, ward
+        if (provinceObjectId) {
+          query = query.filter(item => item.province._id.toString() === provinceObjectId.toString());
+        }
+        if (districtObjectId) {
+          query = query.filter(item => item.district._id.toString() === districtObjectId.toString());
+        }
+        if (wardObjectId) {
+          query = query.filter(item => item.ward._id.toString() === wardObjectId.toString());
         }
       }
+
+      // Lọc mảng theo giá
+      if (price) {
+        if (typeof price.to === 'string' && price.to.endsWith('+')) {
+          const minPrice = parseInt(price.from, 10);
+          if (!isNaN(minPrice)) {
+            query = query.filter(item => item.price >= minPrice);
+          }
+        } else if (typeof price === 'object' && price.from !== undefined && price.to !== undefined) {
+          const fromPrice = parseInt(price.from, 10);
+          const toPrice = parseInt(price.to, 10);
+          if (!isNaN(fromPrice) && !isNaN(toPrice)) {
+            query = query.filter(item => item.price >= fromPrice && item.price <= toPrice);
+          }
+        }
+      }
+
+      // Lọc mảng theo diện tích
+      if (area) {
+        if (typeof area.to === 'string' && area.to.endsWith('+')) {
+          const minArea = parseInt(area.from, 10);
+          if (!isNaN(minArea)) {
+            query = query.filter(item => item.area >= minArea);
+          }
+        } else if (typeof area === 'object' && area.from !== undefined && area.to !== undefined) {
+          const fromArea = parseInt(area.from, 10);
+          const toArea = parseInt(area.to, 10);
+          if (!isNaN(fromArea) && !isNaN(toArea)) {
+            query = query.filter(item => item.area >= fromArea && item.area <= toArea);
+          }
+        }
+      }
+      totalItems = query.length;
+      totalPages = Math.ceil(totalItems / limit);
+      results = query.slice((page - 1) * limit, page * limit);
+    } else {
+      // Truy vấn dựa trên từ khóa tìm kiếm
+      if (searchInput) {
+        const keywordRegex = new RegExp(searchInput, 'i');
+        query = query.or([
+          { title: { $regex: keywordRegex } },
+          { exactAddress: { $regex: keywordRegex } },
+          { street: { $regex: keywordRegex } },
+          { details: { $regex: keywordRegex } },
+          { contactMobile: { $regex: keywordRegex } },
+          { contactName: { $regex: keywordRegex } }
+        ]);
+  
+        // Nếu searchInput có thể được chuyển đổi sang số, thì thêm điều kiện cho price và area
+        const searchInputNumber = Number(searchInput);
+        if (!isNaN(searchInputNumber)) {
+          query = query.or([
+            { price: searchInputNumber },
+            { area: searchInputNumber },
+          ]);
+        }
+      }
+  
+      // Truy vấn province, district và ward từ collections
+      if (location) {
+        let provinceObjectId;
+        let districtObjectId;
+        let wardObjectId;
+  
+        // Tìm kiếm ObjectId của tỉnh
+        if (location.provinceId) {
+          const province = await Province.findOne({
+            id: location.provinceId
+          }).exec();
+  
+          if (!province) {
+            return res.status(404).json({
+              message: 'Province not found'
+            });
+          }
+          provinceObjectId = province._id; // Lưu ObjectId của tỉnh
+        }
+  
+        // Tìm kiếm ObjectId của quận
+        if (location.districtId) {
+          const district = await District.findOne({
+            id: location.districtId
+          }).exec();
+  
+          if (!district) {
+            return res.status(204).json({
+              message: 'District not found'
+            });
+          }
+          districtObjectId = district._id; // Lưu ObjectId của quận
+        }
+  
+        // Tìm kiếm ObjectId của phường
+        if (location.wardId) {
+          const ward = await Ward.findOne({
+            id: location.wardId
+          }).exec();
+  
+          if (!ward) {
+            return res.status(204).json({
+              message: 'Ward not found'
+            });
+          }
+          wardObjectId = ward._id; // Lưu ObjectId của phường
+        }
+  
+        // Thêm điều kiện province vào truy vấn
+        if (provinceObjectId) {
+          query = query.where('province').equals(provinceObjectId);
+        }
+  
+        // Thêm điều kiện district vào truy vấn
+        if (districtObjectId) {
+          query = query.where('district').equals(districtObjectId);
+        }
+  
+        // Thêm điều kiện ward vào truy vấn
+        if (wardObjectId) {
+          query = query.where('ward').equals(wardObjectId);
+        }
+      }
+  
+      // Thêm điều kiện cho giá
+      if (price) {
+        if (typeof price.to == 'string' && price.to.endsWith('+')) {
+          const minPrice = parseInt(price.from, 10); // Lấy giá trị trước dấu +
+          if (!isNaN(minPrice)) {
+            query = query.where('price').gte(minPrice);
+          }
+        } else if (typeof price === 'object' && price.from !== undefined && price.to !== undefined) {
+          const fromPrice = parseInt(price.from, 10);
+          const toPrice = parseInt(price.to, 10);
+          
+          if (!isNaN(fromPrice) && !isNaN(toPrice)) {
+            query = query.where('price').gte(fromPrice).lte(toPrice);
+          }
+        }
+      }
+  
+      // Thêm điều kiện cho diện tích
+      if (area) {
+        if (typeof area.to == 'string' && area.to.endsWith('+')) {
+          const minArea = parseInt(area.from, 10); // Lấy giá trị trước dấu +
+          if (!isNaN(minArea)) {
+            query = query.where('area').gte(minArea);
+          }
+        } else if (typeof area === 'object' && area.from !== undefined && area.to !== undefined) {
+          const fromArea = parseInt(area.from, 10);
+          const toArea = parseInt(area.to, 10);
+          
+          if (!isNaN(fromArea) && !isNaN(toArea)) {
+            query = query.where('area').gte(fromArea).lte(toArea);
+          }
+        }
+      }
+
+      
+      query = query.skip((page - 1) * limit).limit(limit);
+      results = await query.populate('province').populate('district').populate('ward').exec();
+      totalPages = Math.ceil(results.length / limit);
+      totalItems = results.length;
     }
 
-    query = query.skip((page - 1) * limit).limit(limit);
-    const results = await query.populate('province').populate('district').populate('ward').exec();
-    console.log("Final Results: ", results);
 
-    // Đếm tổng số kết quả không phân trang
-    const totalItems = await Room.countDocuments(); // Đếm số lượng mục tổng cộng
 
     // Trả kết quả về client, bao gồm cả thông tin phân trang
     return res.json({
-      results, // Kết quả tìm kiếm cho trang hiện tại
+      results: results, // Kết quả tìm kiếm cho trang hiện tại
       currentPage: page, // Trang hiện tại
-      totalPages: Math.ceil(totalItems / limit), // Tổng số trang
-      totalItems // Tổng số mục
+      totalPages: totalPages, // Tổng số trang
+      totalItems: totalItems // Tổng số mục
     });
   } catch (error) {
     console.error(error);
@@ -219,6 +378,164 @@ const searchRoom = async (req, res) => {
     });
   }
 };
+
+// const searchRoom = async (req, res) => {
+//   const {
+//     roomType,
+//     location,
+//     price,
+//     area
+//   } = req.body;
+//   console.log("reqbody: ", req.body);
+
+//   try {
+//     let query; // Khởi tạo truy vấn
+//     let {
+//       page = 1, limit = 9
+//     } = req.query; // Lấy page và limit từ query string (mặc định page 1, mỗi trang 9 mục)
+//     page = parseInt(page, 10);
+//     limit = parseInt(limit, 10);
+
+//     // Lựa chọn collection dựa trên roomType
+//     switch (roomType) {
+//       case 'PHÒNG TRỌ':
+//         query = Room.find(); // Sử dụng Room
+//         break;
+//       case 'NHÀ Ở':
+//         query = House.find(); // Sử dụng House
+//         break;
+//       case 'CĂN HỘ':
+//         query = Apartment.find(); // Sử dụng Apartment
+//         break;
+//       case 'TÌM NGƯỜI Ở GHÉP':
+//         query = FindRoommate.find(); // Sử dụng FindRoommate
+//         break;
+//       default:
+//         return res.status(400).json({
+//           message: 'Invalid room type'
+//         });
+//     }
+
+//     // Truy vấn province, district và ward từ collections
+//     if (location) {
+//       let provinceObjectId;
+//       let districtObjectId;
+//       let wardObjectId;
+
+//       // Tìm kiếm ObjectId của tỉnh
+//       if (location.provinceId) {
+//         const province = await Province.findOne({
+//           id: location.provinceId
+//         }).exec();
+
+//         if (!province) {
+//           return res.status(404).json({
+//             message: 'Province not found'
+//           });
+//         }
+//         provinceObjectId = province._id; // Lưu ObjectId của tỉnh
+//       }
+
+//       // Tìm kiếm ObjectId của quận
+//       if (location.districtId) {
+//         const district = await District.findOne({
+//           id: location.districtId
+//         }).exec();
+
+//         if (!district) {
+//           return res.status(204).json({
+//             message: 'District not found'
+//           });
+//         }
+//         districtObjectId = district._id; // Lưu ObjectId của quận
+//       }
+
+//       // Tìm kiếm ObjectId của phường
+//       if (location.wardId) {
+//         const ward = await Ward.findOne({
+//           id: location.wardId
+//         }).exec();
+
+//         if (!ward) {
+//           return res.status(204).json({
+//             message: 'Ward not found'
+//           });
+//         }
+//         wardObjectId = ward._id; // Lưu ObjectId của phường
+//       }
+
+//       // Thêm điều kiện province vào truy vấn
+//       if (provinceObjectId) {
+//         query = query.where('province').equals(provinceObjectId);
+//       }
+
+//       // Thêm điều kiện district vào truy vấn
+//       if (districtObjectId) {
+//         query = query.where('district').equals(districtObjectId);
+//       }
+
+//       // Thêm điều kiện ward vào truy vấn
+//       if (wardObjectId) {
+//         query = query.where('ward').equals(wardObjectId);
+//       }
+//     }
+
+//     // Thêm điều kiện cho giá
+//     if (price) {
+//       if (typeof price.to == 'string' && price.to.endsWith('+')) {
+//         const minPrice = parseInt(price.from, 10); // Lấy giá trị trước dấu +
+//         if (!isNaN(minPrice)) {
+//           query = query.where('price').gte(minPrice);
+//         }
+//       } else if (typeof price === 'object' && price.from !== undefined && price.to !== undefined) {
+//         const fromPrice = parseInt(price.from, 10);
+//         const toPrice = parseInt(price.to, 10);
+        
+//         if (!isNaN(fromPrice) && !isNaN(toPrice)) {
+//           query = query.where('price').gte(fromPrice).lte(toPrice);
+//         }
+//       }
+//     }
+
+//     // Thêm điều kiện cho diện tích
+//     if (area) {
+//       if (typeof area.to == 'string' && area.to.endsWith('+')) {
+//         const minArea = parseInt(area.from, 10); // Lấy giá trị trước dấu +
+//         if (!isNaN(minArea)) {
+//           query = query.where('area').gte(minArea);
+//         }
+//       } else if (typeof area === 'object' && area.from !== undefined && area.to !== undefined) {
+//         const fromArea = parseInt(area.from, 10);
+//         const toArea = parseInt(area.to, 10);
+        
+//         if (!isNaN(fromArea) && !isNaN(toArea)) {
+//           query = query.where('area').gte(fromArea).lte(toArea);
+//         }
+//       }
+//     }
+
+//     query = query.skip((page - 1) * limit).limit(limit);
+//     const results = await query.populate('province').populate('district').populate('ward').exec();
+//     console.log("Final Results: ", results);
+
+
+//     // Trả kết quả về client, bao gồm cả thông tin phân trang
+//     console.log("results: ",results)
+//     console.log("totalPages: ",Math.ceil(results.length / limit))
+//     console.log("totalItems: ",results.length)
+//     return res.json({
+//       results, // Kết quả tìm kiếm cho trang hiện tại
+//       currentPage: page, // Trang hiện tại
+//       totalPages: Math.ceil(results.length / limit), // Tổng số trang
+//       totalItems: results.length // Tổng số mục
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({
+//       message: 'Internal server error'
+//     });
+//   }
+// };
 
   
       const searchHost = async (req, res) => {

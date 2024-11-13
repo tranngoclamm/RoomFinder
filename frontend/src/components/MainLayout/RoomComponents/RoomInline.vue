@@ -18,7 +18,7 @@
       </a>
     </div>
     <div v-if="this.roomType=='favorites'">
-      <router-link :to="{ path: '/favorites', query: { refresh: Date.now() } }">Hủy</router-link>
+      <a href="" @click.prevent="fetchData">Hủy</a>
       <a class="ml-4" href="" @click.prevent="updateFavorites()">Lưu</a>
     </div>
   </div>
@@ -47,7 +47,7 @@
                       <div @click.prevent="toggleFavorite(item)"
                         class="apartment__list__card__container__facilities__balcony d-flex align-items-center">
                         <img
-                          :src="favorites.includes(item._id) ? require('@/assets/images/ic-heart-active.svg') : require('@/assets/images/ic-heart.svg')"
+                          :src="this.favoriteRooms.includes(item._id) ? require('@/assets/images/ic-heart-active.svg') : require('@/assets/images/ic-heart.svg')"
                           alt="" class="inline-heart">
                       </div>
                     </div>
@@ -93,19 +93,22 @@
       </div>
     </div>
   </div>
-
-  <!-- navigation -->
-  <!-- modal-detail -->
-  <ul v-show="!loading" role="navigation" class="pagination mb-3">
-    <li aria-disabled="true" aria-label="« Previous" class="page-item disabled"><span aria-hidden="true"
-        class="page-link">‹</span></li>
-    <li aria-current="page" class="page-item active"><span class="page-link">1</span></li>
-    <li class="page-item"><a href="/list?page=2" class="page-link">2</a></li>
-    <li class="page-item"><a href="/list?page=3" class="page-link">3</a></li>
-    <li class="page-item"><a href="/list?page=4" class="page-link">4</a></li>
-    <li class="page-item"><a href="/list?page=2" rel="next" aria-label="Next »" class="page-link">›</a></li>
-  </ul>
-
+  
+    <!-- Pagination Navigation -->
+    <div class="d-flex justify-content-center" v-if="items.length != 0">
+      <ul role="navigation" class="pagination mb-3">
+        <li @click="goToPage(currentPage - 1)" :class="{ disabled: currentPage === 1, 'cursor-pointer': currentPage !== 1 }" class="page-item">
+          <span aria-hidden="true" class="page-link">‹</span>
+        </li>
+        <li v-for="page in totalPages" :key="page" @click="goToPage(page)" :class="{ active: currentPage === page }"
+          class="page-item cursor-pointer">
+          <span class="page-link">{{ page }}</span>
+        </li>
+        <li @click="goToPage(currentPage + 1)" :class="{ disabled: currentPage === totalPages, 'cursor-pointer': currentPage !== totalPages  }" class="page-item">
+          <span aria-hidden="true" class="page-link cursor-pointer">›</span>
+        </li>
+      </ul>
+    </div>
 
   <DetailRoom v-if="showDetailRoom" @close-modal="showDetailRoom = false" :apartment="selectedApartment" />
 </template>
@@ -132,7 +135,10 @@
         user: {},
         type: '',
         roomType: '',
+        currentPage: 1, // Trang hiện tại
+        totalPages: 1,
         isFavorite: false,
+        favoriteRooms: [],
         favorites: [], // Danh sách yêu thích của người dùng
         searchQuery: '',
         items: [], // Data từ server
@@ -169,9 +175,17 @@
         this.selectedApartment = apartment; // Lưu căn hộ/phòng được chọn
         this.showDetailRoom = true; // Hiển thị modal
       },
-
+      async goToPage(page) {
+      if (page < 1 || page > this.totalPages) return; // Kiểm tra nếu trang nằm trong giới hạn
+      this.currentPage = page;
+      await this.fetchData();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
       async fetchData() {
         this.loading = true;
+        if(this.$route.meta.type != this.roomType){
+          this.currentPage = 1;
+        }
         this.type = this.$route.meta.type;
         if (this.type == 'rooms') {
           this.roomType = 'rooms';
@@ -191,23 +205,23 @@
         }
         let query = {
           type: this.$route.meta.type || 'default', // Lấy loại phòng từ meta
-          page: this.$route.query.page || 1, // Lấy số trang từ query params (mặc định là 1)
+          page: this.currentPage || 1, // Lấy số trang từ query params (mặc định là 1)
           search: this.searchQuery || '',
         };
         try {
+          const user = await this.getUserProfile; // Lấy dữ liệu người dùng từ getter
           if (this.roomType === 'favorites') {
-            const user = this.getUserProfile; // Lấy dữ liệu người dùng từ getter
-
+            
             // Kiểm tra nếu `user` tồn tại và có `_id`
             if (user && user._id) {
               // Gán `userId` vào `query` khi người dùng đã đăng nhập
               query.userId = user._id;
-              const response = await getFavorites(query.userId); // Gọi API với query
+              const response = await getFavorites(query); // Gọi API với query
               this.items = response.data.results;
-
+              this.totalPages = response.data.totalPages;
+              this.favoriteRooms = response.data.allFavoriteIds;
               // Lấy tất cả các `_id` trong mảng favorites
               const favoriteIds = this.items.map(item => item._id);
-
               // Gán trực tiếp danh sách `_id` vào `this.favorites`
               this.favorites = favoriteIds;
             } else {
@@ -217,6 +231,12 @@
           } else {
             const response = await getPosts(query); // Gọi API với query
             this.items = response.data.posts;
+            this.totalPages = response.data.totalPages;
+            if (user && user._id) {
+              query.userId = user._id;
+              const response = await getFavorites(query); // Gọi API với query
+              this.favoriteRooms = response.data.allFavoriteIds;
+            }
           }
         } catch (error) {
           console.error('Lỗi lấy dữ liệu:', error);
@@ -237,7 +257,7 @@
 
           const data = {
             userId: user._id,
-            favorites: this.favorites
+            favorites: this.favoriteRooms
           };
 
           // Gọi API cập nhật danh sách yêu thích
@@ -251,7 +271,7 @@
       },
 
       async toggleFavorite(item) {
-        const user = this.getUserProfile;
+        let user = this.user;
         try {
           if (!user._id) {
             console.error("Người dùng không hợp lệ.");
@@ -259,7 +279,7 @@
           }
 
           // Kiểm tra xem phòng có trong danh sách yêu thích hay không
-          this.isFavorite = this.favorites.includes(item._id);
+          this.isFavorite = this.favoriteRooms.includes(item._id);
           const data = {
             userId: user._id,
             roomId: item._id
@@ -270,11 +290,11 @@
               if (response.status === 200) { // Kiểm tra nếu API thành công
                 this.animateHeart(item, false); // false cho việc xóa
                 // Cập nhật danh sách yêu thích trên client
-                this.favorites = this.favorites.filter(favId => favId !== item._id);
+                this.favoriteRooms = this.favoriteRooms.filter(favId => favId !== item._id);
               }
             } else {
               this.animateHeart(item, false); // false cho việc xóa
-              this.favorites = this.favorites.filter(favId => favId !== item._id);
+              this.favoriteRooms = this.favoriteRooms.filter(favId => favId !== item._id);
             }
           } else {
             if (this.roomType !== 'favorites') {
@@ -282,11 +302,11 @@
               if (response.status === 200) { // Kiểm tra nếu API thành công
                 this.animateHeart(item, true); // true cho việc thêm
                 // Cập nhật danh sách yêu thích trên client
-                this.favorites.push(item._id);
+                this.favoriteRooms.push(item._id);
               }
             } else {
               this.animateHeart(item, true); // true cho việc thêm
-              this.favorites.push(item._id);
+              this.favoriteRooms.push(item._id);
             }
           }
         } catch (error) {
@@ -325,11 +345,17 @@
     created() {
       this.fetchData(); // Gọi hàm fetchData khi component được tạo
     },
-    mounted() {
+    async mounted() {
       this.user = this.getUserProfile;
-      // const user = JSON.parse(localStorage.getItem('user'));
       if (this.user && this.user._id) {
-        this.favoriteRooms = ['exampleRoomId1', 'exampleRoomId2']; // Placeholder cho danh sách yêu thích
+        let query = {
+          type: this.$route.meta.type || 'default', // Lấy loại phòng từ meta
+          page: 1, // Lấy số trang từ query params (mặc định là 1)
+          search: this.searchQuery || '',
+          userId: this.user._id
+        };
+        const response = await getFavorites(query); // Gọi API với query
+        this.favoriteRooms = response.data.allFavoriteIds;
       }
     },
   };

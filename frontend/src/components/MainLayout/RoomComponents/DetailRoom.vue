@@ -48,8 +48,8 @@
                     <p data-v-524c0c0c="" style="min-height:100px">{{ apartment.details }}</p> <!-- Sử dụng giá trị động từ apartment -->
                   </div>
                   <div v-if="(apartment.userId?._id || '') !== (this.getUserProfile?._id || '')" data-v-524c0c0c="" class="info__details__list d-flex align-items-center position-relative">
-                    <h6 data-v-524c0c0c="" @click="sentDataAndOpenChat(apartment.userId)" class="m-0">Liên hệ: {{ apartment.contactName }}</h6> <!-- Sử dụng giá trị động từ apartment -->
-                    <p class="m-0 ps-2"> (+{{ apartment.contactMobile }})</p> <!-- Sử dụng giá trị động từ apartment -->
+                    <h6 data-v-524c0c0c="" @click="sentDataAndOpenChat(apartment.userId)" class="m-0 cursor-pointer">Liên hệ: {{ apartment.contactName }}</h6> <!-- Sử dụng giá trị động từ apartment -->
+                    <p class="m-0 ps-2 cursor-pointer"> (+{{ apartment.contactMobile }})</p> <!-- Sử dụng giá trị động từ apartment -->
                     <div data-v-524c0c0c="" style="right: -8%" class="position-absolute top-50 translate-middle hover list-inline info__details__social d-flex align-items-center">
                       <a data-v-524c0c0c="" class="list-inline-item" @click.prevent="redirectToVnpay">
                         <p data-v-524c0c0c="" href="https://www.facebook.com/rentroom.md/" target="_blank">Đặt cọc</p>
@@ -90,6 +90,7 @@
       sentDataAndOpenChat(user){
                 this.setChatUser(user)
                 this.openMessageDetail()
+                this.close()
       },
       close() {
         this.$emit('close-modal');

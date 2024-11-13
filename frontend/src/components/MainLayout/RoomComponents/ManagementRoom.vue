@@ -124,7 +124,6 @@
         try {
           const response = await getHistories(this.getUserProfile._id, page, this.pageSize);  // Gọi API lấy tin mới nhất
           if (response && response.data) {
-            console.log(response.data.payments)
             this.histories = response.data.payments;
             this.currentPage = response.data.currentPage;
             this.pageSize = response.data.pageSize;

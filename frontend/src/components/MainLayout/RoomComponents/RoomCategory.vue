@@ -7,8 +7,8 @@
                 <h2 ref="latestPostTitle">Mới nhất</h2>
             </div>
             <div class="view-switcher__element"><input type="hidden" value="en">
-                <input v-model="searchQuery" type="text" placeholder="Nhập nội dung tìm kiếm" class="form-control"> 
-                <a href="#" @click.prevent="search"><i class="fas fa-search"></i></a>
+                <input spellcheck="false" v-model="searchQuery" type="text" placeholder="Nhập nội dung tìm kiếm" class="form-control"> 
+                <a href="#" @click.prevent="searchWithInput"><i class="fas fa-search"></i></a>
                 <a href="#" style="display: none;"></a> 
                 <a class="active">
                     <i class="fas fa-th-large"></i>
@@ -120,8 +120,10 @@
       }
     },
     search() {
-      console.log(this.searchQuery);
       this.$emit('search', this.searchQuery);
+    },
+    searchWithInput(){
+      this.$emit('searchWithInput', this.searchQuery);
     },
     scrollToLatestPostTitle() {
           const titleElement = this.$refs.latestPostTitle; // Giả sử bạn đã thêm ref vào h2
@@ -140,6 +142,11 @@
   components: {
     DetailRoom, // Đăng ký component
   },
+  watch:{
+    searchQuery() {
+      this.$emit('search', this.searchQuery);
+    },
+  }
   };
   </script>
   

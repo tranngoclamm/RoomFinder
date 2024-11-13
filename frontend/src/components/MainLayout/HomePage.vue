@@ -1,23 +1,23 @@
 <!-- HomePage.vue -->
 <template>
   <LoadingPreloader :isLoading="isLoading" />
-  <HeaderRoom @search="handleSearch" @scroll-to-latestPostTitle="scrollToLatestPostTitle" />
+  <HeaderRoom @search="receiveEmitFromHeader" @scroll-to-latestPostTitle="scrollToLatestPostTitle" />
   <div v-if="!isLoading" :class="{ loaded: !isLoading }" class="main_content">
     <TrendRoom />
     <BlogHomePage />
-    <RoomCategory ref="roomCategory" @search="receiveEmit" :results="dataSearch" :total-pages="totalPages"
+    <RoomCategory ref="roomCategory" @search="receiveEmit" @searchWithInput="searchWithInput" :results="dataSearch" :total-pages="totalPages"
       :current-page="currentPage" />
     <!-- Pagination Navigation -->
-    <div class="d-flex justify-content-center">
+    <div class="d-flex justify-content-center" v-if="dataSearch.length != 0">
       <ul role="navigation" class="pagination mb-3">
-        <li @click="goToPage(currentPage - 1)" :class="{ disabled: currentPage === 1 }" class="page-item">
+        <li @click="goToPage(currentPage - 1)" :class="{ disabled: currentPage === 1, 'cursor-pointer': currentPage !== 1 }" class="page-item">
           <span aria-hidden="true" class="page-link">‹</span>
         </li>
         <li v-for="page in totalPages" :key="page" @click="goToPage(page)" :class="{ active: currentPage === page }"
-          class="page-item">
+          class="page-item cursor-pointer">
           <span class="page-link">{{ page }}</span>
         </li>
-        <li @click="goToPage(currentPage + 1)" :class="{ disabled: currentPage === totalPages }" class="page-item">
+        <li @click="goToPage(currentPage + 1)" :class="{ disabled: currentPage === totalPages, 'cursor-pointer': currentPage !== totalPages }" class="page-item">
           <span aria-hidden="true" class="page-link">›</span>
         </li>
       </ul>
@@ -39,7 +39,7 @@
   import FooterRoom from './FooterRoom.vue';
   import PostNewModal from './RoomComponents/PostNewModal.vue';
   import {
-    // searchRoom,
+    searchRoom,
     getLatestPosts
   } from '@/services/api'; // Import hàm gọi API từ api.js
 
@@ -60,6 +60,7 @@
         results: '',
         dataSearch: [],
         fullname: '',
+        formData: {},
         selectedArea:{
                       from: 0,
                       to: "50+",
@@ -70,6 +71,7 @@
             from: 0,
             to: "30+",
           },
+        searchInput: '',
         selectedRoomType:'All',
         currentPage: 1, // Trang hiện tại
         totalPages: 0,
@@ -112,6 +114,7 @@
     },
     methods: {
       scrollToLatestPostTitle() {
+        this.fetchLatestPostsWithSearch();
         this.$refs.roomCategory.scrollToLatestPostTitle(); // Gọi phương thức
       },
       openModal() {
@@ -142,39 +145,60 @@
       }
     },
     receiveEmit(searchInput) {
-      this.fetchLatestPosts(searchInput, 1); // Gọi API với trang đầu tiên
+      if(this.searchInput != searchInput){
+          this.currentPage = 1;
+        }
+      this.searchInput = searchInput;
+      // this.fetchLatestPosts(searchInput, 1); // Gọi API với trang đầu tiên
+    },
+    searchWithInput(searchInput){
+      this.formData.searchInput = searchInput;
+      // this.receiveEmit(searchInput);
+      this.scrollToLatestPostTitle();
     },
     goToPage(page) {
       if (page < 1 || page > this.totalPages) return; // Kiểm tra nếu trang nằm trong giới hạn
       this.currentPage = page;
-      this.fetchLatestPosts('', page); // Gọi API với trang hiện tại
+      this.fetchLatestPostsWithSearch();
+      this.scrollToLatestPostTitle();
+
     },
 
-      async handleSearch(formData) {
-        this.selectedRoomType = formData.roomType;
-        this.selectedLocation = formData.location;
-        this.selectedPrice = formData.price;
-        this.selectedArea = formData.area;
-        console.log(formData)
-        console.log(this.selectedArea)
-        console.log(this.selectedLocation)
-        console.log(this.selectedPrice)
-        console.log(this.selectedRoomType)
-        // try {
-        //   // Gửi yêu cầu tìm kiếm phòng
-        //   const response = await searchRoom(formData);
-        //   // Kiểm tra phản hồi và cập nhật kết quả
-        //   if (response && response.data) {
-        //     this.dataSearch = response.data.results; // Kết quả của trang hiện tại
-        //     this.totalPages = response.data.totalPages; // Tổng số trang
-        //     this.currentPage = response.data.currentPage; // Trang hiện tại
-        //     // Thực hiện cập nhật giao diện hoặc render lại dữ liệu
-        //   } else {
-        //     console.warn('No data found in response.');
-        //   }
-        // } catch (error) {
-        //   console.error('Error:', error);
-        // }
+      async receiveEmitFromHeader(data) {
+        if(this.selectedRoomType != data.roomType || 
+          this.selectedLocation != data.location ||
+          this.selectedPrice != data.price ||
+          this.selectedArea != data.area ){
+            this.currentPage = 1;
+        }
+        this.selectedRoomType = data.roomType;
+        this.selectedLocation = data.location;
+        this.selectedPrice = data.price;
+        this.selectedArea = data.area;
+        this.formData = {
+          ...data,
+          searchInput: this.searchInput, 
+        };
+        // this.fetchLatestPostsWithSearch();
+
+      },
+
+      async fetchLatestPostsWithSearch() {
+        try {
+          // Gửi yêu cầu tìm kiếm phòng
+          const response = await searchRoom(this.formData, this.currentPage);
+          // Kiểm tra phản hồi và cập nhật kết quả
+          if (response && response.data) {
+            this.dataSearch = response.data.results; // Kết quả của trang hiện tại
+            this.totalPages = response.data.totalPages; // Tổng số trang
+            this.currentPage = response.data.currentPage; // Trang hiện tại
+            // Thực hiện cập nhật giao diện hoặc render lại dữ liệu
+          } else {
+            console.warn('No data found in response.');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
 
       },
     },

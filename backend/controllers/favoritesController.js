@@ -66,6 +66,7 @@ const getFavorites = async (req, res) => {
 
     // Tổng hợp tất cả các kết quả từ các collections
     const allFavorites = [...rooms, ...houses, ...apartments, ...findRoommates];
+    const allFavoriteIds = allFavorites.map(item => item._id);
 
     // Số lượng phần tử
     const totalItems = allFavorites.length;
@@ -79,6 +80,7 @@ const getFavorites = async (req, res) => {
 
     // Trả kết quả về client
     return res.status(200).json({
+      allFavoriteIds: allFavoriteIds,
       results: paginatedFavorites, // Danh sách các bài yêu thích đã populate theo trang
       totalItems,                  // Tổng số bài yêu thích
       currentPage: parseInt(page, 10),

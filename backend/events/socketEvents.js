@@ -5,8 +5,8 @@ const onlineUsers = {};
 module.exports = (io, socket) => {
   // Đăng ký user
   socket.on('registerUser', (userId) => {
-    onlineUsers[userId] = socket;
-    console.log(`User ${userId} is online`);
+    onlineUsers[userId._id] = socket;
+    console.log(`User ${userId.username} is online`);
   });
 
   // Xử lý khi gửi tin nhắn

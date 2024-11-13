@@ -162,7 +162,6 @@ const vnpayReturn = async (req, res) => {
     vnp_CardType,
     vnp_BankCode
   } = req.query;
-  console.log("req: ", req)
   // Kiểm tra chữ ký (secure hash) để đảm bảo tính xác thực
   // const isValid = verifyVnpaySignature(req.query, vnp_SecureHash);
 

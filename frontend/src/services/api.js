@@ -24,6 +24,11 @@ export const getPosts = (query) => {
   });
 };
 
+// Hàm lấy bài đăng của người dùng
+export const getUserPosts = (userId) => {
+  return axios.get(`${API_URL}/posts/user/${userId}`, {
+  });
+};
 
 // Hàm lấy bài đăng mới nhất
 export const getLatestPosts = (query) => {
@@ -53,8 +58,10 @@ export const searchLocation = (query) => {
 };
 
 // Hàm tìm kiếm ở HomePage 
-export const searchRoom = (data) => {
-  return axios.post(`${API_URL}/search-room`, data);
+export const searchRoom = (data, page) => {
+  return axios.post(`${API_URL}/search-room`, data,{
+    params: { page: page }
+  });
 };
 
 // Hàm tìm kiếm chủ trọ ở đăng tin
@@ -73,7 +80,9 @@ export const searchHistory = (data) => {
 // Hàm lấy danh sách yêu thích
 export const getFavorites = (query) => {
   return axios.get(`${API_URL}/favorites`,{
-    params: { userId: query }
+    params: { userId: query.userId ,
+            page: query.page
+    }
   });
 };
 

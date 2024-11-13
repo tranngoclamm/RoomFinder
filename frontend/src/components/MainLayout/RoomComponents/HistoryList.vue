@@ -55,7 +55,7 @@
         </div>
       </div>
     </div>
-    <ul role="navigation" class="pagination mb-3 mt-4 d-flex align-items-center justify-content-center">
+    <ul role="navigation" v-if="filteredHistories.length != 0" class="pagination mb-3 mt-4 d-flex align-items-center justify-content-center">
       <li :class="['page-item', currentPage === 1 ? 'disabled' : '']">
         <a @click.prevent="changePage(currentPage - 1)" href="#" aria-label="« Previous" class="page-link">‹</a>
       </li>
@@ -124,7 +124,6 @@
         try {
           const response = await getHistories(this.getUserProfile._id, page, this.pageSize);  // Gọi API lấy tin mới nhất
           if (response && response.data) {
-            console.log(response.data.payments)
             this.histories = response.data.payments;
             this.currentPage = response.data.currentPage;
             this.pageSize = response.data.pageSize;

@@ -28,7 +28,9 @@
   import DetailRoom from './RoomComponents/DetailRoom.vue'; 
   import BlogPostMain from './BlogPost/BlogPostMain.vue'; 
   import { search } from '@/services/api'; // Import hàm gọi API từ api.js
-
+  import {
+    mapGetters,
+  } from 'vuex';
   
   export default {
     components: {
@@ -69,7 +71,7 @@
             };
             try {
               if (!searchData.searchString || typeof searchData.searchString !== 'string') {
-              alert('Vui lòng nhập nội dung tìm kiếm hợp lệ.');
+              // alert('Vui lòng nhập nội dung tìm kiếm hợp lệ.');
               return; // Stop execution if the search string is not valid
             }
               await search(searchData);
@@ -88,6 +90,9 @@
 
       closeModal() {
         this.showModal = false; // Đóng modal
+      },
+      computed: {
+      ...mapGetters(['getUserProfile']),
       },
     },
   };
