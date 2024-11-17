@@ -25,7 +25,7 @@
                   </div>
                   <div data-v-524c0c0c="" class="info__details__list">
                     <h6 data-v-524c0c0c="">Địa chỉ</h6>
-                    <p data-v-524c0c0c="" style="height:40px">
+                    <p data-v-524c0c0c="">
                       {{ apartment.exactAddress && apartment.exactAddress ? apartment.exactAddress + ',' : '' }}
                       {{ apartment.street && apartment.street ? apartment.street + ',' : '' }}
                       {{ apartment.ward && apartment.ward.full_name ? apartment.ward.full_name + ',' : '' }}

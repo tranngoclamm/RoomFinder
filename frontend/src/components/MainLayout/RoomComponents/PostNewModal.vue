@@ -472,11 +472,13 @@
           if (response.data) {
             // Xử lý phản hồi thành công
             alert('Bài đăng đã được gửi thành công!');
-            this.closeModal(); // Đóng modal nếu gửi thành công
           }
         } catch (error) {
           console.error('Error:', error);
           alert(error.response ? error.response.data.message : 'Đã xảy ra lỗi, vui lòng thử lại.');
+        }finally{
+          this.closeModal(); // Đóng modal nếu gửi thành công
+          window.location.href = this.$route.fullPath;
         }
         async function blobToFile(blobUrl, fileName) {
           const response = await fetch(blobUrl);

@@ -2137,6 +2137,11 @@ span.email-notes{
         margin-left: 1.5rem;
         letter-spacing: 0.9px; 
         /* font-family: 'Poppins', sans-serif; */
+        display: -webkit-box;
+        -webkit-line-clamp: 6; /* Hiển thị tối đa 6 dòng */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis; 
     }
     @media only screen and (max-width: 769px) {
     .contacte .info__details__list p[data-v-524c0c0c] {

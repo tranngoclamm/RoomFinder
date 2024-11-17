@@ -34,10 +34,10 @@
                             <td>{{ history.itemId.price }}tr</td>
                             <td>
                               <span v-if="history.itemId.status === 'sold' && history.status === 'success' && this.getUserProfile._id != history.buyUser._id">
-                                Đã bán
+                                Đã cho thuê
                               </span>
                               <span v-else-if="history.itemId.status === 'sold' && history.status === 'success' && this.getUserProfile._id == history.buyUser._id">
-                                Đã mua
+                                Đã cọc
                               </span>
                               <span v-else>
                                 {{ history.itemId.status }}

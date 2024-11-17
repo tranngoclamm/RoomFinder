@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const { registerUser, loginUser } = require('../controllers/authController');
-const { getPosts, getLatestPosts, createPost, searchPosts, getAllPostsForAnalytics, getUserPosts } = require('../controllers/postController');
+const { getPosts, getLatestPosts, createPost, deletePosts, searchPosts, getAllPostsForAnalytics, getUserPosts } = require('../controllers/postController');
 const { getFavorites, updateFavorites, addFavorite, removeFavorite} = require('../controllers/favoritesController');
 const { analyzeSearchHistory } = require('../controllers/searchHistory'); 
 const { searchLocation, searchRoom, searchHost } = require('../controllers/searchController');
@@ -34,6 +34,7 @@ router.post('/register', registerUser);
 // Bài đăng
 router.get('/posts', getPosts); // Lấy bài đăng theo loại
 router.post('/posts', upload.array('images'), createPost); 
+router.post('/posts/delete', deletePosts); 
 router.get('/latest-posts', getLatestPosts); // Lấy bài đăng mới nhất
 router.get('/posts/user/:userId', getUserPosts); // Lấy phòng của người dùng đã đăng
 

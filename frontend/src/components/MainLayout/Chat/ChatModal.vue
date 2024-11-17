@@ -94,10 +94,10 @@
                 <!-- Profile Receiver Information -->
                 <div v-if="messages.length == 0"
                   class="profile-receiver d-flex justify-content-center align-items-center flex-column">
-                  <img v-if="chatUser.profilePicture" :src="chatUser.profilePicture" alt="Avatar" class="avatar-icon" />
+                  <img v-if="chatUser?.profilePicture" :src="chatUser.profilePicture || 'https://res.cloudinary.com/dlawgdb8h/image/upload/v1730344959/avatars/kn6xdlvb6hivqkhka000.jpg'" alt="Avatar" class="avatar-icon" />
                   <img v-else :src="defaultProfilePicture" alt="Default Avatar" class="avatar-icon" />
 
-                  <p class="name-user">{{ chatUser.fullName }}</p>
+                  <p class="name-user">{{ chatUser?.fullName }}</p>
                 </div>
 
                 <!-- Messages Content -->

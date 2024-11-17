@@ -412,6 +412,51 @@ const createPost = async (req, res) => {
   }
 };
 
+const deletePosts = async (req, res) => {
+  const { ids } = req.body; // Lấy danh sách id từ request body
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ message: 'Danh sách id không hợp lệ hoặc trống.' });
+  }
+
+  try {
+    // Khởi tạo danh sách các promises xóa
+    const deletePromises = ids.map(async (id) => {
+      // Kiểm tra và xóa trong từng collection
+      const deletedRoom = await Room.findByIdAndDelete(id);
+      if (deletedRoom) return { id, collection: 'Room', success: true };
+
+      const deletedHouse = await House.findByIdAndDelete(id);
+      if (deletedHouse) return { id, collection: 'House', success: true };
+
+      const deletedApartment = await Apartment.findByIdAndDelete(id);
+      if (deletedApartment) return { id, collection: 'Apartment', success: true };
+
+      const deletedFindRoommate = await FindRoommate.findByIdAndDelete(id);
+      if (deletedFindRoommate) return { id, collection: 'FindRoommate', success: true };
+
+      // Nếu không tìm thấy, trả về thông báo thất bại
+      return { id, collection: null, success: false };
+    });
+
+    // Chờ tất cả các thao tác xoá hoàn tất
+    const results = await Promise.all(deletePromises);
+
+    // Phân loại kết quả
+    const successfulDeletes = results.filter((result) => result.success);
+    const failedDeletes = results.filter((result) => !result.success);
+
+    // Trả kết quả về cho client
+    return res.status(200).json({
+      message: 'Đã xử lý xóa bài viết.',
+      successfulDeletes, // Danh sách bài viết xóa thành công
+      failedDeletes, // Danh sách bài viết không tìm thấy hoặc thất bại
+    });
+  } catch (error) {
+    console.error('Lỗi khi xóa bài viết:', error);
+    return res.status(500).json({ message: 'Đã xảy ra lỗi khi xóa bài viết.' });
+  }
+};
+
 // 
 const searchPosts = async (req, res) => {
   const { searchString, category, province, district, minPrice, maxPrice, minArea, maxArea, page = 1 } = req.body; // Nhận các tham số tìm kiếm từ request body
@@ -595,4 +640,4 @@ const getAllPostsForAnalytics = async (req, res) => {
 
 
 
-module.exports = { getPosts, getLatestPosts, createPost, searchPosts, getAllPostsForAnalytics, getUserPosts }; // Export cả searchPosts
+module.exports = { getPosts, getLatestPosts, createPost,deletePosts, searchPosts, getAllPostsForAnalytics, getUserPosts }; // Export cả searchPosts
