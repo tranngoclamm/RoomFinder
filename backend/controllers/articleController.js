@@ -40,6 +40,63 @@ const createArticle = async (req, res) => {
     }
 };
 
+// Xóa bài viết
+const deleteArticle = async (req, res) => {
+    const { id } = req.params;
+  
+    try {
+      const deletedArticle = await Article.findByIdAndDelete(id);
+      if (!deletedArticle) {
+        return res.status(404).json({ message: "Bài viết không tồn tại" });
+      }
+      res.status(200).json({ message: "Đã xóa bài viết thành công", article: deletedArticle });
+    } catch (error) {
+      console.error("Lỗi khi xóa bài viết:", error);
+      res.status(500).json({ message: "Đã xảy ra lỗi khi xóa bài viết" });
+    }
+  };
+
+// Update bài viết
+const updateArticle = async (req, res) => {
+    const { id } = req.params;
+    const { category, title, content, author, landlord } = req.body;
+  
+    try {
+      const articleToUpdate = await Article.findById(id);
+      if (!articleToUpdate) {
+        return res.status(404).json({ message: "Bài viết không tồn tại" });
+      }
+  
+      // Nếu tiêu đề thay đổi, cập nhật slug
+      if (title && title !== articleToUpdate.title) {
+        let slug = slugify(title, { lower: true });
+        const existingArticle = await Article.findOne({ slug });
+        if (existingArticle && existingArticle._id.toString() !== id) {
+          let count = 1;
+          while (await Article.findOne({ slug: `${slug}-${count}` })) {
+            count++;
+          }
+          slug = `${slug}-${count}`;
+        }
+        articleToUpdate.slug = slug;
+      }
+  
+      // Cập nhật các trường khác
+      if (category) articleToUpdate.category = category;
+      if (title) articleToUpdate.title = title;
+      if (content) articleToUpdate.content = content;
+      if (author) articleToUpdate.author = author;
+      if (landlord) articleToUpdate.landlord = landlord;
+  
+      // Lưu thay đổi
+      const updatedArticle = await articleToUpdate.save();
+      res.status(200).json({ message: "Cập nhật bài viết thành công", article: updatedArticle });
+    } catch (error) {
+      console.error("Lỗi khi cập nhật bài viết:", error);
+      res.status(500).json({ message: "Đã xảy ra lỗi khi cập nhật bài viết" });
+    }
+  };
+  
 // Lấy bài đăng mới nhất với phân trang, tìm kiếm, và lọc loại bài viết
 const getLatestArticles = async (req, res) => {
   const { query = "", page = 1, size = 10, category } = req.query;
@@ -148,4 +205,4 @@ const getArticleDetail = async (req, res) => {
 };
 
 
-module.exports = { createArticle, getLatestArticles, getArticleDetail,articlesByUser  };
+module.exports = { createArticle, getLatestArticles, updateArticle, deleteArticle, getArticleDetail,articlesByUser  };

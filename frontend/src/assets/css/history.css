@@ -5,6 +5,37 @@
     border-bottom: 1px solid #dee2e6;
     white-space: nowrap;
 }
+.line-clamp-2 {
+    display: -webkit-box; /* Kích hoạt layout để sử dụng -webkit-line-clamp */
+    -webkit-box-orient: vertical; /* Thiết lập hướng hiển thị dọc */
+    overflow: hidden; /* Ẩn nội dung vượt quá */
+    text-overflow: ellipsis; /* Hiển thị dấu "..." nếu bị cắt */
+    -webkit-line-clamp: 2; /* Hiển thị tối đa 2 dòng */
+    line-height: 1.5em; /* Chiều cao dòng */
+    max-height: 3em; /* Giới hạn chiều cao (2 dòng x 1.5em) */
+    word-wrap: break-word; /* Tự động ngắt từ nếu quá dài */
+    white-space: normal; /* Cho phép xuống dòng */
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+    border-bottom: none !important;
+    transform: translateY(-1px);
+    /* border-top: 1px solid #dee2e6; */
+  }
+  
+  .line-clamp-2b {
+     /* display: -webkit-box;
+    -webkit-box-orient:inline-axis;  */
+    overflow: hidden; /* Ẩn nội dung vượt quá */
+    text-overflow: ellipsis; /* Hiển thị dấu "..." nếu bị cắt */
+    -webkit-line-clamp: 2; /* Hiển thị tối đa 2 dòng */
+    line-height: 1.5em; /* Chiều cao dòng */
+    max-height: 3em; /* Giới hạn chiều cao (2 dòng x 1.5em) */
+    word-wrap: break-word; /* Tự động ngắt từ nếu quá dài */
+    white-space: normal; /* Cho phép xuống dòng */
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+  }
+  
 .user-wrapper .card.bootstrap-table{
     border-bottom: none;
     height: fit-content;
@@ -31,4 +62,161 @@
     margin-left: 7px;
     color: #CBCBCB;
     line-height: 0;
+}
+.delete-popup svg{
+    height: 45px;
+    width: 45px;
+}
+.delete-popup .close-btn{
+    outline: none;
+    border: none;
+    width: 14px;
+    height: 14px;
+    font-size: 12px;
+}
+.delete-popup h3{
+    font-size: 22px;
+    margin-bottom: 20px !important;
+}
+.delete-popup .button-wrapper button{
+    font-size: 13px;
+}
+.newpost-box .btn.btn-primary, .modal-footer .btn.btn-primary.bg-green {
+    color: #fff;
+    background-color: #2fa360 !important;
+    border-color: #2d995b;
+}
+.user-wrapper tr td select:focus,
+.user-wrapper tr:hover td select{
+    
+    background-color: #ececec;
+}
+.img-avatar-wrapper .image-modify.image-avatar{
+    transform: translate(16px, 4px);
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+}
+/* Modal Overlay */
+#popup-modal.delete-popup {
+    display: flex; /* Dùng flexbox để căn giữa nội dung */
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    position: fixed; /* Bao phủ toàn bộ màn hình */
+    top: 0;
+    left: 0;
+    width: 100vw; /* Độ rộng toàn màn hình */
+    height: 100vh; /* Chiều cao toàn màn hình */
+    background-color: rgba(0, 0, 0, 0.5); /* Màu nền đen mờ */
+    z-index: 50; /* Đảm bảo nằm trên các thành phần khác */
+  }
+  
+  /* Nội dung Modal */
+  #popup-modal .fixed {
+    position: fixed; /* Cố định nội dung modal */
+    background: #fff; /* Nền trắng */
+    border-radius: 8px; /* Bo góc */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Đổ bóng */
+    max-width: 430px; /* Độ rộng tối đa */
+    width: 90%; /* Độ rộng modal, co giãn theo kích thước màn hình */
+    padding: 20px; /* Khoảng cách bên trong */
+  }
+  .overflow-hidden{
+    overflow: hidden;
+  }
+  
+  /* Đóng modal */
+  #popup-modal .close-btn {
+    cursor: pointer; /* Con trỏ chỉ tay khi hover */
+    transition: color 0.3s ease, background 0.3s ease; /* Hiệu ứng khi hover */
+  }
+  
+.text-white {
+    --tw-text-opacity: 1;
+    color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.font-medium {
+    font-weight: 500;
+}
+.text-sm {
+    font-size: .875rem;
+    line-height: 1.25rem;
+}
+.text-center {
+    text-align: center;
+}
+.py-2\.5 {
+    padding-bottom: .625rem;
+    padding-top: .625rem;
+}
+.px-5 {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+}
+.bg-red-600 {
+    --tw-bg-opacity: 1;
+    background-color: #e02424;
+}
+.rounded-lg {
+    border-radius: .5rem;
+}
+.inline-flex {
+    display: inline-flex
+;
+}
+.nowrap{
+    white-space: nowrap;
+
+}
+.outline-none{
+    border: none;
+    outline: none;
+}
+.text-gray-400 {
+    --tw-text-opacity: 1;
+    color: rgb(156 163 175 / var(--tw-text-opacity));
+}
+
+.text-sm {
+    font-size: .875rem;
+    line-height: 1.25rem;
+}
+.bg-transparent {
+    background-color: transparent;
+}
+.rounded-lg {
+    border-radius: .5rem;
+}
+.justify-center {
+    justify-content: center;
+}
+.items-center {
+    align-items: center;
+}
+.w-8 {
+    width: 2rem;
+}
+.h-8 {
+    height: 2rem;
+}
+.inline-flex {
+    display: inline-flex
+;
+}
+.ms-auto {
+    -webkit-margin-start: auto;
+    margin-inline-start: auto;
+}
+.top-3 {
+    top: .75rem;
+}
+.end-2\.5 {
+    inset-inline-end: .625rem;
+}
+.absolute {
+    position: absolute;
+}
+.relative{
+    position: relative;
 }

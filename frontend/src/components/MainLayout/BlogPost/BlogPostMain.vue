@@ -4,7 +4,7 @@
     <div class="breadcrumb-list">
       <router-link to="/">RoomFinder</router-link>
       <span> > </span>
-      <router-link to="/blog-posts" @click="isBlogPostDetail=false">Tin tức</router-link>
+      <router-link to="/blog-posts" @click="isBlogPostDetail=false">{{selectedBlogType}}</router-link>
     </div>
     <div class="view-switcher__element"><input type="hidden" value="en">
       <input v-model="searchQuery" type="text" placeholder="Nhập nội dung tìm kiếm" class="form-control">
@@ -55,13 +55,13 @@
           </h3>
           <div class="sidebarbox-body">
             <ul class="box-lastnews">
-              <li @click="isBlogPostDetail=false">
+              <li @click="isBlogPostDetail=false, selectedBlogType='Tin tức'">
                 <router-link to="/blog-posts/category/news">Tin tức</router-link>
               </li>
-              <li @click="isBlogPostDetail=false">
+              <li @click="isBlogPostDetail=false, selectedBlogType='Review chủ trọ'">
                 <router-link to="/blog-posts/category/owner-review">Review chủ trọ</router-link>
               </li>
-              <li @click="isBlogPostDetail=false">
+              <li @click="isBlogPostDetail=false, selectedBlogType='Chia sẻ kinh nghiệm'">
                 <router-link to="/blog-posts/category/experience-sharing">Chia sẻ kinh nghiệm</router-link>
               </li>
             </ul>
@@ -108,6 +108,7 @@
         isBlogPostDetail: false,
         postContent: '',
         selectedUser: {},
+        selectedBlogType: "Tin tức",
       }
     },
     methods: {

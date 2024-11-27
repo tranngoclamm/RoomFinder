@@ -132,6 +132,8 @@ export default {
           if (this.rememberMe) {
             localStorage.setItem('username', this.account);
             localStorage.setItem('password', this.password);
+            localStorage.setItem('user', JSON.stringify(response.data.user));
+            localStorage.setItem('auth_token', response.data.token);
           } else {
             // Clear saved credentials if Remember Me is not checked
             localStorage.removeItem('username');
@@ -139,7 +141,6 @@ export default {
           }
 
           // Store user information in localStorage
-          localStorage.setItem('user', JSON.stringify(response.data.user));
 
           // Redirect to home or dashboard page
           this.$router.push('/');

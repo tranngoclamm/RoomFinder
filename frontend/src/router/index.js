@@ -5,6 +5,8 @@ import HomePage from '../components/MainLayout/HomePage.vue';
 import MainRoomInline from '../components/MainLayout/MainRoomInline.vue';
 import SuccessPaymentPage from '@/components/Notification/SuccessPaymentPage.vue';
 import HistoryListMain from '@/components/MainLayout/HistoryListMain.vue';
+import PostManage from '@/components/MainLayout/PostManage.vue';
+import UserManage from '@/components/MainLayout/UserManage.vue';
 
 const routes = [
   {
@@ -76,6 +78,16 @@ const routes = [
     path: '/history',
     name: 'HistoryList',
     component: HistoryListMain,
+  },
+  {
+    path: '/post-management',
+    name: 'PostManage',
+    component: PostManage,
+  },
+  {
+    path: '/user-management',
+    name: 'UserManage',
+    component: UserManage,
   },
 ]
 

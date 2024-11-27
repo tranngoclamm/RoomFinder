@@ -1,15 +1,13 @@
 <!-- PostNewModal.vue -->
 <template>
-  <div @click.self="closeModal" class="modal fade show" style="display: block;" tabindex="-1" role="dialog">
+  <div @click.self="closeModal" class="post__new-modal modal fade show" style="display: block;" tabindex="-1" role="dialog">
     <div v-if="!isBlogPostModal" class="modal-dialog modal-dialog-scrollable" role="document">
       <div class="modal-content">
-        <div class="modal-header">
+        <div class="modal-header post-modal-header">
           <h5 class="modal-title">Đăng tin</h5>
           <button type="button" class="close" @click="closeModal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
-        </div>
-        <div class="modal-body">
           <div class="newpost-box mt-2">
             <div class="form-layout detail-section">
               <div class="form-group detail-section-category w-100">

@@ -96,7 +96,12 @@
 
                           <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="#">Thông tin</a></li>
-                            <li><a class="dropdown-item" href="#">Quản lý tin</a></li>
+                            <li>
+                              <router-link to="/post-management" class="dropdown-item" href="#">Quản lý tin</router-link>
+                            </li>
+                            <li v-if="this.user.role == 'admin'">
+                              <router-link to="/user-management" class="dropdown-item" href="#">Quản lý user</router-link>
+                            </li>
                             <li>
                               <router-link to="/history" class="dropdown-item" href="#">Lịch sử giao dịch</router-link>
                             </li>

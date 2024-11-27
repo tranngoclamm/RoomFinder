@@ -12,10 +12,59 @@ export const loginUser = (userData) => {
   return axios.post(`${API_URL}/login`, userData);
 };
 
+// Hàm lấy danh sách người dùng với phân trang
+export const getUsersWithPagination = (page) => {
+  return axios.get(`${API_URL}/user`, { 
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,  // Lấy token từ localStorage
+    },
+    params: { 
+      page: page  // Truyền tham số phân trang vào query string
+    }
+  });
+};
+
+export const updateUser = (userData, userId) => {
+  return axios.put(`${API_URL}/user/update/${userId}`, userData);
+};
+
+export const updateUserRole = (userId, role) => {
+  return axios.put(
+    `${API_URL}/user/update-role/${userId}`, 
+    { role }, // Role được đưa vào body dưới dạng một đối tượng
+    {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`, // Lấy token từ localStorage
+      },
+    }
+  );
+};
+
+export const deleteUser = (userId) => {
+  return axios.delete(`${API_URL}/user/delete/${userId}`, { 
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,  // Lấy token từ localStorage
+    },
+  });
+};
+
+
 // Hàm thêm bài đăng 
 export const postNew = (formData) => {
   return axios.post(`${API_URL}/posts`, formData);
 };
+
+
+// Hàm thêm bài đăng 
+export const postUpdate = (data, id) => {
+  return axios.put(`${API_URL}/posts/${id}`, data);
+};
+
+// Hàm xóa bài đăng 
+export const deletePost = (ids) => {
+  return axios.post(`${API_URL}/posts/delete`, ids);
+};
+
 
 // Hàm lấy bài đăng theo loại
 export const getPosts = (query) => {
@@ -113,6 +162,16 @@ export const uploadImagePostToCloudinary = (formData) => {
 // Hàm lấy chi tiết tin
 export const getArticleDetail = (slug) => {
   return axios.get(`${API_URL}/blog-posts/${slug}`);
+};
+
+// Hàm update tin
+export const articleUpdate = (data, id) => {
+  return axios.put(`${API_URL}/article/${id}`, data);
+};
+
+// Hàm xóa tin
+export const deleteArticle = (id) => {
+  return axios.delete(`${API_URL}/article/${id}`);
 };
 
 // Hàm lấy danh sách tin mới nhất với các tham số tìm kiếm và phân trang

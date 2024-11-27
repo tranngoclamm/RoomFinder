@@ -2277,6 +2277,7 @@ span.email-notes{
             /* Show the indicator (dot/circle) when checked */
             /* Style the indicator (dot/circle) */
     }
+
     .m_booking__block__form__input__pay input[data-v-524c0c0c] {
               position: absolute;
               opacity: 0;
@@ -2610,4 +2611,15 @@ span.email-notes{
   
   .next-arrow {
     right: 10px;
+  }
+  .modal-header.post-modal-header{
+    display: block;
+  }
+  .post__new-modal  .close{
+    position: absolute;
+    right: 16px;
+    top: 16px;
+  }
+  .post__new-modal .modal-content{
+    overflow: scroll;
   }

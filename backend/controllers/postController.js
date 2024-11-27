@@ -239,6 +239,7 @@ const createPost = async (req, res) => {
           contactMobile,
           userId
       } = req.body;
+      console.log("req :",req.body)
            // Kiểm tra và xử lý các file ảnh từ `req.files`
     const uploadedImages = [];
     const images = req.files || []; // Lấy tất cả ảnh từ `req.files`
@@ -412,8 +413,200 @@ const createPost = async (req, res) => {
   }
 };
 
+//Update bài
+const mongoose = require('mongoose'); // Để sử dụng ObjectId
+
+const updatePost = async (req, res) => {
+  try {
+    const {
+      category,
+      title,
+      provinceId,
+      districtId,
+      wardId,
+      street,
+      exactAddress,
+      price,
+      area,
+      details,
+      contactName,
+      contactMobile,
+      userId,
+    } = req.body;
+
+    const postId = req.params.id;
+    // Tìm bài viết trong tất cả các collections để lấy category cũ
+    const categoryModels = { room: Room, house: House, apartment: Apartment, 'find-roommate': FindRoommate };
+    let existingPost = null;
+    let currentCategory = null;
+
+    for (const [key, model] of Object.entries(categoryModels)) {
+      existingPost = await model.findById(postId);
+      if (existingPost) {
+        currentCategory = key;
+        break;
+      }
+    }
+    console.log("currentCategory:",currentCategory)
+    if (!existingPost) {
+      return res.status(404).json({ message: 'Post not found in any category' });
+    }
+    const uploadedImages = [];
+    const images = req.files || []; // Lấy tất cả ảnh từ `req.files`
+      if (images) {
+
+        for (const file of images) {
+          const tempFilePath = file.path;
+          try {
+            // Upload file lên Cloudinary
+            const secureUrl = await uploadToCloudinary(tempFilePath);
+            uploadedImages.push(secureUrl);
+          } catch (error) {
+            console.error(`Error uploading image: ${error.message}`);
+          } finally {
+            // Xóa tệp tạm sau khi upload
+            fs.unlinkSync(tempFilePath);
+          }
+        }
+      }
+    // Lưu thông tin tỉnh, huyện, xã vào các collections tương ứng
+    const provinceData = await Province.findOneAndUpdate({
+      id: provinceId
+  }, // Điều kiện lọc
+  {
+      $set: {
+          updatedAt: new Date()
+      }
+  }, // Nếu cần cập nhật bất kỳ trường nào
+  {
+      new: true
+  } // Đảm bảo trả về giá trị sau khi cập nhật
+).exec();
+
+// Tìm và cập nhật quận
+let districtData = await District.findOneAndUpdate({
+  id: districtId
+}, {
+  $set: {
+      updatedAt: new Date()
+  }
+}, {
+  new: true
+}).exec();
+
+if (!districtData) {
+  // Nếu không tìm thấy districtData, gọi API để lấy dữ liệu quận/huyện
+  try {
+      const apiResponse = await axios.get(`https://esgoo.net/api-tinhthanh/2/${provinceId}.htm`);
+      const districtList = apiResponse.data.data;
+
+      // Tìm thông tin quận/huyện trong dữ liệu lấy từ API
+      const districtFromApi = districtList.find(d => d.id === districtId);
+
+      if (districtFromApi) {
+          // Tạo mới district trong cơ sở dữ liệu
+          districtData = await District.create({
+              id: districtFromApi.id,
+              name: districtFromApi.name,
+              full_name: districtFromApi.full_name,
+              latitude: districtFromApi.latitude,
+              longitude: districtFromApi.longitude,
+              provinceId: provinceData._id, // Thêm provinceId vào model
+              __v: 0, // Mặc định là 0 khi tạo mới
+              createdAt: new Date(),
+              updatedAt: new Date()
+          });
+      }
+  } catch (error) {
+      console.error("Error fetching district data from API:", error);
+  }
+}
+
+// Lấy districtData._id để sử dụng
+const districtIdToUse = districtData ? districtData._id : null;
+
+// Tìm và cập nhật xã/phường
+let wardData = await Ward.findOneAndUpdate({
+  id: wardId
+}, {
+  $set: {
+      updatedAt: new Date()
+  }
+}, {
+  new: true
+}).exec();
+
+if (!wardData) {
+  // Nếu không tìm thấy wardData, gọi API để lấy dữ liệu xã/phường
+  try {
+      const apiResponse = await axios.get(`https://esgoo.net/api-tinhthanh/3/${districtId}.htm`);
+      const wardList = apiResponse.data.data;
+
+      // Tìm thông tin xã/phường trong dữ liệu lấy từ API
+      const wardFromApi = wardList.find(w => w.id === wardId);
+      if (wardFromApi) {
+          // Tạo mới ward trong cơ sở dữ liệu
+          wardData = await Ward.create({
+              id: wardFromApi.id,
+              name: wardFromApi.name,
+              full_name: wardFromApi.full_name,
+              latitude: wardFromApi.latitude,
+              longitude: wardFromApi.longitude,
+              districtId: districtData._id,
+              __v: 0, // Mặc định là 0 khi tạo mới
+              createdAt: new Date(),
+              updatedAt: new Date()
+          });
+      }
+  } catch (error) {
+      console.error("Error fetching ward data from API:", error);
+  }
+}
+
+// Lấy wardData._id để sử dụng
+const wardIdToUse = wardData ? wardData._id : null;
+
+    // Nếu category thay đổi:
+    // 1. Xóa bài viết từ category cũ
+    await categoryModels[currentCategory].findByIdAndDelete(postId);
+
+    // 2. Tạo bài viết mới trong category mới
+    const PostModel = categoryModels[category];
+    const newPost = new PostModel({
+      title,
+          province: provinceData._id,
+          district: districtIdToUse,
+          ward: wardIdToUse,
+          street,
+          exactAddress,
+          price,
+          area,
+          details,
+          contactName,
+          contactMobile,
+          images: uploadedImages,
+      userId: userId,
+    });
+
+    await newPost.save();
+
+    res.status(200).json({
+      message: 'Post moved to new category and updated successfully!',
+      post: newPost,
+    });
+  } catch (error) {
+    console.error('Error updating post:', error);
+    res.status(500).json({ message: 'Error updating post', error: error.message });
+  }
+};
+
+
+
+
+// Xóa bài
 const deletePosts = async (req, res) => {
   const { ids } = req.body; // Lấy danh sách id từ request body
+  console.log(req.body)
   if (!Array.isArray(ids) || ids.length === 0) {
     return res.status(400).json({ message: 'Danh sách id không hợp lệ hoặc trống.' });
   }
@@ -421,6 +614,8 @@ const deletePosts = async (req, res) => {
   try {
     // Khởi tạo danh sách các promises xóa
     const deletePromises = ids.map(async (id) => {
+  console.log("34: ",id)
+
       // Kiểm tra và xóa trong từng collection
       const deletedRoom = await Room.findByIdAndDelete(id);
       if (deletedRoom) return { id, collection: 'Room', success: true };
@@ -640,4 +835,4 @@ const getAllPostsForAnalytics = async (req, res) => {
 
 
 
-module.exports = { getPosts, getLatestPosts, createPost,deletePosts, searchPosts, getAllPostsForAnalytics, getUserPosts }; // Export cả searchPosts
+module.exports = { getPosts, getLatestPosts, createPost,updatePost, deletePosts, searchPosts, getAllPostsForAnalytics, getUserPosts }; // Export cả searchPosts
