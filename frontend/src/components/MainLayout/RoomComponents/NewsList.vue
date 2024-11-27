@@ -78,13 +78,13 @@
           </div>
       </div>
   </div>
-  <PostUpdateModal v-if="showPostUpdate" :selected-post="selectedArticle"  @close-modal="showPostUpdate = false" />
+  <BlogPostUpdateModal v-if="showBlogPostUpdate" :selected-article="selectedArticle"  @close-modal="showBlogPostUpdate = false" />
 
   </template>
   
   <script>
   import {getLatestPosts, getUserPosts, deleteArticle, getLatestArticles} from '@/services/api'; // Import hàm gọi API từ api.js
-  import PostUpdateModal from './PostUpdateModal.vue';
+  import BlogPostUpdateModal from '../BlogPost/BlogPostComponents/BlogPostUpdateModal.vue';
   import { formatDate } from '@/utils/dateUtils'; 
   import {
     mapGetters,
@@ -110,7 +110,7 @@
   },
     },
     components:{
-      PostUpdateModal,
+      BlogPostUpdateModal,
     },
     props: {
       searchQuery: {
@@ -128,7 +128,7 @@
         blogPosts: [],
         isDeletePopup: false,
         selectedArticle:'',
-        showPostUpdate: false, 
+        showBlogPostUpdate: false, 
       };
     },
     mounted() {
@@ -202,7 +202,7 @@
      },
      openUpdateModal(post) {
       this.selectedArticle = post; // Gán post vào biến selectedArticle
-      this.showPostUpdate = true; // Hiển thị modal
+      this.showBlogPostUpdate = true; // Hiển thị modal
     },
      handledeleteArticle(id){
        this.selectedArticle = id;

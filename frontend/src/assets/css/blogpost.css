@@ -78,7 +78,15 @@ figure {
 .blog-list-wrapper{
     transform: translateY(-16px);
 }
-
+.tinymce-header .cancelPost {
+    right: 75px;
+    top: 5.3px;
+    width: 125px;
+    outline: none;
+    background-color: transparent;
+    border: none;
+    color: #797979;
+}
 img {
     width: 100%;
     height: auto;

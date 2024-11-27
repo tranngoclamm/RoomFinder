@@ -60,7 +60,8 @@ const deleteArticle = async (req, res) => {
 const updateArticle = async (req, res) => {
     const { id } = req.params;
     const { category, title, content, author, landlord } = req.body;
-  
+    console.log("id:", id)
+    console.log("body:", req.body)
     try {
       const articleToUpdate = await Article.findById(id);
       if (!articleToUpdate) {
