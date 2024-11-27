@@ -139,16 +139,19 @@
     methods: {
       async fetchLatestArticles() {
         var response;
+        var postData;
       try {
         if(this.getUserProfile.role == 'admin'){
           response = await getLatestArticles("", this.currentPage, 9, this.category);  // Gọi API lấy tin mới nhất
+          postData = response.data.data
+          this.totalPages = postData.totalPages
         } else {
           response = await getArticleByUser(this.getUserProfile._id, this.currentPage, 9);  // Gọi API lấy tin mới nhất
-
+          postData = response.data.articles
+          this.totalPages = 1
         }
         if (response && response.data) {
-          let postData = response.data
-          postData.data.forEach(newsItem => {
+          postData.forEach(newsItem => {
           newsItem.createdAt = formatDate(newsItem.createdAt); // chuyển định dạng ngày
           // Sử dụng biểu thức chính quy để tìm URL hình ảnh trong content
           const imageUrlMatch = newsItem.content.match(/<img[^>]+src="([^">]+)"/);
@@ -180,8 +183,7 @@
           const words = mainContent.split(/\s+/); // Chia nhỏ chuỗi thành các từ
           const description = words.slice(0, 40).join(' '); // Lấy 100 từ đầu tiên
           newsItem.description = description; // Thêm trường description đã lấy được nội dung
-          this.blogPosts= postData.data
-          this.totalPages = postData.totalPages
+          this.blogPosts= postData
           });
         }
       } catch (error) {
