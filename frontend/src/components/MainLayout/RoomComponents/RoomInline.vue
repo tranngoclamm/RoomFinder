@@ -207,6 +207,7 @@
           type: this.$route.meta.type || 'default', // Lấy loại phòng từ meta
           page: this.currentPage || 1, // Lấy số trang từ query params (mặc định là 1)
           search: this.searchQuery || '',
+          status: 'visible'
         };
         try {
           const user = await this.getUserProfile; // Lấy dữ liệu người dùng từ getter

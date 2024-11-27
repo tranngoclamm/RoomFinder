@@ -46,7 +46,7 @@
     methods: {
       async fetchLatestArticles() {
         try {
-          const response = await getLatestArticles("", 1, 5, "");  // Gọi API lấy tin mới nhất
+          const response = await getLatestArticles("", 1, 5, "", 'visible');  // Gọi API lấy tin mới nhất
           if (response && response.data) {
             let postData = response.data
 

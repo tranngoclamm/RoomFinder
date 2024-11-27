@@ -69,7 +69,7 @@ export const deletePost = (ids) => {
 // Hàm lấy bài đăng theo loại
 export const getPosts = (query) => {
   return axios.get(`${API_URL}/posts`, {
-    params: { type: query.type, page: query.page, search: query.search}
+    params: { type: query.type, page: query.page, search: query.search, status : query.status}
   });
 };
 
@@ -187,9 +187,9 @@ export const deleteArticle = (id) => {
 };
 
 // Hàm lấy danh sách tin mới nhất với các tham số tìm kiếm và phân trang
-export const getLatestArticles = (query = "", page = 1, size = 10, category = "") => {
+export const getLatestArticles = (query = "", page = 1, size = 10, category = "", status) => {
   return axios.get(`${API_URL}/article`, {
-    params: {query, page, size,category}
+    params: {query, page, size,category,status}
   });
 };
 

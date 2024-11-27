@@ -85,7 +85,7 @@
   </template>
   
   <script>
-  import {getLatestPosts, getUserPosts, deleteArticle, getLatestArticles, updateArticleStatus} from '@/services/api'; // Import hàm gọi API từ api.js
+  import {getLatestPosts, getUserPosts, deleteArticle, getLatestArticles, updateArticleStatus, getArticleByUser} from '@/services/api'; // Import hàm gọi API từ api.js
   import BlogPostUpdateModal from '../BlogPost/BlogPostComponents/BlogPostUpdateModal.vue';
   import { formatDate } from '@/utils/dateUtils'; 
   import {
@@ -134,13 +134,18 @@
       };
     },
     mounted() {
-      this.fetchRoomList();
       this.fetchLatestArticles();
     },
     methods: {
       async fetchLatestArticles() {
+        var response;
       try {
-        const response = await getLatestArticles("", this.currentPage, 9, this.category);  // Gọi API lấy tin mới nhất
+        if(this.getUserProfile.role == 'admin'){
+          response = await getLatestArticles("", this.currentPage, 9, this.category);  // Gọi API lấy tin mới nhất
+        } else {
+          response = await getArticleByUser(this.getUserProfile._id, this.currentPage, 9);  // Gọi API lấy tin mới nhất
+
+        }
         if (response && response.data) {
           let postData = response.data
           postData.data.forEach(newsItem => {

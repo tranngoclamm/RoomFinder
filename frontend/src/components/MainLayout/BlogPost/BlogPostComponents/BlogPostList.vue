@@ -84,7 +84,7 @@
     methods: {
       async fetchLatestArticles() {
       try {
-        const response = await getLatestArticles("", 1, 7, this.category);  // Gọi API lấy tin mới nhất
+        const response = await getLatestArticles("", 1, 7, this.category, 'visible');  // Gọi API lấy tin mới nhất
         if (response && response.data) {
           let postData = response.data
           postData.data.forEach(newsItem => {

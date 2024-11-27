@@ -66,7 +66,7 @@
     methods: {
       async fetchLatestArticles() {
       try {
-        const response = await getLatestArticles("", 1, 5, "");  // Gọi API lấy tin mới nhất
+        const response = await getLatestArticles("", 1, 5, "", 'visible');  // Gọi API lấy tin mới nhất
         if (response && response.data) {
           let data = Object.values(response.data)[0]; // Chuyển object sang mảng
           data.forEach(newsItem => {
