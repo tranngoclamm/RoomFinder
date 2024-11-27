@@ -129,7 +129,7 @@ export default {
         if (response && response.data) {
 
           // Store credentials if Remember Me is checked
-          if (this.rememberMe) {
+          if ( userData) {
             localStorage.setItem('username', this.account);
             localStorage.setItem('password', this.password);
             localStorage.setItem('user', JSON.stringify(response.data.user));

@@ -134,6 +134,7 @@
           location: this.selectedLocation, 
           price: this.selectedPrice, 
           area: this.selectedArea,
+          status: 'visible',
         });
         if (response && response.data) {
           this.dataSearch = response.data.results;

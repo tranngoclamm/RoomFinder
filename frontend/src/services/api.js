@@ -100,6 +100,7 @@ export const getLatestPosts = (query) => {
               location: query.location, 
               price: query.price, 
               area: query.area,
+              status : query.status
            }
   });
 };
