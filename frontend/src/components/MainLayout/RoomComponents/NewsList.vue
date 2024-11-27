@@ -144,7 +144,7 @@
         if(this.getUserProfile.role == 'admin'){
           response = await getLatestArticles("", this.currentPage, 9, this.category);  // Gọi API lấy tin mới nhất
           postData = response.data.data
-          this.totalPages = postData.totalPages
+          this.totalPages = response.data.totalPages
         } else {
           response = await getArticleByUser(this.getUserProfile._id, this.currentPage, 9);  // Gọi API lấy tin mới nhất
           postData = response.data.articles

@@ -409,6 +409,8 @@
       logout() {
         // Xóa thông tin người dùng khỏi localStorage và chuyển hướng về trang đăng nhập
         localStorage.removeItem('user');
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('password');
         this.$router.push('/login');
       },
       openPostNew() {

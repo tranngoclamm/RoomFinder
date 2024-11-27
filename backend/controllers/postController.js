@@ -111,26 +111,43 @@ const getPosts = async (req, res) => {
 
 
 const getUserPosts = async (req, res) => {
-  const { userId } = req.params; // Lấy userId từ params
+  const { userId, status } = req.params; // Lấy userId và status từ params
 
   try {
-    // Tạo các truy vấn để lấy tất cả bài đăng của người dùng có userId
-    const roomPromise = Room.find({ userId }).populate('province').populate('district').populate('ward').populate({
+    // Tạo điều kiện tìm kiếm
+    const statusCondition = {};
+    if (status) {
+      if (status === 'visible') {
+        // Nếu status là "visible", lọc thêm cả "hidden"
+        statusCondition.status = { $in: ['visible', 'hidden'] };
+      } else if (status === 'not-sold') {
+        // Nếu status là "not-sold", lọc bỏ "sold"
+        statusCondition.status = { $ne: 'sold' };
+      } else {
+        // Nếu status khác, không lọc
+        statusCondition.status = { $ne: 'sold' }; // Lọc bỏ "sold"
+      }
+    } else {
+      statusCondition.status = { $ne: 'sold' }; // Lọc bỏ "sold" nếu không có status
+    }
+
+    // Tạo các truy vấn để lấy tất cả bài đăng của người dùng có userId và status (nếu có)
+    const roomPromise = Room.find({ userId, ...statusCondition }).populate('province').populate('district').populate('ward').populate({
       path: 'userId',
       select: '-password' // Không lấy trường password
     });
     
-    const housePromise = House.find({ userId }).populate('province').populate('district').populate('ward').populate({
+    const housePromise = House.find({ userId, ...statusCondition }).populate('province').populate('district').populate('ward').populate({
       path: 'userId',
       select: '-password' // Không lấy trường password
     });
     
-    const apartmentPromise = Apartment.find({ userId }).populate('province').populate('district').populate('ward').populate({
+    const apartmentPromise = Apartment.find({ userId, ...statusCondition }).populate('province').populate('district').populate('ward').populate({
       path: 'userId',
       select: '-password' // Không lấy trường password
     });
     
-    const findRoommatePromise = FindRoommate.find({ userId }).populate('province').populate('district').populate('ward').populate({
+    const findRoommatePromise = FindRoommate.find({ userId, ...statusCondition }).populate('province').populate('district').populate('ward').populate({
       path: 'userId',
       select: '-password' // Không lấy trường password
     });
@@ -144,13 +161,14 @@ const getUserPosts = async (req, res) => {
     // Trả dữ liệu về cho client
     return res.status(200).json({
       results: allPosts, // Danh sách bài viết của người dùng
-      totalPosts: allPosts.length
+      totalPosts: allPosts.length // Tổng số bài viết
     });
   } catch (error) {
     console.error('Lỗi khi lấy dữ liệu:', error);
     return res.status(500).json({ message: 'Đã xảy ra lỗi khi lấy dữ liệu' });
   }
 };
+
 
 
 // Lấy danh sách bài viết mới nhất và lọc theo nội dung tìm kiếm
