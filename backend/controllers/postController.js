@@ -19,6 +19,8 @@ const getPosts = async (req, res) => {
   const limit = 9; // Số lượng bài đăng mỗi trang
   const postType = req.query.type; // Lấy loại bài viết từ query string (rooms, houses, apartments, find-roommates, favorites)
   const searchQuery = req.query.search || ''; // Lấy giá trị tìm kiếm từ query string
+  const status = req.query.status || ''; // Lấy giá trị tìm kiếm từ query string
+  
   let Model;
   // Xác định collection dựa trên loại param
   switch (postType) {
@@ -53,7 +55,17 @@ const getPosts = async (req, res) => {
         { contactMobile: { $regex: searchQuery, $options: 'i' } } // Tìm theo contactMobile
       ]
     };
-    const statusCondition = { status: { $ne: 'sold' } };
+    var statusCondition
+    if (status) {
+      if (status === "visible") {
+          // Lọc bài đăng có status là "visible"
+          
+       statusCondition = { status: { $ne: ["sold", "hidden"] } };
+
+      }
+      } else {
+        statusCondition = { status: { $ne: 'sold' } };
+      }
     var posts;
     if(postType == 'favorites'){
       posts = await Model.find({ ...searchCondition }) // Loại bỏ các bài viết có status = 'sold'
@@ -152,7 +164,6 @@ const getLatestPosts = async (req, res) => {
         { contactMobile: { $regex: search, $options: 'i' } } // Tìm theo contactMobile
       ]
     };
-
     // Kiểm tra có trường status trong từng collection và thêm điều kiện lọc status = 'sold' nếu có
     const roomPromise = Room.find({
       ...searchCondition,
@@ -447,7 +458,6 @@ const updatePost = async (req, res) => {
         break;
       }
     }
-    console.log("currentCategory:",currentCategory)
     if (!existingPost) {
       return res.status(404).json({ message: 'Post not found in any category' });
     }
@@ -614,7 +624,6 @@ const deletePosts = async (req, res) => {
   try {
     // Khởi tạo danh sách các promises xóa
     const deletePromises = ids.map(async (id) => {
-  console.log("34: ",id)
 
       // Kiểm tra và xóa trong từng collection
       const deletedRoom = await Room.findByIdAndDelete(id);
@@ -833,6 +842,76 @@ const getAllPostsForAnalytics = async (req, res) => {
   }
 };
 
+const findCategoryByPostId = async (req, res) => {
+  try {
+    const { id: postId } = req.params;
+
+    // Các model và category tương ứng
+    const categoryModels = { 
+      room: Room, 
+      house: House, 
+      apartment: Apartment, 
+      'find-roommate': FindRoommate 
+    };
+
+    // Tìm bài viết trong từng collection
+    for (const [category, model] of Object.entries(categoryModels)) {
+      const post = await model.findById(postId);
+      if (post) {
+        return res.status(200).json({ category, post });
+      }
+    }
+
+    // Nếu không tìm thấy bài viết
+    return res.status(404).json({ message: "Không tìm thấy bài viết." });
+  } catch (error) {
+    console.error("Lỗi khi tìm category:", error);
+    return res.status(500).json({ message: "Lỗi máy chủ." });
+  }
+};
+
+const updatePostVisibility = async (req, res) => {
+  try {
+    const { id: postId } = req.params;
+    const { status } = req.body; // Trạng thái được truyền từ client (visible hoặc hidden)
+
+    // Kiểm tra giá trị status hợp lệ
+    if (!["visible", "hidden"].includes(status)) {
+      return res.status(400).json({ message: "Trạng thái không hợp lệ. Chỉ chấp nhận 'visible' hoặc 'hidden'." });
+    }
+
+    // Các model và category tương ứng
+    const categoryModels = { 
+      room: Room, 
+      house: House, 
+      apartment: Apartment, 
+      'find-roommate': FindRoommate 
+    };
+
+    // Tìm bài viết và cập nhật trạng thái
+    for (const [category, model] of Object.entries(categoryModels)) {
+      const post = await model.findById(postId);
+      if (post) {
+        // Cập nhật trường status
+        post.status = status; 
+        const updatedPost = await post.save();
+        // Trả về bài viết sau khi cập nhật
+        return res.status(200).json({ 
+          message: "Cập nhật trạng thái thành công.", 
+          post: updatedPost 
+        });
+      }
+    }
+
+    // Nếu không tìm thấy bài viết
+    return res.status(404).json({ message: "Không tìm thấy bài viết." });
+  } catch (error) {
+    console.error("Lỗi khi cập nhật trạng thái bài viết:", error);
+    return res.status(500).json({ message: "Lỗi máy chủ." });
+  }
+};
 
 
-module.exports = { getPosts, getLatestPosts, createPost,updatePost, deletePosts, searchPosts, getAllPostsForAnalytics, getUserPosts }; // Export cả searchPosts
+
+
+module.exports = { getPosts, getLatestPosts, createPost,updatePost, deletePosts,updatePostVisibility,findCategoryByPostId , searchPosts, getAllPostsForAnalytics, getUserPosts }; // Export cả searchPosts

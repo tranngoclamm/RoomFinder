@@ -60,47 +60,91 @@ const deleteArticle = async (req, res) => {
 const updateArticle = async (req, res) => {
     const { id } = req.params;
     const { category, title, content, author, landlord } = req.body;
-    console.log("id:", id)
-    console.log("body:", req.body)
     try {
+        const articleToUpdate = await Article.findById(id);
+        if (!articleToUpdate) {
+            console.warn("Bài viết không tồn tại với ID:", id);
+            return res.status(404).json({ message: "Bài viết không tồn tại" });
+        }
+
+
+        // Nếu tiêu đề thay đổi, cập nhật slug
+        if (title && title !== articleToUpdate.title) {
+            let slug = slugify(title, { lower: true });
+            const existingArticle = await Article.findOne({ slug });
+
+            if (existingArticle && existingArticle._id.toString() !== id) {
+                console.log("Slug bị trùng, tạo slug mới với đuôi số.");
+                let count = 1;
+                while (await Article.findOne({ slug: `${slug}-${count}` })) {
+                    count++;
+                }
+                slug = `${slug}-${count}`;
+                console.log("Slug mới:", slug);
+            }
+            articleToUpdate.slug = slug;
+        }
+
+        if (landlord) console.log("Cập nhật landlord:", landlord);
+
+        // Cập nhật các trường khác
+        if (category) articleToUpdate.category = category;
+        if (title) articleToUpdate.title = title;
+        if (content) articleToUpdate.content = content;
+        if (author) articleToUpdate.author = author;
+        if (landlord == "") {
+            articleToUpdate.landlord = undefined;
+        } else if (landlord != null) {
+            articleToUpdate.landlord = landlord;
+        }
+        
+
+        // Lưu thay đổi
+        const updatedArticle = await articleToUpdate.save();
+
+        res.status(200).json({ message: "Cập nhật bài viết thành công", article: updatedArticle });
+    } catch (error) {
+        console.error("Lỗi khi cập nhật bài viết:", error);
+        res.status(500).json({ message: "Đã xảy ra lỗi khi cập nhật bài viết" });
+    } 
+};
+
+// Cập nhật trạng thái ẩn / hiện 
+const updateArticleStatus = async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;  // Nhận giá trị status từ body
+  
+    try {
+      // Kiểm tra trạng thái có hợp lệ không
+      if (status !== 'visible' && status !== 'hidden') {
+        return res.status(400).json({ message: "Trạng thái không hợp lệ. Trạng thái phải là 'visible' hoặc 'hidden'." });
+      }
+  
+      // Tìm bài viết theo ID
       const articleToUpdate = await Article.findById(id);
       if (!articleToUpdate) {
+        console.warn("Bài viết không tồn tại với ID:", id);
         return res.status(404).json({ message: "Bài viết không tồn tại" });
       }
   
-      // Nếu tiêu đề thay đổi, cập nhật slug
-      if (title && title !== articleToUpdate.title) {
-        let slug = slugify(title, { lower: true });
-        const existingArticle = await Article.findOne({ slug });
-        if (existingArticle && existingArticle._id.toString() !== id) {
-          let count = 1;
-          while (await Article.findOne({ slug: `${slug}-${count}` })) {
-            count++;
-          }
-          slug = `${slug}-${count}`;
-        }
-        articleToUpdate.slug = slug;
-      }
-  
-      // Cập nhật các trường khác
-      if (category) articleToUpdate.category = category;
-      if (title) articleToUpdate.title = title;
-      if (content) articleToUpdate.content = content;
-      if (author) articleToUpdate.author = author;
-      if (landlord) articleToUpdate.landlord = landlord;
+      // Cập nhật trạng thái
+      articleToUpdate.status = status;
   
       // Lưu thay đổi
       const updatedArticle = await articleToUpdate.save();
-      res.status(200).json({ message: "Cập nhật bài viết thành công", article: updatedArticle });
+  
+      // Trả về bài viết sau khi đã cập nhật trạng thái
+      res.status(200).json({ message: "Cập nhật trạng thái bài viết thành công", article: updatedArticle });
     } catch (error) {
-      console.error("Lỗi khi cập nhật bài viết:", error);
-      res.status(500).json({ message: "Đã xảy ra lỗi khi cập nhật bài viết" });
+      console.error("Lỗi khi cập nhật trạng thái bài viết:", error);
+      res.status(500).json({ message: "Đã xảy ra lỗi khi cập nhật trạng thái bài viết" });
     }
   };
   
+  
 // Lấy bài đăng mới nhất với phân trang, tìm kiếm, và lọc loại bài viết
 const getLatestArticles = async (req, res) => {
-  const { query = "", page = 1, size = 10, category } = req.query;
+  const { query = "", page = 1, size = 10, category,status  } = req.query;
 
   try {
       // Tạo bộ lọc tìm kiếm
@@ -115,6 +159,13 @@ const getLatestArticles = async (req, res) => {
       if (category) {
           searchCriteria.category = category;
       }
+
+      if (status) {
+        if (status === "visible") {
+            // Lọc bài đăng có status là "visible"
+            searchCriteria.status = { $nin: ["sold", "hidden"] };
+        }
+        }
 
       // Tính toán số lượng bài viết cần bỏ qua
       const skip = (page - 1) * size;
@@ -206,4 +257,4 @@ const getArticleDetail = async (req, res) => {
 };
 
 
-module.exports = { createArticle, getLatestArticles, updateArticle, deleteArticle, getArticleDetail,articlesByUser  };
+module.exports = { createArticle, getLatestArticles, updateArticle, deleteArticle,updateArticleStatus, getArticleDetail,articlesByUser  };

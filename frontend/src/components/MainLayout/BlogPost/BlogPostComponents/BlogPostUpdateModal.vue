@@ -40,7 +40,7 @@
                         </div>
                     </div>
                     <div class="selected__owner-wrapper" v-if="!input_select">
-                        <a class="dropdown-item" @click="this.input_select=true">
+                        <a class="dropdown-item" @click="this.input_select=true, this.ownerId = '' ">
                             <img :src="this.ownerAvatar || 'https://res.cloudinary.com/dlawgdb8h/image/upload/v1730344959/avatars/kn6xdlvb6hivqkhka000.jpg'" class="avatar" alt="Avatar" />
                             <span> {{this.ownerName}}</span>
                           </a>
@@ -226,7 +226,6 @@
                                 // Gán giá trị tiêu đề vào ô tiêu đề
                                 this.titleArticle = this.localArticle.title || '';
                                 this.postType = this.localArticle.category || '';
-                                console.log("45:",this.localArticle)
                                 if (this.localArticle.category === 'owner-review' && this.localArticle.landlord && this.localArticle.landlord !== 'null' && this.localArticle.landlord !== 'undefined') { 
     // Kiểm tra landlord có tồn tại và không phải là 'null' hoặc 'undefined'
     let owner = this.localArticle.landlord;
@@ -363,12 +362,13 @@
                 };
 
                 try {
+                    console.log("a:", postData.landlord)
                     // Gửi bài viết lên backend và chờ phản hồi
                     const response = await articleUpdate(postData, this.localArticle._id);
                     // Xử lý phản hồi từ backend, ví dụ: hiển thị thông báo thành công
-                    if (response.data && response.status === 201) {
+                    if (response.data && response.status === 200) {
                         alert("Bài viết đã được update thành công!");
-                        this.$emit('closeAll');
+                        this.$emit('close-modal');
                     } else {
                         alert("Đã xảy ra lỗi khi update bài viết.");
                     }

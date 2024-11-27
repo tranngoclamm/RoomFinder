@@ -30,7 +30,9 @@
                             <td>{{ post.price }}tr</td>
                             <td>
                               <a href="" @click.prevent="openUpdateModal(post)" class="mr-4">Sửa</a>
-                              <a href="" @click.prevent="handleDeletePost(post._id)" class="text-danger">Xóa</a>
+                              <a href="" @click.prevent="handleDeletePost(post._id)" class="text-danger mr-4">Xóa</a>
+                              <a href="" v-if="post.status === 'visible' || !post.status" @click.prevent="updatePostStatus(post._id, 'hidden')" class="text-secondary">Ẩn</a>
+                              <a href="" v-else @click.prevent="updatePostStatus(post._id, 'visible')" class="text-secondary">Hiện</a>
                             </td>
                           </tr>
                         </tbody>
@@ -87,7 +89,7 @@
   </template>
   
   <script>
-  import {getLatestPosts, getUserPosts, deletePost} from '@/services/api'; // Import hàm gọi API từ api.js
+  import {getLatestPosts, getUserPosts, deletePost, updatePostVisibility} from '@/services/api'; // Import hàm gọi API từ api.js
   import PostUpdateModal from './PostUpdateModal.vue';
   import {
     mapGetters,
@@ -175,6 +177,16 @@
           let response = await deletePost(ids);  // Gọi API lấy tin mới nhất
           if (response.status == 200) {
             this.isDeletePopup = false;
+            this.fetchRoomList();            
+          }
+        } catch (error) {
+          console.error("Lỗi xóa tin:", error);
+        }
+     },
+     async updatePostStatus(id, state){
+      try {
+          let response = await updatePostVisibility(id, state);  // Gọi API lấy tin mới nhất
+          if (response.status == 200) {
             this.fetchRoomList();            
           }
         } catch (error) {

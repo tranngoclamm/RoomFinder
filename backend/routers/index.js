@@ -3,11 +3,11 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const { registerUser, loginUser, updateUser, updateUserRole, deleteUser, getUsersWithPagination } = require('../controllers/authController');
-const { getPosts, getLatestPosts, createPost,updatePost, deletePosts, searchPosts, getAllPostsForAnalytics, getUserPosts } = require('../controllers/postController');
+const { getPosts, getLatestPosts, createPost,updatePost, deletePosts, searchPosts, getAllPostsForAnalytics, getUserPosts, findCategoryByPostId, updatePostVisibility } = require('../controllers/postController');
 const { getFavorites, updateFavorites, addFavorite, removeFavorite} = require('../controllers/favoritesController');
 const { analyzeSearchHistory } = require('../controllers/searchHistory'); 
 const { searchLocation, searchRoom, searchHost } = require('../controllers/searchController');
-const { createArticle, getLatestArticles, getArticleDetail, articlesByUser, updateArticle, deleteArticle } = require('../controllers/articleController');
+const { createArticle, getLatestArticles, getArticleDetail, articlesByUser, updateArticle, deleteArticle,updateArticleStatus  } = require('../controllers/articleController');
 const { createConversation, getUserConversations, getUserProfileById, resetUnreadMessages  } = require('../controllers/conversationController');
 const { sendMessage, getMessages } = require('../controllers/messageController');
 const { createPayment, vnpayReturn } = require('../controllers/paymentController');
@@ -44,6 +44,8 @@ router.put('/posts/:id', upload.array('images'), updatePost);
 router.post('/posts/delete', deletePosts); 
 router.get('/latest-posts', getLatestPosts); // Lấy bài đăng mới nhất
 router.get('/posts/user/:userId', getUserPosts); // Lấy phòng của người dùng đã đăng
+router.get('/posts/:id/category', findCategoryByPostId ); // lấy category từ id bài
+router.patch('/posts/:id/visibility', updatePostVisibility ); // lấy category từ id bài
 
 // Danh sách yêu thích
 router.get('/favorites', getFavorites);
@@ -67,6 +69,7 @@ router.get('/blog-posts/:slug', getArticleDetail ); // Lấy chi tiết tin
 router.post('/article', createArticle); // Đăng tin 
 router.delete("/article/:id", deleteArticle); // Xóa bài viết
 router.put("/article/:id", updateArticle); // Cập nhật bài viết
+router.patch('/article/:id/status', updateArticleStatus); // cập nhật trạng thái ẩn/ hiện 
 
 // Conversations
 router.get('/conversations/:userId', getUserConversations); // Lấy tất cả cuộc hội thoại của người dùng

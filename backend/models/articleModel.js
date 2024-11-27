@@ -7,6 +7,7 @@ const articleSchema = new mongoose.Schema({
   author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Tham chiếu tới người viết
   landlord: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Tham chiếu tới chủ trọ (chỉ có trong bài review chủ trọ)
   category: { type: String, required: true },
+  status: { type: String },
   slug: { type: String, unique: true, required: true } 
 }, { timestamps: true });
 

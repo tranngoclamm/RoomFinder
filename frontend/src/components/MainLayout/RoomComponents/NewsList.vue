@@ -26,7 +26,9 @@
                             <td class="line-clamp-2b">{{ post.description }}</td>
                             <td>
                               <a href="" @click.prevent="openUpdateModal(post)" class="mr-4">Sửa</a>
-                              <a href="" @click.prevent="handledeleteArticle(post._id)" class="text-danger">Xóa</a>
+                              <a href="" @click.prevent="handledeleteArticle(post._id)" class="text-danger mr-4">Xóa</a>
+                              <a href="" v-if="post.status === 'visible' || !post.status" @click.prevent="updateArticleStatus(post._id, 'hidden')" class="text-secondary">Ẩn</a>
+                              <a href="" v-else @click.prevent="updateArticleStatus(post._id, 'visible')" class="text-secondary">Hiện</a>
                             </td>
                           </tr>
                         </tbody>
@@ -78,12 +80,12 @@
           </div>
       </div>
   </div>
-  <BlogPostUpdateModal v-if="showBlogPostUpdate" :selected-article="selectedArticle"  @close-modal="showBlogPostUpdate = false" />
+  <BlogPostUpdateModal v-if="showBlogPostUpdate" :selected-article="selectedArticle"  @close-modal="closeArticleModal" />
 
   </template>
   
   <script>
-  import {getLatestPosts, getUserPosts, deleteArticle, getLatestArticles} from '@/services/api'; // Import hàm gọi API từ api.js
+  import {getLatestPosts, getUserPosts, deleteArticle, getLatestArticles, updateArticleStatus} from '@/services/api'; // Import hàm gọi API từ api.js
   import BlogPostUpdateModal from '../BlogPost/BlogPostComponents/BlogPostUpdateModal.vue';
   import { formatDate } from '@/utils/dateUtils'; 
   import {
@@ -181,6 +183,10 @@
         console.error("Lỗi lấy tin mới nhất:", error);
       }
      },
+     closeArticleModal(){
+       this.showBlogPostUpdate = false;
+       this.fetchLatestArticles();
+     },
       async fetchRoomList() {
         try {
           var response;
@@ -204,6 +210,16 @@
       this.selectedArticle = post; // Gán post vào biến selectedArticle
       this.showBlogPostUpdate = true; // Hiển thị modal
     },
+    async updateArticleStatus(id, state){
+      try {
+          let response = await updateArticleStatus(id, state);  // Gọi API lấy tin mới nhất
+          if (response.status == 200) {
+            this.fetchLatestArticles();            
+          }
+        } catch (error) {
+          console.error("Lỗi xóa tin:", error);
+        }
+     },
      handledeleteArticle(id){
        this.selectedArticle = id;
        this.isDeletePopup = true;

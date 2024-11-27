@@ -79,6 +79,17 @@ export const getUserPosts = (userId) => {
   });
 };
 
+// Hàm lấy bài đăng của người dùng
+export const findCategoryByPostId = (id) => {
+  return axios.get(`${API_URL}/posts/${id}/category`, {
+  });
+};
+// Hàm cập nhật trạng thái hiển thị bài đăng
+export const updatePostVisibility = (id, state) => {
+  return axios.patch(`${API_URL}/posts/${id}/visibility`, { status: state });
+};
+
+
 // Hàm lấy bài đăng mới nhất
 export const getLatestPosts = (query) => {
   return axios.get(`${API_URL}/latest-posts`, {
@@ -190,6 +201,12 @@ export const getArticleByUser = (userId, page = 1, pageSize = 10) => {
     }
   });
 };
+
+// Hàm cập nhật trạng thái hiển thị bài đăng
+export const updateArticleStatus = (id, state) => {
+  return axios.patch(`${API_URL}/article/${id}/status`, { status: state });
+};
+
 
 // Hàm tạo mới tin
 export const createArticle = (data) => {
